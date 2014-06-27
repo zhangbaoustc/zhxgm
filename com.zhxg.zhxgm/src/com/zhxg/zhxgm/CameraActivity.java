@@ -6,12 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -54,15 +57,28 @@ public class CameraActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				mHandler.postDelayed(takePicRunnable, 2000);
+				
 				//mCamera.takePicture(null, null, mPicture);				
 			}
 		});
 		
 		if(!GpsUtils.isOPen(this)){
+			new GpsUtils(this);
 			GpsUtils.openGPSSetting(this);
 		}
 		
+		
+		LocationManager locMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);	
+		List<String> providers = locMan.getAllProviders();
+		for(Iterator iterator = providers.iterator();iterator.hasNext();){
+		    String provider = (String)iterator.next();
+		    System.out.println(provider);
+		    // and do something you need
+		}
+		
 	}
+	
+	
 	
 	private Runnable takePicRunnable = new Runnable() {
 		
@@ -124,8 +140,9 @@ public class CameraActivity extends Activity {
 	            FileOutputStream fos = new FileOutputStream(pictureFile);
 	            fos.write(data);
 	            fos.close();
-	            
-	           new getServerTimeTask().execute(pictureFile.toString());
+	            ImageUtils imgUtils = new ImageUtils();
+		        imgUtils.addWatermark(CameraActivity.this,pictureFile.toString());
+	          // new getServerTimeTask().execute(pictureFile.toString());
 	        } catch (FileNotFoundException e) {
 	            Log.d(CameraPreview.TAG, "File not found: " + e.getMessage());
 	        } catch (IOException e) {

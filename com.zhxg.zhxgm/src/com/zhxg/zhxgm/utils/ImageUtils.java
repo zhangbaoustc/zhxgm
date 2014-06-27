@@ -24,8 +24,8 @@ public class ImageUtils {
 		Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
 		Point point = new Point(60, 80); 
 		
-//		String markStr = GpsUtils.getGPSLocation(context);
-		String markStr = TimeUtils.getCurrentNetworkTime();
+		String markStr = GpsUtils.getGPSLocation(context);
+//		String markStr = TimeUtils.getCurrentNetworkTime();
 		Bitmap afterMark = mark(bitmap, markStr, point, 255, 1, 15, false);
 		BitmapTofile(afterMark,filePath);
 	}
