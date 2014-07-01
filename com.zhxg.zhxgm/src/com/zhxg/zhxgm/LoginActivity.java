@@ -1,5 +1,10 @@
 package com.zhxg.zhxgm;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.zhxg.zhxgm.library.UserFunction;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -119,10 +124,6 @@ public class LoginActivity extends Activity {
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
-		} else if (mPassword.length() < 4) {
-			mPasswordView.setError(getString(R.string.error_invalid_password));
-			focusView = mPasswordView;
-			cancel = true;
 		}
 
 		// Check for a valid email address.
@@ -130,11 +131,7 @@ public class LoginActivity extends Activity {
 			mEmailView.setError(getString(R.string.error_field_required));
 			focusView = mEmailView;
 			cancel = true;
-		} else if (!mEmail.contains("@")) {
-			mEmailView.setError(getString(R.string.error_invalid_email));
-			focusView = mEmailView;
-			cancel = true;
-		}
+		} 
 
 		if (cancel) {
 			// There was an error; don't attempt login and focus the first
@@ -196,27 +193,22 @@ public class LoginActivity extends Activity {
 	 * the user.
 	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+		private boolean resultCode = false;
+		
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
-
+			
+			JSONObject result = new UserFunction().loginUser(mEmail, mPassword);
 			try {
-				// Simulate network access.
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				return false;
-			}
-
-			for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mEmail)) {
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
+				if("TRUE".equals(result.getString("flag"))){
+					resultCode = true;
+				}else{
+					resultCode = false;
 				}
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-
-			// TODO: register the new account here.
-			return true;
+			return resultCode;
 		}
 
 		@Override
@@ -225,7 +217,8 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
-				finish();
+				UserFunction.loginOK(LoginActivity.this,mEmail,mPassword);
+				
 			} else {
 				mPasswordView
 						.setError(getString(R.string.error_incorrect_password));
