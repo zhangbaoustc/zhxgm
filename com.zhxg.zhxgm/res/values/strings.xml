@@ -6,5 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_camera">CameraActivity</string>
     <string name="title_activity_start">StartActivity</string>
+    <string name="login_loading">登录中&#8230;</string>
+    <string name="title_activity_map">MapActivity</string>
 
 </resources>
