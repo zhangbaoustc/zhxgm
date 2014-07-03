@@ -3,16 +3,15 @@ package com.zhxg.zhxgm;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.Menu;
+
 import com.zhxg.zhxgm.library.UserFunction;
 import com.zhxg.zhxgm.vo.User;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Intent;
-import android.view.Menu;
-
-public class StartActivity extends Activity {
+public class StartActivity extends BaseActivity {
 
 	private User user;
 	private String username;
@@ -24,6 +23,7 @@ public class StartActivity extends Activity {
 		username = user.getUserName();
 		if("".equals(user.getUserName()) || user.getUserName() == null){
 			startActivity(new Intent(this, LoginActivity.class));
+			finish();
 		}else{
 			new UserLoginTask().execute(user);
 		}

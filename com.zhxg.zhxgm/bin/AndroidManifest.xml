@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="14"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -48,6 +49,10 @@
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
+        <activity 
+            android:name="com.zhxg.zhxgm.Register"
+            android:label="@string/register"
+            android:windowSoftInputMode="adjustResize|stateVisible"></activity>
         <activity
             android:name="com.zhxg.zhxgm.CameraActivity"
             android:label="@string/title_activity_camera" >
@@ -78,6 +83,10 @@
         <activity
             android:name="com.zhxg.zhxgm.MapActivity"
             android:label="@string/title_activity_map" >
+        </activity>
+        <activity
+            android:name="com.zhxg.zhxgm.BaseActivity"
+            android:label="@string/title_activity_base" >
         </activity>
     </application>
 

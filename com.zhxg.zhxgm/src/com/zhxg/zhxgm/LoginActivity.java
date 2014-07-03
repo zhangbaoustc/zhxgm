@@ -3,28 +3,29 @@ package com.zhxg.zhxgm;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.zhxg.zhxgm.library.UserFunction;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.zhxg.zhxgm.library.UserFunction;
+
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends BaseActivity {
 	/**
 	 * A dummy authentication store containing known user names and passwords.
 	 * TODO: remove after connecting to a real authentication system.
@@ -61,7 +62,7 @@ public class LoginActivity extends Activity {
 
 		// Set up the login form.
 		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-		mEmailView = (EditText) findViewById(R.id.email);
+		mEmailView = (EditText) findViewById(R.id.username);
 		mEmailView.setText(mEmail);
 
 		mPasswordView = (EditText) findViewById(R.id.password);
@@ -95,7 +96,23 @@ public class LoginActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		getMenuInflater().inflate(R.menu.login, menu);
+		
 		return true;
+	}
+
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.register:
+			Intent intent = new Intent(this, Register.class);              
+            startActivity(intent);  
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+		
 	}
 
 	/**
@@ -218,7 +235,8 @@ public class LoginActivity extends Activity {
 
 			if (success) {
 				UserFunction.loginOK(LoginActivity.this,mEmail,mPassword);
-				
+				startActivity(new Intent(LoginActivity.this, MainActivity.class));
+				finish();
 			} else {
 				mPasswordView
 						.setError(getString(R.string.error_incorrect_password));

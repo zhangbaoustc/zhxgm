@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
@@ -29,7 +28,7 @@ import com.zhxg.zhxgm.control.CameraPreview;
 import com.zhxg.zhxgm.utils.GpsUtils;
 import com.zhxg.zhxgm.utils.ImageUtils;
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends BaseActivity {
 
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;

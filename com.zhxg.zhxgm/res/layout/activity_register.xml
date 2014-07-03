@@ -51,12 +51,32 @@
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="30dp"
                 android:singleLine="true" />
-
-            <EditText
+			<EditText
+                android:id="@+id/mobile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_mobile"
+                android:inputType="textPhonetic"
+                android:maxLines="1"
+                android:layout_marginBottom="20dp"
+                android:singleLine="true" />
+			<EditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_password"
+                android:imeActionId="@+id/login"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:layout_marginBottom="20dp"
+                android:maxLines="1"
+                android:singleLine="true" />
+            <EditText
+                android:id="@+id/comfirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_comfirm_password"
                 android:imeActionId="@+id/login"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
@@ -66,7 +86,7 @@
                 android:singleLine="true" />
 
             <Button
-                android:id="@+id/sign_in_button"
+                android:id="@+id/register_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
@@ -74,8 +94,9 @@
                 android:paddingLeft="32dp"
                 android:paddingRight="32dp"
                 android:textColor="@color/white"
-                android:background="@drawable/blue_button"
-                android:text="@string/action_sign_in_register" />
+                android:background="@drawable/red_button"
+                android:text="@string/register" />
+
 
         </LinearLayout>
     </ScrollView>

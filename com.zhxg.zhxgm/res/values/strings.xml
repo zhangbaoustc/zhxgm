@@ -8,5 +8,6 @@
     <string name="title_activity_start">StartActivity</string>
     <string name="login_loading">登录中&#8230;</string>
     <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_base">BaseActivity</string>
 
 </resources>
