@@ -1,6 +1,10 @@
 package com.zhxg.zhxgm;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.zhxg.zhxgm.library.UserFunction;
 import com.zhxg.zhxgm.utils.Utils;
 
 import android.app.ActionBar;
@@ -12,14 +16,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class Register extends BaseActivity {
 
 	private UserRegisterTask mRegisterTask = null;
-	private EditText username;
-	private EditText mobile;
-	private EditText password;
-	private EditText confirm_password;
+	private EditText usernameView;
+	private EditText mobileView;
+	private EditText passwordView;
+	private EditText confirm_passwordView;
+	
+	private String username;
+	private String mobile;
+	private String password;
+	private String confirm_password;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +40,10 @@ public class Register extends BaseActivity {
 		ab.setDisplayHomeAsUpEnabled(true);
 		ab.setHomeButtonEnabled(true);
 		
-		username = (EditText) findViewById(R.id.username);
-		mobile = (EditText)findViewById(R.id.mobile);
-		password = (EditText) findViewById(R.id.password);
-		confirm_password = (EditText) findViewById(R.id.comfirm_password);
+		usernameView = (EditText) findViewById(R.id.username);
+		mobileView = (EditText)findViewById(R.id.mobile);
+		passwordView = (EditText) findViewById(R.id.password);
+		confirm_passwordView = (EditText) findViewById(R.id.comfirm_password);
 		
 		findViewById(R.id.register_button).setOnClickListener(
 				new OnClickListener() {
@@ -50,50 +60,55 @@ public class Register extends BaseActivity {
 		}
 		
 		// Reset errors.
-		username.setError(null);
-		mobile.setError(null);
-		password.setError(null);
-		confirm_password.setError(null);
+		usernameView.setError(null);
+		mobileView.setError(null);
+		passwordView.setError(null);
+		confirm_passwordView.setError(null);
+		
+		username = usernameView.getText().toString();
+		mobile = mobileView.getText().toString();
+		password = passwordView.getText().toString();
+		confirm_password = confirm_passwordView.getText().toString();
 		
 		boolean cancel = false;
 		View focusView = null;
 		
 		//check validation	
 		
-		if(TextUtils.isEmpty(confirm_password.getText().toString())){
-			confirm_password.setError(getString(R.string.error_field_required));
-			focusView = confirm_password;
+		if(TextUtils.isEmpty(confirm_passwordView.getText().toString())){
+			confirm_passwordView.setError(getString(R.string.error_field_required));
+			focusView = confirm_passwordView;
 			cancel = true;
-		}else if(!confirm_password.getText().equals(password.getText())){
-			confirm_password.setError(getString(R.string.error_field_not_identical));
-			focusView = confirm_password;
+		}else if(!confirm_passwordView.getText().equals(confirm_passwordView.getText())){
+			confirm_passwordView.setError(getString(R.string.error_field_not_identical));
+			focusView = confirm_passwordView;
 			cancel = true;
 		}
 		
-		if(TextUtils.isEmpty(password.getText().toString())){
-			password.setError(getString(R.string.error_field_required));
-			focusView = password;
+		if(TextUtils.isEmpty(passwordView.getText().toString())){
+			passwordView.setError(getString(R.string.error_field_required));
+			focusView = passwordView;
 			cancel = true;
 		}		
 		
-		if(TextUtils.isEmpty(mobile.getText())){
-			mobile.setError(getString(R.string.error_field_required));
-			focusView = mobile;
+		if(TextUtils.isEmpty(mobileView.getText())){
+			mobileView.setError(getString(R.string.error_field_required));
+			focusView = mobileView;
 			cancel = true;
-		}else if(!Utils.checkMobile(mobile.getText().toString())){
-			mobile.setError(getString(R.string.error_field_username_format));
-			focusView = mobile;
+		}else if(!Utils.checkMobile(mobileView.getText().toString())){
+			mobileView.setError(getString(R.string.error_field_username_format));
+			focusView = mobileView;
 			cancel = true;
 		}
 		
 		
-		if(TextUtils.isEmpty(username.getText())){
-			username.setError(getString(R.string.error_field_required));
-			focusView = username;
+		if(TextUtils.isEmpty(usernameView.getText())){
+			usernameView.setError(getString(R.string.error_field_required));
+			focusView = usernameView;
 			cancel = true;
-		}else if(!Utils.checkUserName(username.getText().toString())){
-			username.setError(getString(R.string.error_field_username_format));
-			focusView = username;
+		}else if(!Utils.checkUserName(usernameView.getText().toString())){
+			usernameView.setError(getString(R.string.error_field_username_format));
+			focusView = usernameView;
 			cancel = true;
 		}
 		
@@ -110,19 +125,41 @@ public class Register extends BaseActivity {
 	
 	public class UserRegisterTask extends AsyncTask<Void, Void, Boolean>{
 
+		private boolean resultCode = false;
+		private String errorMsg = "";
+		
 		@Override
 		protected Boolean doInBackground(Void... arg0) {
-			return null;
+			JSONObject result = new UserFunction().registerUser(username, mobile, password, confirm_password);
+			try {
+				if("TRUE".equals(result.getString("flag"))){
+					resultCode = true;
+				}else{
+					resultCode = false;
+					errorMsg = result.getString("msg");
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return resultCode;
 		}
 
 		@Override
-		protected void onPostExecute(Boolean result) {
-			super.onPostExecute(result);
+		protected void onPostExecute(Boolean success) {
+			mRegisterTask = null;
+			if (success) {
+				UserFunction.loginOK(Register.this,username,password);
+				startActivity(new Intent(Register.this, MainActivity.class));
+				finish();
+			} else {
+				Toast.makeText(Register.this, errorMsg, Toast.LENGTH_LONG).show();
+				usernameView.requestFocus();
+			}
 		}
 		
 		@Override
 		protected void onCancelled() {
-			super.onCancelled();
+			mRegisterTask = null;
 		}
 		
 	}

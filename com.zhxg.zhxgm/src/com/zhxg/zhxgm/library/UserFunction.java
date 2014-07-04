@@ -16,6 +16,7 @@ import android.content.SharedPreferences.Editor;
 public class UserFunction {
 	private JSONParser jsonParser;
 	private String loginUrl = "http://zhxg.com/api/apk/login.php";
+	private String registerUrl = "http://zhxg.com/api/apk/reg.php";
 	public UserFunction() {
 		jsonParser = new JSONParser();
 	}
@@ -27,6 +28,17 @@ public class UserFunction {
 		JSONObject jObj = jsonParser.getJSONFromUrl(loginUrl, params, "POST");
 		return jObj;
 	}
+	
+	
+	public JSONObject registerUser(String userName,String mobile,String password,String confirm_password){
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("username", userName));
+		params.add(new BasicNameValuePair("psd", password));
+		params.add(new BasicNameValuePair("psd2", confirm_password));
+		JSONObject jObj = jsonParser.getJSONFromUrl(registerUrl, params, "POST");
+		return jObj;
+	}
+	
 	
 	public static void loginOK(Context context,String username,String password)
 	{
