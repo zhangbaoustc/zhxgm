@@ -66,7 +66,7 @@ public final class R {
         public static final int top_bar=0x7f020013;
     }
     public static final class id {
-        public static final int action_settings=0x7f09004a;
+        public static final int action_settings=0x7f09004c;
         public static final int bmapView=0x7f090015;
         public static final int bottom_fragment=0x7f090014;
         public static final int btnGalleryOk=0x7f090022;
@@ -77,10 +77,10 @@ public final class R {
         public static final int button_selectpic=0x7f09001c;
         public static final int camera_preview=0x7f090000;
         public static final int comfirm_password=0x7f090017;
-        public static final int fragment_bottom_game_man=0x7f090046;
-        public static final int fragment_bottom_more=0x7f090048;
-        public static final int fragment_bottom_news=0x7f090045;
-        public static final int fragment_bottom_notice=0x7f090047;
+        public static final int fragment_bottom_game_man=0x7f090048;
+        public static final int fragment_bottom_more=0x7f09004a;
+        public static final int fragment_bottom_news=0x7f090047;
+        public static final int fragment_bottom_notice=0x7f090049;
         public static final int frmQueue=0x7f090023;
         public static final int gameNameSpinner=0x7f09002f;
         public static final int gameTypeSpinner=0x7f090030;
@@ -101,13 +101,15 @@ public final class R {
         public static final int game_info_num=0x7f09003c;
         public static final int game_info_trace=0x7f090039;
         public static final int game_info_update_btn=0x7f090040;
-        public static final int game_letfly_ll=0x7f090044;
+        public static final int game_letfly_ll=0x7f090046;
         public static final int game_mgr_ll=0x7f09002c;
         public static final int game_nav_group=0x7f090027;
         public static final int game_place=0x7f090034;
         public static final int game_referee=0x7f090037;
         public static final int game_time=0x7f090033;
+        public static final int game_transport_action=0x7f090045;
         public static final int game_transport_ll=0x7f090043;
+        public static final int game_transport_trace=0x7f090044;
         public static final int general_fragment=0x7f090020;
         public static final int gridGallery=0x7f090006;
         public static final int imageView_pic=0x7f09001b;
@@ -131,12 +133,12 @@ public final class R {
         public static final int pageTransport=0x7f09002a;
         public static final int password=0x7f090010;
         public static final int pbLarge=0x7f09001a;
-        public static final int register=0x7f09004b;
+        public static final int register=0x7f09004d;
         public static final int register_button=0x7f090018;
         public static final int sign_in_button=0x7f090012;
         public static final int text=0x7f09001f;
         public static final int textView1=0x7f090019;
-        public static final int tvTitleText=0x7f090049;
+        public static final int tvTitleText=0x7f09004b;
         public static final int type=0x7f090026;
         public static final int typeLL=0x7f090004;
         public static final int uploadButton=0x7f09001d;

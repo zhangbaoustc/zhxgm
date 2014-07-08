@@ -308,7 +308,31 @@
 	        android:layout_weight="10"
 	        android:visibility="gone"
 	        android:orientation="vertical" >
-
+			<RelativeLayout
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <Button
+                android:id="@+id/game_transport_trace"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                 android:layout_alignParentLeft="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_game_info_camera" />
+			    
+			    <Button
+                android:id="@+id/game_transport_action"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_game_info_image_upload" />
+			</RelativeLayout>
            
             
         </LinearLayout>
