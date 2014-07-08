@@ -1,24 +1,39 @@
 package com.zhxg.zhxgm;
 
 
-import android.content.Intent;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.view.Menu;
 
-public class MainActivity extends BaseActivity {
+import com.zhxg.zhxgm.fragment.GeneralFragment;
+import com.zhxg.zhxgm.fragment.MainNavFragment.Callbacks;
 
+public class MainActivity extends BaseActivity implements Callbacks{
+
+	public static final String Item = "item";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);		
-		startActivity(new Intent(this, MapActivity.class));
+		onItemSelected(R.id.fragment_bottom_game_man);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	@Override
+	public void onItemSelected(int item) {
+		Bundle arguments = new Bundle();
+		arguments.putInt(Item, item);
+		
+		GeneralFragment generalFragment = new GeneralFragment();
+		generalFragment.setArguments(arguments);
+		
+		FragmentManager fm = this.getFragmentManager();
+		fm.beginTransaction().replace(R.id.main_detail_FrameLayout, generalFragment).commit();
 	}
 
 }

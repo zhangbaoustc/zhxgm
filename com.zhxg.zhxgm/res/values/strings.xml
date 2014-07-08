@@ -3,11 +3,26 @@
 
     <string name="app_name">com.zhxg.zhxgm</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_camera">CameraActivity</string>
     <string name="title_activity_start">StartActivity</string>
     <string name="login_loading">登录中&#8230;</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="title_activity_base">BaseActivity</string>
+    <string name="more">More</string>
+    <string name="notice">Notice</string>
+    <string name="order">Order</string>
+    <string name="home">Home</string>
+    <string name="title_activity_game_detail">比赛详情</string>
+
+    <!-- game detail -->
+    <string name="game_name">比赛名称</string>
+    <string name="game_type">比赛类型</string>
+    <string name="title_activity_upload_file">UploadFileActivity</string>
+    
+    <string name="hello_world">Hello world!</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_pick">Pick From Gallery</string>
+    <string name="btn_pick_mul">Pick From Gallery (Multiple)</string>
+    <string name="btn_upload">上传</string>
 
 </resources>

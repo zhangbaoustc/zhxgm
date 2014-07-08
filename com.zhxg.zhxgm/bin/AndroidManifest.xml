@@ -26,7 +26,7 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -49,10 +49,11 @@
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
-        <activity 
+        <activity
             android:name="com.zhxg.zhxgm.Register"
             android:label="@string/register"
-            android:windowSoftInputMode="adjustResize|stateVisible"></activity>
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
         <activity
             android:name="com.zhxg.zhxgm.CameraActivity"
             android:label="@string/title_activity_camera" >
@@ -66,7 +67,6 @@
         <receiver android:name="com.zhxg.zhxgm.receiver.MainReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
@@ -74,11 +74,7 @@
         <activity
             android:name="com.zhxg.zhxgm.StartActivity"
             android:label="@string/title_activity_start" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            
         </activity>
         <activity
             android:name="com.zhxg.zhxgm.MapActivity"
@@ -87,6 +83,34 @@
         <activity
             android:name="com.zhxg.zhxgm.BaseActivity"
             android:label="@string/title_activity_base" >
+        </activity>
+        <activity
+            android:name="com.zhxg.zhxgm.GameDetailActivity"
+            android:label="@string/title_activity_game_detail" >
+        </activity>
+        <activity
+            android:name="com.zhxg.zhxgm.UploadFileActivity"
+            android:label="@string/title_activity_upload_file" >
+            
+        </activity>
+        
+        <activity android:name="com.zhxg.zhxgm.library.CustomGalleryActivity" >
+           
+            <intent-filter>
+                <action android:name="luminous.ACTION_PICK" />
+                <action android:name="luminous.ACTION_MULTIPLE_PICK" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.zhxg.zhxgm.library.ImageSelectActivity">
+             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
         </activity>
     </application>
 
