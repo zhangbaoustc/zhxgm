@@ -5,25 +5,327 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     tools:context=".MainActivity" >
-
+	<include layout="@layout/game_man_nav_top"/>
     <LinearLayout
+        android:id="@+id/game_mgr_ll"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
+        android:visibility="gone"
         android:orientation="vertical" >
+			<RelativeLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="45dp">
+			    <Button android:id="@+id/game_add"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_toLeftOf="@+id/game_edit"
+			        android:text="@string/game_add"/>
+
+			    <Button
+			        android:id="@+id/game_edit"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentTop="true"
+			        android:layout_alignParentRight="true"
+			        android:text="@string/game_edit" />
+
+			</RelativeLayout>
+			
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_name"/>
+			    
+			    <Spinner android:id="@+id/gameNameSpinner"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			    
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_type"/>
+			    
+			    <Spinner android:id="@+id/gameTypeSpinner"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			    
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_distance"/>
+			    
+			    <TextView android:id="@+id/game_distance"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			    
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_bonus"/>
+			    
+			    <TextView android:id="@+id/game_bonus"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			    
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_date"/>
+			    
+			    <TextView android:id="@+id/game_time"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_place"/>
+			    
+			    <TextView android:id="@+id/game_place"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_fly_date"/>
+			    
+			    <TextView android:id="@+id/game_fly_date"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_fly_place"/>
+			    
+			    <TextView android:id="@+id/game_fly_place"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_referee"/>
+			    
+			    <TextView android:id="@+id/game_referee"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+            
+    </LinearLayout>
+	<LinearLayout
+	    android:id="@+id/game_info_ll"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:visibility="visible"
+        android:orientation="vertical" >
+
+           <RelativeLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="45dp">
+			    <Button android:id="@+id/game_info_trace"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentLeft="true"
+			        android:text="@string/game_trace"/>
+
+			    <Button
+			        android:id="@+id/game_info_edit"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentTop="true"
+			        android:layout_alignParentRight="true"
+			        android:text="@string/game_edit" />
+
+			</RelativeLayout>
+            
+           <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_name"/>
+			    
+			    <TextView android:id="@+id/game_info_name"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_page_num"/>
+			    
+			    <TextView android:id="@+id/game_info_num"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_info_longitude"/>
+			    
+			    <TextView android:id="@+id/game_info_longitude"
+			        android:layout_width="80dp"
+			        android:layout_height="wrap_content"/>
+			    
+			    <TextView 
+			        android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_info_latitude"/>
+			    
+			    <TextView 
+			        android:id="@+id/game_info_latitude"
+			        android:layout_width="80dp"
+			        android:layout_height="wrap_content"/>
+			    <TextView android:layout_weight="2"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:drawableLeft="@drawable/mark"
+			        android:text="@string/location"/>
+			</LinearLayout>
+			
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_info_memo"/>
+			    
+			    <TextView android:id="@+id/game_info_memo"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+             <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <Button
+                android:id="@+id/game_info_update_btn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="16dp"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_update" />
+			</LinearLayout>
+			
+             <RelativeLayout
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <Button
+                android:id="@+id/game_info_camera"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                 android:layout_alignParentLeft="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_game_info_camera" />
+			    
+			    <Button
+                android:id="@+id/game_info_image_upload"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_game_info_image_upload" />
+			</RelativeLayout>
+			
+    </LinearLayout>
+    
+    	<LinearLayout
+    	    android:id="@+id/game_transport_ll"
+	        android:layout_width="fill_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="10"
+	        android:visibility="gone"
+	        android:orientation="vertical" >
+
+           
+            
+        </LinearLayout>
+    
+    	<LinearLayout
+	    	android:id="@+id/game_letfly_ll"
+	        android:layout_width="fill_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="10"
+	        android:visibility="gone"
+	        android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="game manager" />
-            <ListView 
-                android:id="@+id/games"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                
-            </ListView>
-
+                android:text="game let fly" />
+            
     </LinearLayout>
-
 </LinearLayout>

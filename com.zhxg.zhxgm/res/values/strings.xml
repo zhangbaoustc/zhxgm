@@ -15,8 +15,27 @@
     <string name="title_activity_game_detail">比赛详情</string>
 
     <!-- game detail -->
-    <string name="game_name">比赛名称</string>
-    <string name="game_type">比赛类型</string>
+    <string name="game_name">比赛名称：</string>
+    <string name="game_type">比赛类型：</string>
+    <string name="game_distance">空      距：</string>
+    <string name="game_bonus">奖      金：</string>
+    <string name="game_date">集鸽时间：</string>
+    <string name="game_fly_date">放飞时间：</string>
+    <string name="game_fly_place">放飞地点：</string>
+    <string name="game_referee">裁		判：</string>
+    <string name="game_place">集鸽地点：</string>
+    <string name="game_add">添加比赛</string>
+    <string name="game_trace">行程记录</string>
+    <string name="game_edit">编辑比赛</string>
+    
+    <string name="game_page_num">集鸽羽数：</string>
+    <string name="game_info_latitude">集鸽纬度：</string>
+    <string name="game_info_longitude">集鸽经度：</string>
+    <string name="location">定位</string>
+    <string name="game_info_memo">集鸽备注：</string>
+    <string name="action_game_info_camera">集鸽拍照</string>
+    <string name="action_game_info_image_upload">上传照片</string>
+    <string name="action_update">更新</string>
     <string name="title_activity_upload_file">UploadFileActivity</string>
     
     <string name="hello_world">Hello world!</string>
@@ -24,5 +43,6 @@
     <string name="btn_pick">Pick From Gallery</string>
     <string name="btn_pick_mul">Pick From Gallery (Multiple)</string>
     <string name="btn_upload">上传</string>
+    
 
 </resources>

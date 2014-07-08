@@ -58,7 +58,7 @@ public class GeneralFragment extends Fragment{
 			//更换mainView中间的内容（home,msg,at,more）
 			getActivity().getFragmentManager().beginTransaction().replace(R.id.general_fragment, fragment).commit();
 		}
-		main_title_RelativeLayout =  ((View) container.getParent()).findViewById(R.id.main_title_RelativeLayout);
+		//main_title_RelativeLayout =  ((View) container.getParent()).findViewById(R.id.main_title_RelativeLayout);
 		//将生成的view返回
 		return view;
 	}
@@ -67,14 +67,14 @@ public class GeneralFragment extends Fragment{
 	protected void setTitle(Object title) {
 		if(main_title_RelativeLayout != null) {
 			//标题栏中的文字
-			TextView mTvTitle = (TextView) main_title_RelativeLayout.findViewById(R.id.main_title_TextView);
-			if(mTvTitle != null) {
-				if(title instanceof Integer) {  //整型
-					mTvTitle.setText((Integer)title);
-				} else { //字符类型
-					mTvTitle.setText((CharSequence)title);
-				}
-			}
+			//TextView mTvTitle = (TextView) main_title_RelativeLayout.findViewById(R.id.main_title_TextView);
+//			if(mTvTitle != null) {
+//				if(title instanceof Integer) {  //整型
+//					mTvTitle.setText((Integer)title);
+//				} else { //字符类型
+//					mTvTitle.setText((CharSequence)title);
+//				}
+//			}
 		}
 	}
 	
