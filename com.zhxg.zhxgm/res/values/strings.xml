@@ -31,11 +31,21 @@
     <string name="game_page_num">集鸽羽数：</string>
     <string name="game_info_latitude">集鸽纬度：</string>
     <string name="game_info_longitude">集鸽经度：</string>
+    <string name="game_letfly_latitude">司放纬度：</string>
+    <string name="game_letfly_longitude">司放经度：</string>
     <string name="location">定位</string>
     <string name="game_info_memo">集鸽备注：</string>
+    <string name="game_letfly_time">放飞时间：</string>
     <string name="action_game_info_camera">集鸽拍照</string>
+    <string name="action_transport_begin">开始司放</string>
+    <string name="action_transport_end">结束司放</string>
+    <string name="action_game_transport_camera">运输拍照</string>
+    <string name="action_game_letfly_camera">司放拍照</string>
     <string name="action_game_info_image_upload">上传照片</string>
     <string name="action_update">更新</string>
+    <string name="game_transport_start_location">起始坐标：</string>
+    <string name="game_transport_current_location">当前坐标：</string>
+    
     <string name="title_activity_upload_file">UploadFileActivity</string>
     
     <string name="hello_world">Hello world!</string>

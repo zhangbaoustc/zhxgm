@@ -11,7 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
-        android:visibility="gone"
+        android:visibility="visible"
         android:orientation="vertical" >
 			<RelativeLayout 
 			    android:layout_width="match_parent"
@@ -162,7 +162,7 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
-        android:visibility="visible"
+        android:visibility="gone"
         android:orientation="vertical" >
 
            <RelativeLayout 
@@ -324,7 +324,103 @@
                 android:text="@string/action_game_info_camera" />
 			    
 			    <Button
-                android:id="@+id/game_transport_action"
+                android:id="@+id/game_transport_action_begin"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_transport_begin" />
+			     <Button
+                android:id="@+id/game_transport_action_end"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_transport_end" />
+			</RelativeLayout>
+           
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_name"/>
+			    
+			    <TextView 
+			        android:id="@+id/game_transport_name"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_transport_start_location"/>
+			    
+			    <TextView 
+			        android:id="@+id/game_transport_start_point"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_transport_current_location"/>
+			    
+			    <TextView
+			         android:id="@+id/game_transport_current_point" 
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+			<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_distance"/>
+			    
+			    <TextView
+			         android:id="@+id/game_transport_distance" 
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+             
+              <RelativeLayout
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <Button
+                android:id="@+id/game_transport_camera"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                 android:layout_alignParentLeft="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_game_transport_camera" />
+			    
+			    <Button
+                android:id="@+id/game_transport_image_upload"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
@@ -333,8 +429,6 @@
                 android:background="@drawable/blue_button"
                 android:text="@string/action_game_info_image_upload" />
 			</RelativeLayout>
-           
-            
         </LinearLayout>
     
     	<LinearLayout
@@ -345,11 +439,114 @@
 	        android:visibility="gone"
 	        android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
+            <RelativeLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="45dp">
+			    <Button android:id="@+id/game_letfly_trace"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentLeft="true"
+			        android:text="@string/game_trace"/>
+			   
+			</RelativeLayout>
+            
+           <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_name"/>
+			    
+			    <TextView android:id="@+id/game_letfly_name"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_letfly_time"/>
+			    
+			    <TextView android:id="@+id/game_letfly_time"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_letfly_latitude"/>
+			    
+			    <TextView android:id="@+id/game_letfly_longitude"
+			        android:layout_width="80dp"
+			        android:layout_height="wrap_content"/>
+			    
+			    <TextView 
+			        android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_letfly_latitude"/>
+			    
+			    <TextView 
+			        android:id="@+id/game_letfly_latitude"
+			        android:layout_width="80dp"
+			        android:layout_height="wrap_content"/>
+			    <TextView android:layout_weight="2"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:drawableLeft="@drawable/mark"
+			        android:text="@string/location"/>
+			</LinearLayout>
+			
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:text="@string/game_distance"/>
+			    
+			    <TextView android:id="@+id/game_letfly_distance"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+			
+             <RelativeLayout
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <Button
+                android:id="@+id/game_letfly_camera"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="game let fly" />
+                android:layout_gravity="right"
+                 android:layout_alignParentLeft="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_game_info_camera" />
+			    
+			    <Button
+                android:id="@+id/game_letfly_image_upload"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button"
+                android:text="@string/action_game_info_image_upload" />
+			</RelativeLayout>
             
     </LinearLayout>
 </LinearLayout>
