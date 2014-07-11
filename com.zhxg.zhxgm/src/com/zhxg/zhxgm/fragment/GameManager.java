@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -38,12 +40,14 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.zhxg.zhxgm.AddGameActivity;
+import com.zhxg.zhxgm.EditGameActivity;
 import com.zhxg.zhxgm.R;
 import com.zhxg.zhxgm.library.GameFunction;
 import com.zhxg.zhxgm.service.GameTransportService;
 import com.zhxg.zhxgm.vo.Game;
 
-public class GameManager extends GeneralFragment {
+public class GameManager extends GeneralFragment implements OnClickListener{
 
 	private View rootView;
 	private RadioGroup rg;
@@ -62,9 +66,26 @@ public class GameManager extends GeneralFragment {
 	//game info
 	private Spinner gameSpinner;
 	private	ArrayAdapter<Game> adapter;
+	private TextView game_distance;
+	private TextView game_bonus;
+	private TextView game_gather_time;
+	private TextView game_gather_place;
+	private TextView game_fly_date;
+	private TextView game_fly_place;
+	private TextView game_referee;
+	private Button game_add;
+	private Button game_edit;
+	
+	//game gather
+	private TextView game_gather_name;
+	
 	//transport
+	private TextView game_transport_name;
 	private Button beginTransport;
 	private Button endTransport;
+	
+	//let fly
+	private TextView game_letfly_name;
 	
 	private static List<Game> data;
 	@Override
@@ -91,8 +112,7 @@ public class GameManager extends GeneralFragment {
 		game_info_ll = (LinearLayout) rootView.findViewById(R.id.game_info_ll);
 		game_transport_ll = (LinearLayout) rootView.findViewById(R.id.game_transport_ll);
 		game_letfly_ll = (LinearLayout) rootView.findViewById(R.id.game_letfly_ll);
-		
-		
+				
 		
 		mBaiduMapView = new MapView(getActivity());
 		mBaiduMapView.setClickable(true);
@@ -100,15 +120,20 @@ public class GameManager extends GeneralFragment {
 		p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 500);
 		
 		//geme info
+		game_add = (Button) rootView.findViewById(R.id.game_add);
+		game_add.setOnClickListener(this);
+		game_edit = (Button) rootView.findViewById(R.id.game_edit);
+		game_edit.setOnClickListener(this);
 		gameSpinner = (Spinner) rootView.findViewById(R.id.gameNameSpinner);
 		adapter = new ArrayAdapter<Game>(getActivity(), android.R.layout.simple_spinner_item, data);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
 		gameSpinner.setAdapter(adapter);
 		gameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+					int position, long arg3) {
+				Log.i("dd", "23423423");
+				setLayoutData(data.get(position));
 			}
 
 			@Override
@@ -116,9 +141,21 @@ public class GameManager extends GeneralFragment {
 				
 			}
 		});
+		game_distance = (TextView) rootView.findViewById(R.id.game_distance);
+		game_bonus = (TextView) rootView.findViewById(R.id.game_bonus);
+		game_gather_time = (TextView) rootView.findViewById(R.id.game_gather_time);
+		game_gather_place = (TextView) rootView.findViewById(R.id.game_gather_place);
+		game_fly_date = (TextView) rootView.findViewById(R.id.game_fly_date);
+		game_fly_place = (TextView) rootView.findViewById(R.id.game_fly_place);
+		game_referee = (TextView) rootView.findViewById(R.id.game_referee);
+		
+		//gather
+		game_gather_name = (TextView) rootView.findViewById(R.id.game_gather_name);
+		
 		
 		
 		//transport
+		game_transport_name = (TextView) rootView.findViewById(R.id.game_transport_name);
 		beginTransport = (Button) rootView.findViewById(R.id.game_transport_action_begin);
 		beginTransport.setOnClickListener(new OnClickListener() {
 			@Override
@@ -137,6 +174,25 @@ public class GameManager extends GeneralFragment {
 				getActivity().stopService(intent);
 			}
 		});
+		
+		//let fly
+		game_letfly_name = (TextView) rootView.findViewById(R.id.game_letfly_name);
+	}
+	
+	//set layout view data
+	private void setLayoutData(Game game){
+		game_distance.setText(game.getDistance());
+		game_bonus.setText(game.getBonus());
+		game_gather_time.setText(game.getJgDate());
+		game_gather_place.setText(game.getJgAddress());
+		game_fly_date.setText(game.getFlyDate());
+		game_fly_place.setText(game.getFlyAddress());
+
+		
+		game_gather_name.setText(game.getName());
+		game_transport_name.setText(game.getName());
+		game_letfly_name.setText(game.getName());
+		
 	}
 	
 	//set game data
@@ -144,6 +200,7 @@ public class GameManager extends GeneralFragment {
 		adapter.clear();
 		adapter.addAll(data);
 		adapter.notifyDataSetChanged();
+		setLayoutData(data.get(0));
 	}
 
 	@Override
@@ -371,7 +428,23 @@ public class GameManager extends GeneralFragment {
 			
 			Toast.makeText(getActivity(), "获取比赛信息失败！", Toast.LENGTH_LONG).show();
 		}
+	}
 
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
+		case R.id.game_add:
+			Intent intentAdd = new Intent(getActivity(), AddGameActivity.class);
+			startActivity(intentAdd);
+			break;
+		case R.id.game_edit:
+			Intent intentEdit = new Intent(getActivity(), EditGameActivity.class);
+			startActivity(intentEdit);
+			break;
+
+		default:
+			break;
+		}
 	}
 	
 

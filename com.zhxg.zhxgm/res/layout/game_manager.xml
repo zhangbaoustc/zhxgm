@@ -35,8 +35,8 @@
 			<LinearLayout 
 			    android:layout_width="match_parent"
 			    android:layout_height="wrap_content"
-			    android:orientation="horizontal"
-			    >
+			    android:orientation="horizontal" >
+			    
 			    <TextView android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:text="@string/game_name"/>
@@ -95,9 +95,9 @@
 			    >
 			    <TextView android:layout_width="70dp"
 			        android:layout_height="wrap_content"
-			        android:text="@string/game_date"/>
+			        android:text="@string/game_gather_date"/>
 			    
-			    <TextView android:id="@+id/game_time"
+			    <TextView android:id="@+id/game_gather_time"
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"/>
 			</LinearLayout>
@@ -109,9 +109,9 @@
 			    >
 			    <TextView android:layout_width="70dp"
 			        android:layout_height="wrap_content"
-			        android:text="@string/game_place"/>
+			        android:text="@string/game_gather_place"/>
 			    
-			    <TextView android:id="@+id/game_place"
+			    <TextView android:id="@+id/game_gather_place"
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"/>
 			</LinearLayout>
@@ -193,7 +193,7 @@
 			        android:layout_height="wrap_content"
 			        android:text="@string/game_name"/>
 			    
-			    <TextView android:id="@+id/game_info_name"
+			    <TextView android:id="@+id/game_gather_name"
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"/>
 			</LinearLayout>
@@ -270,7 +270,7 @@
                 android:paddingRight="32dp"
                 android:textColor="@color/white"
                 android:background="@drawable/blue_button"
-                android:text="@string/action_update" />
+                android:text="@string/action_add" />
 			</LinearLayout>
 			
              <RelativeLayout
