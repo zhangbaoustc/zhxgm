@@ -343,7 +343,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 	@Override
 	public void onDataSetChanged() {
 		setListViewHeightBasedOnChildren(referee_listview);
-		
+		addGame.requestFocus();
 	}
 
 

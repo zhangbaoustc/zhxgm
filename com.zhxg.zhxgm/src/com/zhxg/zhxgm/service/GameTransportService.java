@@ -1,8 +1,12 @@
 package com.zhxg.zhxgm.service;
 
+
+import java.util.HashMap;
 import android.app.Service;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -10,11 +14,15 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
+import com.zhxg.zhxgm.control.SqliteController;
 
 public class GameTransportService extends Service {
 
+	private static final int HashMap = 0;
 	private LocationClient mLocationClient;
 	private BDLocationListener myLocationListener = new MyLocationListener();
+	private	SqliteController controller;
+	private HashMap<String,String> locationMap;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -24,6 +32,9 @@ public class GameTransportService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		controller = new SqliteController(getApplicationContext());
+		SQLiteDatabase sqliteDatabase = controller.getWritableDatabase();
+		
 		mLocationClient = new LocationClient(getApplicationContext());
 		mLocationClient.registerLocationListener(myLocationListener);
 		
@@ -34,7 +45,6 @@ public class GameTransportService extends Service {
 		option.setIsNeedAddress(true);//返回的定位结果包含地址信息
 		option.setNeedDeviceDirect(true);//返回的定位结果包含手机机头的方向
 		mLocationClient.setLocOption(option);
-		
 		mLocationClient.start();
 		
 	}
@@ -64,13 +74,31 @@ public class GameTransportService extends Service {
 				sb.append("\naddr : ");
 				sb.append(location.getAddrStr());
 			} 
+			
+			//insert into sqlite
+			insertToSqlite(location);
+			
 			Toast.makeText(getApplicationContext(), "sevice location", Toast.LENGTH_LONG).show();
+			Log.i("transport service: ", location.getLatitude() + " --" + location.getLongitude());
 		}
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		mLocationClient.stop();
+		
+	}
+	
+	private void insertToSqlite(BDLocation location){
+		locationMap = new HashMap<String, String>();
+		locationMap.put("bsid", "1234");
+		locationMap.put("xdot", location.getLongitude()+"");
+		locationMap.put("ydot", location.getLatitude()+"");
+		locationMap.put("to_server", "Y");
+		locationMap.put("time", location.getTime());
+		controller.insertLocation(locationMap);
+		
 	}
 	
 	

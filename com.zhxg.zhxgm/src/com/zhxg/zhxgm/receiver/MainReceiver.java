@@ -19,7 +19,7 @@ public class MainReceiver extends BroadcastReceiver {
 			long interval = 60000;
 			AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		    PendingIntent pi = PendingIntent.getService(context, 0, new Intent(context, MainService.class), PendingIntent.FLAG_UPDATE_CURRENT);
-		    am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + interval, interval, pi);
+		    am.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis() + interval, interval, pi);
 			Log.i(TAG, "------- boot start service ----------------");
 		}
 	}

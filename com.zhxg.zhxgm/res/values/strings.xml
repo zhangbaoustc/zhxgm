@@ -54,14 +54,20 @@
     <string name="title_activity_add_game">添加比赛</string>
     <string name="title_activity_edit_game">编辑比赛</string>
 
-    
     <!-- add game -->
-    <string-array name="game_type_array"> 
-        <item>协会比赛</item> 
-        <item>地区比赛</item> 
-        <item>鸽舍比赛</item> 
-    </string-array> 
+    <string-array name="game_type_array">
+        <item>协会比赛</item>
+        <item>地区比赛</item>
+        <item>鸽舍比赛</item>
+    </string-array>
+
     <string name="game_add_select_gather_time_title">选择集鸽时间</string>
     <string name="game_add_select_fly_time_title">选择放飞日期</string>
+    <string name="title_activity_trace_mark">TraceMarkActivity</string>
     
+    <!-- trace -->
+    <string name="trace_title">行程记录</string>
+    <string name="trace_title_note">发表行程记录</string>
+    <string name="trace_publish">发表</string>
+
 </resources>

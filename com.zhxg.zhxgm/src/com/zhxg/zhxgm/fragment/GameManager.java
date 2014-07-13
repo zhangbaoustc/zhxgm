@@ -1,12 +1,16 @@
 package com.zhxg.zhxgm.fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,8 +47,11 @@ import com.baidu.mapapi.model.LatLng;
 import com.zhxg.zhxgm.AddGameActivity;
 import com.zhxg.zhxgm.EditGameActivity;
 import com.zhxg.zhxgm.R;
+import com.zhxg.zhxgm.TraceMarkActivity;
+import com.zhxg.zhxgm.control.SqliteController;
 import com.zhxg.zhxgm.library.GameFunction;
 import com.zhxg.zhxgm.service.GameTransportService;
+import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Game;
 
 public class GameManager extends GeneralFragment implements OnClickListener{
@@ -62,6 +69,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private BaiduMap mBaiduMap;
 	private LocationClient mLocationClient;
 	private BDLocationListener myLocationListener = new MyLocationListener();
+	
    
 	//game info
 	private Spinner gameSpinner;
@@ -84,15 +92,19 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private Button beginTransport;
 	private Button endTransport;
 	
+	
 	//let fly
 	private TextView game_letfly_name;
 	
 	private static List<Game> data;
+	private Game currentGame;
+	private	SqliteController controller;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		data = new ArrayList<Game>();
+		controller = new SqliteController(getActivity().getApplicationContext());
 		new loadGamesTask().execute();
 		//loadGameData
 		
@@ -133,7 +145,8 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
 				Log.i("dd", "23423423");
-				setLayoutData(data.get(position));
+				currentGame = data.get(position);
+				setLayoutData(currentGame);
 			}
 
 			@Override
@@ -155,11 +168,18 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		
 		
 		//transport
+		rootView.findViewById(R.id.game_transport_trace).setOnClickListener(this);
 		game_transport_name = (TextView) rootView.findViewById(R.id.game_transport_name);
 		beginTransport = (Button) rootView.findViewById(R.id.game_transport_action_begin);
 		beginTransport.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				//save game id to sharedPreferences
+				SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences(Const.transport_page, Context.MODE_PRIVATE); //私有数据
+				Editor editor = sharedPreferences.edit();//获取编辑器
+				editor.putString("game_id", currentGame.getId());
+				editor.commit();//提交修改
+				
 				Intent intent = new Intent(getActivity(), GameTransportService.class);
 				getActivity().startService(intent);
 				beginTransport.setVisibility(View.GONE);
@@ -170,13 +190,14 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		endTransport.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(getActivity(), GameTransportService.class);
-				getActivity().stopService(intent);
+				Intent intent = new Intent(getActivity().getApplicationContext(), GameTransportService.class);
+				getActivity().getApplicationContext().stopService(intent);
 			}
 		});
 		
 		//let fly
-		game_letfly_name = (TextView) rootView.findViewById(R.id.game_letfly_name);
+		game_letfly_name = (TextView) rootView.findViewById(R.id.game_letfly_name);		
+		rootView.findViewById(R.id.game_letfly_trace).setOnClickListener(this);
 	}
 	
 	//set layout view data
@@ -200,7 +221,8 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		adapter.clear();
 		adapter.addAll(data);
 		adapter.notifyDataSetChanged();
-		setLayoutData(data.get(0));
+		currentGame = data.get(0);
+		setLayoutData(currentGame);
 	}
 
 	@Override
@@ -217,7 +239,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		option.setNeedDeviceDirect(true);//返回的定位结果包含手机机头的方向
 		mLocationClient.setLocOption(option);
 		
-		//mLocationClient.start();
+		mLocationClient.start();
 		
 		rg.setOnCheckedChangeListener(
 				new OnCheckedChangeListener() {
@@ -372,19 +394,15 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	}
 	
 	public void addTrace(BDLocation location){
-		LatLng pt1 = new LatLng(39.93923, 116.357428);  
-		LatLng pt2 = new LatLng(39.91923, 116.327428);  
-		LatLng pt3 = new LatLng(39.89923, 116.347428);  
-		LatLng pt4 = new LatLng(39.89923, 116.367428);  
-		LatLng pt5 = new LatLng(39.91923, 116.387428);
-		LatLng pt6 = new LatLng(location.getLatitude(), location.getLongitude());
+		ArrayList<HashMap<String, String>> wordList = controller.getAllLocations("1234");
 		List<LatLng> pts = new ArrayList<LatLng>();  
-		pts.add(pt1);  
-		pts.add(pt2);  
-		pts.add(pt3);  
-		pts.add(pt4);  
-		pts.add(pt5);
-		pts.add(pt6);  
+		for(int i=0;i<wordList.size();i++){
+			LatLng pt = new LatLng(Double.valueOf(wordList.get(i).get("ydot")),Double.valueOf(wordList.get(i).get("xdot")));
+			pts.add(pt);
+		}
+		
+		LatLng ptCurrent = new LatLng(location.getLatitude(), location.getLongitude());
+		pts.add(ptCurrent);  
 		//构建用户绘制多边形的Option对象
 		PolylineOptions polylineOption = new PolylineOptions()
 				.points(pts).color(0xAAFF0000);
@@ -441,7 +459,11 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			Intent intentEdit = new Intent(getActivity(), EditGameActivity.class);
 			startActivity(intentEdit);
 			break;
-
+		case R.id.game_info_trace:
+		case R.id.game_transport_trace:
+			Intent intentTrace = new Intent(getActivity(), TraceMarkActivity.class);
+			startActivity(intentTrace);
+			break;
 		default:
 			break;
 		}

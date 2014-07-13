@@ -67,12 +67,19 @@ public class RefereeAdapter extends BaseAdapter {
 		
 		//bind data		
 		holder.referee.setText(data.get(position));
+		if(position == (getCount()-1)){
+			holder.referee.setVisibility(View.GONE);
+			holder.action.setImageResource(R.drawable.referee_add);
+		}else{
+			holder.referee.setVisibility(View.VISIBLE);
+			holder.action.setImageResource(R.drawable.referee_plus);
+		}
 		
-		
-			holder.action.setOnClickListener(new OnClickListener() {
+		holder.action.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if(position == (getCount()-1)){
+					
 					final EditText refereeV = new EditText(mActivity);
 					new AlertDialog.Builder(mActivity)
 							.setTitle("«Î ‰»Î")
@@ -81,11 +88,7 @@ public class RefereeAdapter extends BaseAdapter {
 							.setPositiveButton("»∑∂®", new  DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(DialogInterface arg0, int arg1) {
-											if(data.size() == 1 && "".equals(data.get(0))){
-												data.remove(0);
-											}
-											
-											data.add(refereeV.getText().toString());
+											data.add(getCount()-1,refereeV.getText().toString());
 											notifyDataSetChanged();
 											callback.onDataSetChanged();
 										}
