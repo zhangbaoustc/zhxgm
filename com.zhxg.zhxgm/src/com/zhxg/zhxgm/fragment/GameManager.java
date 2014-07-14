@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,12 +46,15 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.zhxg.zhxgm.AddGameActivity;
+import com.zhxg.zhxgm.CameraActivity;
 import com.zhxg.zhxgm.EditGameActivity;
 import com.zhxg.zhxgm.R;
 import com.zhxg.zhxgm.TraceMarkActivity;
 import com.zhxg.zhxgm.control.SqliteController;
 import com.zhxg.zhxgm.library.GameFunction;
+import com.zhxg.zhxgm.library.UserFunction;
 import com.zhxg.zhxgm.service.GameTransportService;
+import com.zhxg.zhxgm.utils.Utils;
 import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Game;
 
@@ -69,6 +73,8 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private BaiduMap mBaiduMap;
 	private LocationClient mLocationClient;
 	private BDLocationListener myLocationListener = new MyLocationListener();
+	private String targetid;
+	private Activity mActivity;
 	
    
 	//game info
@@ -83,6 +89,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private TextView game_referee;
 	private Button game_add;
 	private Button game_edit;
+	private TextView game_type;
 	
 	//game gather
 	private TextView game_gather_name;
@@ -105,8 +112,6 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		
 		data = new ArrayList<Game>();
 		controller = new SqliteController(getActivity().getApplicationContext());
-		new loadGamesTask().execute();
-		//loadGameData
 		
 	}
 
@@ -132,6 +137,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 500);
 		
 		//geme info
+		game_type = (TextView) rootView.findViewById(R.id.game_type);
 		game_add = (Button) rootView.findViewById(R.id.game_add);
 		game_add.setOnClickListener(this);
 		game_edit = (Button) rootView.findViewById(R.id.game_edit);
@@ -164,11 +170,13 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		
 		//gather
 		game_gather_name = (TextView) rootView.findViewById(R.id.game_gather_name);
-		
+		rootView.findViewById(R.id.game_info_trace).setOnClickListener(this);
+		rootView.findViewById(R.id.game_info_camera).setOnClickListener(this);
 		
 		
 		//transport
 		rootView.findViewById(R.id.game_transport_trace).setOnClickListener(this);
+		rootView.findViewById(R.id.game_transport_camera).setOnClickListener(this);
 		game_transport_name = (TextView) rootView.findViewById(R.id.game_transport_name);
 		beginTransport = (Button) rootView.findViewById(R.id.game_transport_action_begin);
 		beginTransport.setOnClickListener(new OnClickListener() {
@@ -198,17 +206,18 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		//let fly
 		game_letfly_name = (TextView) rootView.findViewById(R.id.game_letfly_name);		
 		rootView.findViewById(R.id.game_letfly_trace).setOnClickListener(this);
+		rootView.findViewById(R.id.game_letfly_camera).setOnClickListener(this);
 	}
 	
 	//set layout view data
 	private void setLayoutData(Game game){
+		game_type.setText(Utils.getGameTypeNameByType(mActivity, Integer.parseInt(game.getType())));
 		game_distance.setText(game.getDistance());
 		game_bonus.setText(game.getBonus());
 		game_gather_time.setText(game.getJgDate());
 		game_gather_place.setText(game.getJgAddress());
 		game_fly_date.setText(game.getFlyDate());
 		game_fly_place.setText(game.getFlyAddress());
-
 		
 		game_gather_name.setText(game.getName());
 		game_transport_name.setText(game.getName());
@@ -228,6 +237,10 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);	
+		targetid = UserFunction.getUserInfo(getActivity(), Const.TARGETID);
+		mActivity = getActivity();
+		new loadGamesTask().execute();
+
 		mLocationClient = new LocationClient(getActivity().getApplicationContext());     //ÉùÃ÷LocationClientÀà
 		mLocationClient.registerLocationListener( myLocationListener );    //×¢²á¼àÌýº¯Êý
 		
@@ -417,7 +430,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			
-			result = new GameFunction().getGames("340000");
+			result = new GameFunction().getGames(targetid);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
 					resultCode = true;
@@ -459,10 +472,19 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			Intent intentEdit = new Intent(getActivity(), EditGameActivity.class);
 			startActivity(intentEdit);
 			break;
-		case R.id.game_info_trace:
+		case R.id.game_letfly_trace:
 		case R.id.game_transport_trace:
+		case R.id.game_info_trace:
 			Intent intentTrace = new Intent(getActivity(), TraceMarkActivity.class);
+			intentTrace.putExtra(Const.BSID, currentGame.getId());
 			startActivity(intentTrace);
+			break;
+		case R.id.game_info_camera:
+		case R.id.game_transport_camera:
+		case R.id.game_letfly_camera:
+			Intent intentCamera= new Intent(getActivity(), CameraActivity.class);
+			intentCamera.putExtra(Const.BSID, currentGame.getId());
+			startActivity(intentCamera);
 			break;
 		default:
 			break;

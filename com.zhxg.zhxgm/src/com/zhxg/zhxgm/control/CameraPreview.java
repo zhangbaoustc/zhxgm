@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -33,6 +34,7 @@ public class CameraPreview extends SurfaceView  implements SurfaceHolder.Callbac
 	public void surfaceCreated(SurfaceHolder holder) {
 		// the surface has been created, now tell the camera where to draw the preview
 		try {
+			 if (Build.VERSION.SDK_INT >= 8) mCamera.setDisplayOrientation(90);
 			mCamera.setPreviewDisplay(holder);
 			mCamera.startPreview();
 		} catch (IOException e) {			

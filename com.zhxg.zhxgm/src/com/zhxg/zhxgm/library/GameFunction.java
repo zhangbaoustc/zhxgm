@@ -49,7 +49,7 @@ public class GameFunction {
 	
 	public JSONObject addGame(Game game){
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("target_id", "340000"));
+		params.add(new BasicNameValuePair("target_id", game.getTargetID()));
 		params.add(new BasicNameValuePair("title", game.getName()));
 		params.add(new BasicNameValuePair("bsdate", game.getName()));
 		params.add(new BasicNameValuePair("distince", game.getDistance()));
@@ -121,22 +121,24 @@ public class GameFunction {
 			Game game = new Game();
 			try {
 				JSONObject obj = arr.getJSONObject(i);
-				game.setName(obj.getString("title"));
-				game.setId(obj.getString("id"));
-				game.setTargetID(obj.getString("target_id"));
-				game.setDate(obj.getString("bsdate"));
-				game.setDistance(obj.getString("distince"));
-				game.setBonus(obj.getString("bonus"));
+				game.setName(obj.getString("title") !=null?obj.getString("title"):"");
+				game.setId(obj.getString("id") != null?obj.getString("id"):"");
+				game.setTargetID(obj.getString("target_id") !=null?obj.getString("target_id"):"");
+				game.setDate(obj.getString("bsdate") !=null?obj.getString("bsdate"):"");
+				game.setDistance(obj.getString("distince") !=null?obj.getString("distince"):"");
+				game.setBonus(obj.getString("bonus") !=null?obj.getString("bonus"):"");
 				
-				game.setJgDate(obj.getString("ji_date"));
-				game.setJgLatitude(obj.getString("ji_wd"));
-				game.setJgLongitude(obj.getString("ji_jd"));
-				game.setJgAddress(obj.getString("ji_address"));
+				game.setJgDate(obj.getString("ji_date") !=null?obj.getString("ji_date"):"");
+				game.setJgLatitude(obj.getString("ji_wd") !=null?obj.getString("ji_wd"):"");
+				game.setJgLongitude(obj.getString("ji_jd") !=null?obj.getString("ji_jd"):"");
+				game.setJgAddress(obj.getString("ji_address") !=null?obj.getString("ji_address"):"");
 				
-				game.setFlyAddress(obj.getString("fly_address"));
-				game.setFlyDate(obj.getString("fly_date"));
-				game.setFlyLatitude(obj.getString("fly_wd"));
-				game.setFlyLongitude(obj.getString("fly_jd"));
+				game.setFlyAddress(obj.getString("fly_address") !=null?obj.getString("fly_address"):"");
+				game.setFlyDate(obj.getString("fly_date") !=null?obj.getString("fly_date"):"");
+				game.setFlyLatitude(obj.getString("fly_wd") !=null?obj.getString("fly_wd"):"");
+				game.setFlyLongitude(obj.getString("fly_jd") !=null?obj.getString("fly_jd"):"");
+				
+				game.setType(obj.getString("type") !=null?obj.getString("type"):"0");
 				
 				data.add(game);
 				

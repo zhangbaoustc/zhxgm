@@ -43,6 +43,7 @@
     <string name="action_game_info_image_upload">上传照片</string>
     <string name="action_update">更新</string>
     <string name="action_add">添加</string>
+    <string name="action_camera">拍照</string>
     <string name="game_transport_start_location">起始坐标：</string>
     <string name="game_transport_current_location">当前坐标：</string>
     <string name="title_activity_upload_file">UploadFileActivity</string>
@@ -60,7 +61,12 @@
         <item>地区比赛</item>
         <item>鸽舍比赛</item>
     </string-array>
-
+    <integer-array name="game_type_array_num">
+    	<item>10</item>    
+    	<item>18</item>
+    	<item>28</item>
+    </integer-array>
+    
     <string name="game_add_select_gather_time_title">选择集鸽时间</string>
     <string name="game_add_select_fly_time_title">选择放飞日期</string>
     <string name="title_activity_trace_mark">TraceMarkActivity</string>

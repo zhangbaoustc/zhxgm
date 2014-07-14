@@ -1,17 +1,22 @@
 package com.zhxg.zhxgm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
@@ -22,6 +27,9 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.zhxg.zhxgm.library.Action;
 import com.zhxg.zhxgm.library.CustomGallery;
 import com.zhxg.zhxgm.library.GalleryAdapter;
+import com.zhxg.zhxgm.library.GameFunction;
+import com.zhxg.zhxgm.library.ImageSelectActivity;
+import com.zhxg.zhxgm.vo.Const;
 
 public class TraceMarkActivity extends Activity {
 
@@ -33,11 +41,19 @@ public class TraceMarkActivity extends Activity {
 	
 	ImageLoader imageLoader;
 	String[] all_path;
+	EditText trace_content;
+	private String bsid;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_trace_mark);
+		
+		
+		Bundle bundle = getIntent().getBundleExtra(Const.BSID);
+		if(getIntent() != null){
+			bsid = getIntent().getStringExtra(Const.BSID);
+		}
 		
 		ActionBar ab = getActionBar();
 		ab.setDisplayHomeAsUpEnabled(true);
@@ -69,7 +85,7 @@ public class TraceMarkActivity extends Activity {
 		adapter.setMultiplePick(false);
 		gridGallery.setAdapter(adapter);
 
-		
+		trace_content = (EditText) findViewById(R.id.trace_content);
 
 		image_select = (Button) findViewById(R.id.image_select);
 		image_select.setOnClickListener(new View.OnClickListener() {
@@ -85,12 +101,21 @@ public class TraceMarkActivity extends Activity {
 		trace_send.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				for(int i=0;i<all_path.length;i++){
-					//new FileuploadTask().execute(all_path[i],"http://hefeihua.com/uploadImage.php");
-				}
+				attemptSendMark();				
 			}
 		});
 
+	}
+	
+	//prepare send trace mark
+	private void attemptSendMark(){
+		boolean cancel = false;
+		
+		if(TextUtils.isEmpty(trace_content.getText().toString())){
+			cancel = true;
+		}
+		
+		new TraceMarkTask().execute(all_path);
 	}
 	
 	@Override
@@ -113,6 +138,38 @@ public class TraceMarkActivity extends Activity {
 		}
 	}
 
+	
+	class TraceMarkTask extends AsyncTask<String[], Integer, Void>{
+		
+		private ProgressDialog dialog = null;
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			dialog = ProgressDialog.show(TraceMarkActivity.this, "", "信息发布中...", true);
+		}
+		
+		@SuppressWarnings("deprecation")
+		@Override
+		protected Void doInBackground(String[]... arg0) {
+			String url = "http://hefeihua.com/uploadImage.php";
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("bsid", bsid);
+			map.put("info", trace_content.getText().toString());
+			map.put("userid", "userid");
+			
+			GameFunction.addTraceMark(url, map, arg0[0]);
+			return null;
+		}
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			dialog.dismiss(); 
+		}
+		
+		
+		
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

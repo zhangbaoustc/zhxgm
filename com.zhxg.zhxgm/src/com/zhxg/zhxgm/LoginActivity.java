@@ -21,26 +21,12 @@ import android.widget.TextView;
 
 import com.zhxg.zhxgm.library.UserFunction;
 
-/**
- * Activity which displays a login screen to the user, offering registration as
- * well.
- */
+
 public class LoginActivity extends BaseActivity {
-	/**
-	 * A dummy authentication store containing known user names and passwords.
-	 * TODO: remove after connecting to a real authentication system.
-	 */
+
 	private static final String[] DUMMY_CREDENTIALS = new String[] {
 			"foo@example.com:hello", "bar@example.com:world" };
-
-	/**
-	 * The default email to populate the email field with.
-	 */
 	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-
-	/**
-	 * Keep track of the login task to ensure we can cancel it if requested.
-	 */
 	private UserLoginTask mAuthTask = null;
 
 	// Values for email and password at the time of the login attempt.
@@ -211,6 +197,7 @@ public class LoginActivity extends BaseActivity {
 	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		private boolean resultCode = false;
+		private JSONObject mResult = new JSONObject();
 		
 		@Override
 		protected Boolean doInBackground(Void... params) {
@@ -219,6 +206,7 @@ public class LoginActivity extends BaseActivity {
 			try {
 				if("TRUE".equals(result.getString("flag"))){
 					resultCode = true;
+					mResult = result;
 				}else{
 					resultCode = false;
 				}
@@ -234,7 +222,7 @@ public class LoginActivity extends BaseActivity {
 			showProgress(false);
 
 			if (success) {
-				UserFunction.loginOK(LoginActivity.this,mEmail,mPassword);
+				UserFunction.loginOK(LoginActivity.this,mEmail,mPassword,mResult);
 				startActivity(new Intent(LoginActivity.this, MainActivity.class));
 				finish();
 			} else {

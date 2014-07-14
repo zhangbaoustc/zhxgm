@@ -3,6 +3,8 @@ package com.zhxg.zhxgm.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import com.baidu.location.BDLocation;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,14 +20,14 @@ public class ImageUtils {
 	}
 	
 	
-	public void addWatermark(Context context,String filePath){
+	public void addWatermark(Context context,String filePath,BDLocation mLocation){
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
 		Point point = new Point(60, 80); 
 		
-		String markStr = GpsUtils.getGPSLocation(context);
-//		String markStr = TimeUtils.getCurrentNetworkTime();
+		String markStr = mLocation.getTime() + " : " + mLocation.getLatitude() + " : " + mLocation.getLongitude();
+		
 		Bitmap afterMark = mark(bitmap, markStr, point, 255, 1, 15, false);
 		BitmapTofile(afterMark,filePath);
 	}

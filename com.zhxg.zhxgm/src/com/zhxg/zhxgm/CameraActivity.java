@@ -6,14 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,7 +21,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.LocationClientOption.LocationMode;
 import com.zhxg.zhxgm.control.CameraPreview;
+import com.zhxg.zhxgm.fragment.GameManager.MyLocationListener;
 import com.zhxg.zhxgm.utils.GpsUtils;
 import com.zhxg.zhxgm.utils.ImageUtils;
 
@@ -37,11 +40,28 @@ public class CameraActivity extends BaseActivity {
 	private CameraPreview mPreview;
 	private Handler mHandler;
 	private int continueCameraCount = 6;
+	private BDLocationListener myLocationListener;
+	private LocationClient mLocationClient;
+	private BDLocation mLocation;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera);
+		
+		myLocationListener = new MyLocationListener();
+		mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
+		mLocationClient.registerLocationListener( myLocationListener );    //注册监听函数
+		
+		LocationClientOption option = new LocationClientOption();
+		option.setLocationMode(LocationMode.Hight_Accuracy);//设置定位模式
+		option.setCoorType("bd09ll");//返回的定位结果是百度经纬度,默认值gcj02
+		option.setScanSpan(1000);//设置发起定位请求的间隔时间为5000ms
+		option.setIsNeedAddress(true);//返回的定位结果包含地址信息
+		option.setNeedDeviceDirect(false);//返回的定位结果包含手机机头的方向
+		mLocationClient.setLocOption(option);
+		mLocationClient.start();
+		
 		
 		mHandler = new Handler();
 		mCamera = getCameraInstance();
@@ -66,18 +86,7 @@ public class CameraActivity extends BaseActivity {
 			GpsUtils.openGPSSetting(this);
 		}
 		
-		
-		LocationManager locMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);	
-		List<String> providers = locMan.getAllProviders();
-		for(Iterator iterator = providers.iterator();iterator.hasNext();){
-		    String provider = (String)iterator.next();
-		    System.out.println(provider);
-		    // and do something you need
-		}
-		
 	}
-	
-	
 	
 	private Runnable takePicRunnable = new Runnable() {
 		
@@ -125,7 +134,6 @@ public class CameraActivity extends BaseActivity {
 	
 	
 	private PictureCallback mPicture = new PictureCallback() {
-
 		@Override
 	    public void onPictureTaken(byte[] data, Camera camera) {
 
@@ -140,7 +148,7 @@ public class CameraActivity extends BaseActivity {
 	            fos.write(data);
 	            fos.close();
 	            ImageUtils imgUtils = new ImageUtils();
-		        imgUtils.addWatermark(CameraActivity.this,pictureFile.toString());
+		        imgUtils.addWatermark(CameraActivity.this,pictureFile.toString(),mLocation);
 	          // new getServerTimeTask().execute(pictureFile.toString());
 	        } catch (FileNotFoundException e) {
 	            Log.d(CameraPreview.TAG, "File not found: " + e.getMessage());
@@ -149,19 +157,6 @@ public class CameraActivity extends BaseActivity {
 	        }
 	    }
 	};
-	
-	
-	class getServerTimeTask  extends AsyncTask<String, Integer, String>{
-
-		@Override
-		protected String doInBackground(String... params) {
-			ImageUtils imgUtils = new ImageUtils();
-	        imgUtils.addWatermark(CameraActivity.this,params[0]);
-			return null;
-		}
-		
-	}
-	
 
 	/** Create a File for saving an image or video */
 	private static File getOutputMediaFile(int type){
@@ -197,4 +192,35 @@ public class CameraActivity extends BaseActivity {
 	    return mediaFile;
 	}
 
+	
+	public class MyLocationListener implements BDLocationListener {
+		@Override
+		public void onReceiveLocation(BDLocation location) {
+			if (location == null)
+		            return ;
+			mLocation = location;
+			StringBuffer sb = new StringBuffer(256);
+			sb.append("time : ");
+			sb.append(location.getTime());
+			sb.append("\nerror code : ");
+			sb.append(location.getLocType());
+			sb.append("\nlatitude : ");
+			sb.append(location.getLatitude());
+			sb.append("\nlontitude : ");
+			sb.append(location.getLongitude());
+			sb.append("\nradius : ");
+			sb.append(location.getRadius());
+			if (location.getLocType() == BDLocation.TypeGpsLocation){
+				sb.append("\nspeed : ");
+				sb.append(location.getSpeed());
+				sb.append("\nsatellite : ");
+				sb.append(location.getSatelliteNumber());
+			} else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
+				sb.append("\naddr : ");
+				sb.append(location.getAddrStr());
+			} 
+			
+		}
+	}
+	
 }

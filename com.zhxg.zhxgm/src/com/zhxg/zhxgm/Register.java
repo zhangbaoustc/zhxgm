@@ -127,13 +127,14 @@ public class Register extends BaseActivity {
 
 		private boolean resultCode = false;
 		private String errorMsg = "";
-		
+		private JSONObject mResult;
 		@Override
 		protected Boolean doInBackground(Void... arg0) {
 			JSONObject result = new UserFunction().registerUser(username, mobile, password, confirm_password);
 			try {
 				if("TRUE".equals(result.getString("flag"))){
 					resultCode = true;
+					mResult = result;
 				}else{
 					resultCode = false;
 					errorMsg = result.getString("msg");
@@ -148,7 +149,7 @@ public class Register extends BaseActivity {
 		protected void onPostExecute(Boolean success) {
 			mRegisterTask = null;
 			if (success) {
-				UserFunction.loginOK(Register.this,username,password);
+				UserFunction.loginOK(Register.this,username,password,mResult);
 				startActivity(new Intent(Register.this, MainActivity.class));
 				finish();
 			} else {
