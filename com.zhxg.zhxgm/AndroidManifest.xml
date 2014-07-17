@@ -64,7 +64,6 @@
         <activity
             android:name="com.zhxg.zhxgm.MainActivity"
             android:label="@string/app_name" >
-            
         </activity>
         <activity
             android:name="com.zhxg.zhxgm.LoginActivity"
@@ -104,7 +103,7 @@
         <activity
             android:name="com.zhxg.zhxgm.StartActivity"
             android:label="@string/title_activity_start" >
-           <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -125,7 +124,6 @@
         <activity
             android:name="com.zhxg.zhxgm.UploadFileActivity"
             android:label="@string/title_activity_upload_file" >
-             
         </activity>
         <activity android:name="com.zhxg.zhxgm.library.CustomGalleryActivity" >
             <intent-filter>
@@ -136,7 +134,6 @@
             </intent-filter>
         </activity>
         <activity android:name="com.zhxg.zhxgm.library.ImageSelectActivity" >
-            
         </activity>
         <activity
             android:name="com.zhxg.zhxgm.AddGameActivity"
@@ -151,6 +148,14 @@
         <activity
             android:name="com.zhxg.zhxgm.TraceMarkActivity"
             android:label="@string/trace_title" >
+        </activity>
+        <activity
+            android:name="com.zhxg.zhxgm.UploadImagesActivity"
+            android:label="@string/title_activity_upload_images" >
+        </activity>
+        <activity
+            android:name="com.zhxg.zhxgm.UpdateGameActivity"
+            android:label="@string/title_activity_update_game" >
         </activity>
     </application>
 

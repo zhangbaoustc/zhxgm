@@ -7,7 +7,9 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -47,9 +50,10 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.zhxg.zhxgm.AddGameActivity;
 import com.zhxg.zhxgm.CameraActivity;
-import com.zhxg.zhxgm.EditGameActivity;
 import com.zhxg.zhxgm.R;
 import com.zhxg.zhxgm.TraceMarkActivity;
+import com.zhxg.zhxgm.UpdateGameActivity;
+import com.zhxg.zhxgm.UploadImagesActivity;
 import com.zhxg.zhxgm.control.SqliteController;
 import com.zhxg.zhxgm.library.GameFunction;
 import com.zhxg.zhxgm.library.UserFunction;
@@ -75,6 +79,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private BDLocationListener myLocationListener = new MyLocationListener();
 	private String targetid;
 	private Activity mActivity;
+	private ProgressDialog progressDialog;  
 	
    
 	//game info
@@ -93,6 +98,10 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	
 	//game gather
 	private TextView game_gather_name;
+	private EditText game_gather_num;
+	private EditText game_gather_memo;
+	private TextView game_gather_longitude;
+	private TextView game_gather_latitude;
 	
 	//transport
 	private TextView game_transport_name;
@@ -103,12 +112,14 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	//let fly
 	private TextView game_letfly_name;
 	
-	private static List<Game> data;
+	private static ArrayList<Game> data;
 	private Game currentGame;
 	private	SqliteController controller;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		progressDialog = new ProgressDialog(getActivity());
+		progressDialog.setMessage(getString(R.string.game_loading));
 		
 		data = new ArrayList<Game>();
 		controller = new SqliteController(getActivity().getApplicationContext());
@@ -140,6 +151,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		game_type = (TextView) rootView.findViewById(R.id.game_type);
 		game_add = (Button) rootView.findViewById(R.id.game_add);
 		game_add.setOnClickListener(this);
+		game_gather_num = (EditText) rootView.findViewById(R.id.game_gather_num);
 		game_edit = (Button) rootView.findViewById(R.id.game_edit);
 		game_edit.setOnClickListener(this);
 		gameSpinner = (Spinner) rootView.findViewById(R.id.gameNameSpinner);
@@ -168,25 +180,31 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		game_fly_place = (TextView) rootView.findViewById(R.id.game_fly_place);
 		game_referee = (TextView) rootView.findViewById(R.id.game_referee);
 		
+		
 		//gather
 		game_gather_name = (TextView) rootView.findViewById(R.id.game_gather_name);
+		game_gather_memo = (EditText) rootView.findViewById(R.id.game_gather_memo);
 		rootView.findViewById(R.id.game_info_trace).setOnClickListener(this);
 		rootView.findViewById(R.id.game_info_camera).setOnClickListener(this);
-		
+		rootView.findViewById(R.id.game_gather_update_btn).setOnClickListener(this);
+		rootView.findViewById(R.id.game_gather_image_upload).setOnClickListener(this);
+		game_gather_longitude = (TextView) rootView.findViewById(R.id.game_gather_longitude);
+		game_gather_latitude = (TextView) rootView.findViewById(R.id.game_gather_latitude);
 		
 		//transport
 		rootView.findViewById(R.id.game_transport_trace).setOnClickListener(this);
 		rootView.findViewById(R.id.game_transport_camera).setOnClickListener(this);
+		rootView.findViewById(R.id.game_transport_image_upload).setOnClickListener(this);
 		game_transport_name = (TextView) rootView.findViewById(R.id.game_transport_name);
 		beginTransport = (Button) rootView.findViewById(R.id.game_transport_action_begin);
 		beginTransport.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				//save game id to sharedPreferences
-				SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences(Const.transport_page, Context.MODE_PRIVATE); //Ë½ÓÐÊý¾Ý
-				Editor editor = sharedPreferences.edit();//»ñÈ¡±à¼­Æ÷
+				SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences(Const.transport_page, Context.MODE_PRIVATE); //Ë½ï¿½ï¿½ï¿½ï¿½ï¿½
+				Editor editor = sharedPreferences.edit();//ï¿½ï¿½È¡ï¿½à¼­ï¿½ï¿½
 				editor.putString("game_id", currentGame.getId());
-				editor.commit();//Ìá½»ÐÞ¸Ä
+				editor.commit();//ï¿½á½»ï¿½Þ¸ï¿½
 				
 				Intent intent = new Intent(getActivity(), GameTransportService.class);
 				getActivity().startService(intent);
@@ -201,17 +219,22 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 				Intent intent = new Intent(getActivity().getApplicationContext(), GameTransportService.class);
 				getActivity().getApplicationContext().stopService(intent);
 			}
-		});
+		}); 
 		
 		//let fly
 		game_letfly_name = (TextView) rootView.findViewById(R.id.game_letfly_name);		
 		rootView.findViewById(R.id.game_letfly_trace).setOnClickListener(this);
 		rootView.findViewById(R.id.game_letfly_camera).setOnClickListener(this);
+		rootView.findViewById(R.id.game_letfly_image_upload).setOnClickListener(this);
 	}
 	
 	//set layout view data
 	private void setLayoutData(Game game){
-		game_type.setText(Utils.getGameTypeNameByType(mActivity, Integer.parseInt(game.getType())));
+		if(game.getType() != null && !"".equals(game.getType())){
+			game_type.setText(Utils.getGameTypeNameByType(mActivity, Integer.parseInt(game.getType())));
+		}else{
+			game_type.setText("");
+		} 
 		game_distance.setText(game.getDistance());
 		game_bonus.setText(game.getBonus());
 		game_gather_time.setText(game.getJgDate());
@@ -220,9 +243,15 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		game_fly_place.setText(game.getFlyAddress());
 		
 		game_gather_name.setText(game.getName());
+		game_gather_num.setText(game.getTotal());
 		game_transport_name.setText(game.getName());
-		game_letfly_name.setText(game.getName());
+		game_letfly_name.setText(game.getName()); 
 		
+		game_gather_memo.setText(game.getInfo());
+		
+		game_referee.setText(game.getReferee());
+		
+		GameFunction.setGameStatus(rg, Integer.parseInt(game.getStatus()));
 	}
 	
 	//set game data
@@ -230,8 +259,10 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		adapter.clear();
 		adapter.addAll(data);
 		adapter.notifyDataSetChanged();
-		currentGame = data.get(0);
-		setLayoutData(currentGame);
+		if(data.size()>0){
+			currentGame = data.get(0);
+			setLayoutData(currentGame);
+		}
 	}
 
 	@Override
@@ -239,17 +270,17 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		super.onActivityCreated(savedInstanceState);	
 		targetid = UserFunction.getUserInfo(getActivity(), Const.TARGETID);
 		mActivity = getActivity();
-		new loadGamesTask().execute();
+		prepareLoadData();
 
-		mLocationClient = new LocationClient(getActivity().getApplicationContext());     //ÉùÃ÷LocationClientÀà
-		mLocationClient.registerLocationListener( myLocationListener );    //×¢²á¼àÌýº¯Êý
+		mLocationClient = new LocationClient(getActivity().getApplicationContext());     //ï¿½ï¿½ï¿½ï¿½LocationClientï¿½ï¿½
+		mLocationClient.registerLocationListener( myLocationListener );    //×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		
 		LocationClientOption option = new LocationClientOption();
-		option.setLocationMode(LocationMode.Hight_Accuracy);//ÉèÖÃ¶¨Î»Ä£Ê½
-		option.setCoorType("bd09ll");//·µ»ØµÄ¶¨Î»½á¹ûÊÇ°Ù¶È¾­Î³¶È,Ä¬ÈÏÖµgcj02
-		option.setScanSpan(10000);//ÉèÖÃ·¢Æð¶¨Î»ÇëÇóµÄ¼ä¸ôÊ±¼äÎª5000ms
-		option.setIsNeedAddress(true);//·µ»ØµÄ¶¨Î»½á¹û°üº¬µØÖ·ÐÅÏ¢
-		option.setNeedDeviceDirect(true);//·µ»ØµÄ¶¨Î»½á¹û°üº¬ÊÖ»ú»úÍ·µÄ·½Ïò
+		option.setLocationMode(LocationMode.Hight_Accuracy);//ï¿½ï¿½ï¿½Ã¶ï¿½Î»Ä£Ê½
+		option.setCoorType("bd09ll");//ï¿½ï¿½ï¿½ØµÄ¶ï¿½Î»ï¿½ï¿½ï¿½ï¿½Ç°Ù¶È¾ï¿½Î³ï¿½ï¿½,Ä¬ï¿½ï¿½Öµgcj02
+		option.setScanSpan(10000);//ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ê±ï¿½ï¿½Îª5000ms
+		option.setIsNeedAddress(true);//ï¿½ï¿½ï¿½ØµÄ¶ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ï¢
+		option.setNeedDeviceDirect(true);
 		mLocationClient.setLocOption(option);
 		
 		mLocationClient.start();
@@ -371,30 +402,30 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	
 	public void addMapMark(double longitute, double latitude){
 		LatLng point = new LatLng(latitude, longitute);  
-		//¹¹½¨MarkerÍ¼±ê  
+		//ï¿½ï¿½ï¿½ï¿½MarkerÍ¼ï¿½ï¿½  
 		BitmapDescriptor bitmap = BitmapDescriptorFactory  
 		    .fromResource(R.drawable.mark);  
-		//¹¹½¨MarkerOption£¬ÓÃÓÚÔÚµØÍ¼ÉÏÌí¼ÓMarker  
+		//ï¿½ï¿½ï¿½ï¿½MarkerOptionï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½Marker  
 		OverlayOptions option = new MarkerOptions()  
 		    .position(point)  
 		    .icon(bitmap);  
-		//ÔÚµØÍ¼ÉÏÌí¼ÓMarker£¬²¢ÏÔÊ¾
+		//ï¿½Úµï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½Markerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
 		mBaiduMap.clear();		  
 		//mBaiduMap.addOverlay(option);
 	}
 	
 	public void locationAndAddMapMark(BDLocation location){
-		// ¿ªÆô¶¨Î»Í¼²ã  
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»Í¼ï¿½ï¿½  
 		mBaiduMap.setMyLocationEnabled(true);  
-		// ¹¹Ôì¶¨Î»Êý¾Ý  
+		// ï¿½ï¿½ï¿½ì¶¨Î»ï¿½ï¿½ï¿½  
 		MyLocationData locData = new MyLocationData.Builder()  
 		    .accuracy(location.getRadius())  
-		    // ´Ë´¦ÉèÖÃ¿ª·¢Õß»ñÈ¡µ½µÄ·½ÏòÐÅÏ¢£¬Ë³Ê±Õë0-360  
+		    // ï¿½Ë´ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ß»ï¿½È¡ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ë³Ê±ï¿½ï¿½0-360  
 		    .direction(100).latitude(location.getLatitude())  
 		    .longitude(location.getLongitude()).build();  
-		// ÉèÖÃ¶¨Î»Êý¾Ý  
+		// ï¿½ï¿½ï¿½Ã¶ï¿½Î»ï¿½ï¿½ï¿½  
 		mBaiduMap.setMyLocationData(locData);  
-		// ÉèÖÃ¶¨Î»Í¼²ãµÄÅäÖÃ£¨¶¨Î»Ä£Ê½£¬ÊÇ·ñÔÊÐí·½ÏòÐÅÏ¢£¬ÓÃ»§×Ô¶¨Òå¶¨Î»Í¼±ê£©  
+		// ï¿½ï¿½ï¿½Ã¶ï¿½Î»Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½Î»Ä£Ê½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ô¶ï¿½ï¿½å¶¨Î»Í¼ï¿½ê£©  
 		BitmapDescriptor mCurrentMarker = BitmapDescriptorFactory  
 		    .fromResource(R.drawable.mark);  
 		MyLocationConfigeration config = new MyLocationConfigeration(
@@ -402,12 +433,16 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 				false, null);  
 		
 		mBaiduMap.setMyLocationConfigeration(config);  
-		// µ±²»ÐèÒª¶¨Î»Í¼²ãÊ±¹Ø±Õ¶¨Î»Í¼²ã  
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Î»Í¼ï¿½ï¿½Ê±ï¿½Ø±Õ¶ï¿½Î»Í¼ï¿½ï¿½  
 		//mBaiduMap.setMyLocationEnabled(false);
 	}
 	
 	public void addTrace(BDLocation location){
 		ArrayList<HashMap<String, String>> wordList = controller.getAllLocations("1234");
+		if(wordList.size() == 0 || wordList.size() > 199)
+		{
+			return;
+		}
 		List<LatLng> pts = new ArrayList<LatLng>();  
 		for(int i=0;i<wordList.size();i++){
 			LatLng pt = new LatLng(Double.valueOf(wordList.get(i).get("ydot")),Double.valueOf(wordList.get(i).get("xdot")));
@@ -416,10 +451,10 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		
 		LatLng ptCurrent = new LatLng(location.getLatitude(), location.getLongitude());
 		pts.add(ptCurrent);  
-		//¹¹½¨ÓÃ»§»æÖÆ¶à±ßÐÎµÄOption¶ÔÏó
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Îµï¿½Optionï¿½ï¿½ï¿½ï¿½
 		PolylineOptions polylineOption = new PolylineOptions()
 				.points(pts).color(0xAAFF0000);
-		//ÔÚµØÍ¼ÉÏÌí¼Ó¶à±ßÐÎOption£¬ÓÃÓÚÏÔÊ¾  
+		//ï¿½Úµï¿½Í¼ï¿½ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½ï¿½Optionï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾  
 		mBaiduMap.addOverlay(polylineOption);
 	}
 	
@@ -429,7 +464,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		private JSONObject result;
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			
+
 			result = new GameFunction().getGames(targetid);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
@@ -445,19 +480,20 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-
+			
 			if (success) {
 				try {
 					data = new GameFunction().gameConvert(result.getJSONArray("msg"));
 					
 					setGameData();
+					progressDialog.dismiss();
 					return;
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
-			
-			Toast.makeText(getActivity(), "»ñÈ¡±ÈÈüÐÅÏ¢Ê§°Ü£¡", Toast.LENGTH_LONG).show();
+			progressDialog.dismiss();
+			Toast.makeText(mActivity, mActivity.getString(R.string.game_loading_error), Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -465,12 +501,17 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.game_add:
-			Intent intentAdd = new Intent(getActivity(), AddGameActivity.class);
-			startActivity(intentAdd);
+			Intent intentAdd = new Intent(getActivity(), AddGameActivity.class);			
+			startActivityForResult(intentAdd, Const.ADD_GAME_INTENT_FOR_RESULT);
 			break;
 		case R.id.game_edit:
-			Intent intentEdit = new Intent(getActivity(), EditGameActivity.class);
-			startActivity(intentEdit);
+			if(currentGame.getId() != null && !"".equals(currentGame.getId())){
+				Intent intentEdit = new Intent(getActivity(), UpdateGameActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putSerializable(Const.ACTIVITY_OBJECT, currentGame);
+				intentEdit.putExtras(bundle);
+				startActivityForResult(intentEdit, Const.EDIT_GAME_INTENT_FOR_RESULT);
+			}
 			break;
 		case R.id.game_letfly_trace:
 		case R.id.game_transport_trace:
@@ -481,14 +522,87 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			break;
 		case R.id.game_info_camera:
 		case R.id.game_transport_camera:
+			Intent intentNormalCamera= new Intent(getActivity(), CameraActivity.class);
+			intentNormalCamera.putExtra(Const.CAMERA_STYLE, Const.NORMAL);
+			startActivity(intentNormalCamera);
+			break;
 		case R.id.game_letfly_camera:
-			Intent intentCamera= new Intent(getActivity(), CameraActivity.class);
-			intentCamera.putExtra(Const.BSID, currentGame.getId());
-			startActivity(intentCamera);
+			Intent intentLetflyCamera= new Intent(getActivity(), CameraActivity.class);
+			intentLetflyCamera.putExtra(Const.CAMERA_STYLE, Const.CONTINUE_CAMERA);
+			startActivity(intentLetflyCamera);
+			break;
+		case R.id.game_gather_update_btn:
+			attempUpdateGatherInfo();
+			break;
+		case R.id.game_gather_image_upload:
+		case R.id.game_transport_image_upload:
+		case R.id.game_letfly_image_upload:
+			Intent intentUpload= new Intent(getActivity(), UploadImagesActivity.class);
+			intentUpload.putExtra(Const.CAMERA_STYLE, Const.CONTINUE_CAMERA);
+			startActivity(intentUpload);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	private void attempUpdateGatherInfo(){
+		currentGame.setTotal(game_gather_num.getText().toString());
+		currentGame.setInfo(game_gather_memo.getText().toString());
+		currentGame.setJgLatitude(game_gather_latitude.getText().toString());
+		currentGame.setJgLongitude(game_gather_longitude.getText().toString());
+		progressDialog.show();
+		new updateGatherInfoTask().execute(currentGame);
+	}
+	
+	public class updateGatherInfoTask extends AsyncTask<Game, Void, Boolean> {
+		private boolean resultCode = false;
+		private JSONObject result;
+		@SuppressLint("DefaultLocale")
+		@Override
+		protected Boolean doInBackground(Game... params) {
+			
+			result = new GameFunction().updateGatherInfo(params[0]);
+			try {
+				if("TRUE".equals(result.getString("flag").toUpperCase())){
+					resultCode = true;
+				}else{
+					resultCode = false;
+				}
+			} catch (JSONException e) {
+				resultCode = false;
+			}
+			return resultCode;
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+
+			if (success) {
+				new GameFunction().updateLocalGameData(data, currentGame,"gather");
+			}else{
+				Toast.makeText(mActivity, R.string.add_error_from_server, Toast.LENGTH_LONG).show();
+			}
+			progressDialog.dismiss();
+		}
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if((requestCode == Const.ADD_GAME_INTENT_FOR_RESULT && resultCode == Const.ADD_GAME_INTENT_FOR_RESULT)
+				|| (requestCode == Const.EDIT_GAME_INTENT_FOR_RESULT && resultCode == Const.EDIT_GAME_INTENT_FOR_RESULT)){
+			prepareLoadData();
+		}
+	}
+	
+	private void prepareLoadData(){
+		progressDialog.show();
+		new loadGamesTask().execute();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
 	}
 	
 

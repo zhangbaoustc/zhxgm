@@ -14,6 +14,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,7 +41,7 @@ public class JSONParser {
 			HttpResponse httpResponse;
 			if("POST".equals(type)){
 				HttpPost httpPost = new HttpPost(url);
-				httpPost.setEntity(new UrlEncodedFormEntity(params));
+				httpPost.setEntity(new UrlEncodedFormEntity(params,HTTP.UTF_8));
 				httpResponse = httpClient.execute(httpPost);
 			}else{
 				HttpGet httpGet = new HttpGet(url);
@@ -59,7 +60,7 @@ public class JSONParser {
 		
 		
 		try{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is,"utf-8"),8);
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 			while((line = reader.readLine()) != null){

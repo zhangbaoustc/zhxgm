@@ -7,16 +7,18 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -27,9 +29,9 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
 import com.zhxg.zhxgm.control.CameraPreview;
-import com.zhxg.zhxgm.fragment.GameManager.MyLocationListener;
 import com.zhxg.zhxgm.utils.GpsUtils;
 import com.zhxg.zhxgm.utils.ImageUtils;
+import com.zhxg.zhxgm.vo.Const;
 
 public class CameraActivity extends BaseActivity {
 
@@ -43,11 +45,20 @@ public class CameraActivity extends BaseActivity {
 	private BDLocationListener myLocationListener;
 	private LocationClient mLocationClient;
 	private BDLocation mLocation;
+	private String style;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera);
+		
+		ActionBar ab = getActionBar();
+		ab.setDisplayHomeAsUpEnabled(true);
+		ab.setHomeButtonEnabled(true);
+		
+		if(getIntent() != null){
+			style = getIntent().getStringExtra(Const.CAMERA_STYLE);
+		}
 		
 		myLocationListener = new MyLocationListener();
 		mLocationClient = new LocationClient(getApplicationContext());     //ÉùÃ÷LocationClientÀà
@@ -75,9 +86,11 @@ public class CameraActivity extends BaseActivity {
 			
 			@Override
 			public void onClick(View arg0) {
-				mHandler.postDelayed(takePicRunnable, 2000);
-				
-				//mCamera.takePicture(null, null, mPicture);				
+				if(style.equals(Const.NORMAL)){
+					mCamera.takePicture(null, null, mPicture);
+				}else{
+					mHandler.postDelayed(takePicRunnable, 2000);
+				}
 			}
 		});
 		
@@ -221,6 +234,20 @@ public class CameraActivity extends BaseActivity {
 			} 
 			
 		}
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			Intent intent = new Intent(this, MainActivity.class);            
+	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+	        startActivity(intent);            
+	        return true;    
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+		
 	}
 	
 }

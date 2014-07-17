@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -32,10 +33,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.zhxg.zhxgm.control.RefereeAdapter;
 import com.zhxg.zhxgm.control.RefereeAdapter.Callbacks;
 import com.zhxg.zhxgm.library.GameFunction;
+import com.zhxg.zhxgm.utils.Utils;
+import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Game;
 
 public class AddGameActivity extends BaseActivity implements View.OnTouchListener, Callbacks{
@@ -57,6 +61,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 	private ArrayList<String> data;
 	
 	private Button addGame;
+	private ProgressDialog progressDialog;  
 	
 	
 	@Override
@@ -88,8 +93,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 		referee_listview = (ListView) findViewById(R.id.referee_listview);
 		
 		data = new ArrayList<String>();
-		
-			data.add("");
+		data.add("");
 		
 		refereeAdapter = new RefereeAdapter(data, this);
 		referee_listview.setAdapter(refereeAdapter);
@@ -122,7 +126,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 		case android.R.id.home:
 			Intent intent = new Intent(this, MainActivity.class);            
 	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-	        startActivity(intent);            
+	        startActivity(intent);
 	        return true;    
 		default:
 			return super.onOptionsItemSelected(item);
@@ -154,7 +158,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 	        	date_title.setVisibility(View.VISIBLE);
 	        	time_title.setVisibility(View.VISIBLE);
 	        	builder.setTitle(getString(R.string.game_add_select_gather_time_title));  
-                builder.setPositiveButton("确  定", new DialogInterface.OnClickListener() {  
+                builder.setPositiveButton("确  锟斤拷", new DialogInterface.OnClickListener() {  
   
                     @Override  
                     public void onClick(DialogInterface dialog, int which) {  
@@ -180,7 +184,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 	        	date_title.setVisibility(View.GONE);
 	        	time_title.setVisibility(View.GONE);
 		        builder.setTitle(getString(R.string.game_add_select_fly_time_title));  
-	            builder.setPositiveButton("确  定", new DialogInterface.OnClickListener() {  
+	            builder.setPositiveButton("确  锟斤拷", new DialogInterface.OnClickListener() {  
 	
 	                @Override  
 	                public void onClick(DialogInterface dialog, int which) {  
@@ -267,23 +271,27 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 		
 		Game game = new Game();
 		game.setName(game_name.getText().toString());
-		game.setType(game_type.getSelectedItemPosition()+1+"");
-		game.setTargetID("340000");
+		game.setBonus(game_bonus.getText().toString());
+		game.setType(Utils.getGameTypeByPosition(this,game_type.getSelectedItemPosition()));
+		game.setTargetID(Utils.getGameTargetIDByPosition(this, game_type.getSelectedItemPosition()));
 		game.setDate("");
 		game.setDistance(game_distance.getText().toString());
+		
 		game.setJgAddress(game_add_gather_place.getText().toString());
 		game.setJgLatitude("");
 		game.setJgLongitude("");
-		game.setJgDate(gather_time_cal.getTimeInMillis()+"");
+		
+		game.setJgDate(gather_time_cal.getTimeInMillis()/1000+"");
 		game.setFlyAddress(game_add_fly_place.getText().toString());
-		game.setFlyDate(fly_date_cal.getTimeInMillis()+"");
+		game.setFlyDate(fly_date_cal.getTimeInMillis()/1000+"");
 		game.setFlyLatitude("");
 		game.setFlyLongitude("");
-		
+		game.setReferee(Utils.ArrayListToString(data));
 		
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
+			progressDialog = ProgressDialog.show(this, "", getString(R.string.add_game_loading), true, false);  
 			new addGameTask().execute(game);
 		}
 	}
@@ -304,7 +312,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 					resultCode = false;
 				}
 			} catch (JSONException e) {
-				e.printStackTrace();
+				resultCode = false;
 			}
 			return resultCode;
 		}
@@ -313,8 +321,13 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 		protected void onPostExecute(final Boolean success) {
 
 			if (success) {
-				
+				Intent backIntent = new Intent();
+				setResult(Const.ADD_GAME_INTENT_FOR_RESULT, backIntent);
+				AddGameActivity.this.finish();
+			}else{
+				Toast.makeText(AddGameActivity.this, R.string.add_error_from_server, Toast.LENGTH_LONG).show();
 			}
+			progressDialog.dismiss();
 		}
 	}
 	

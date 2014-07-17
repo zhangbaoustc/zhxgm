@@ -13,7 +13,7 @@
         android:background="@drawable/fragment_bottom_selector"
         android:button="@null"
         android:gravity="center"
-        android:text="@string/home"
+        android:text="@string/game_mgr"
         android:checked="true"
         android:textColor="@color/white"
         android:textSize="12sp" />
@@ -29,7 +29,7 @@
         android:background="@drawable/fragment_bottom_selector"
         android:button="@null"
         android:gravity="center"
-        android:text="@string/order"
+        android:text="@string/game_gather"
         android:textColor="@color/white"
         android:textSize="12sp" />
     <View
@@ -45,7 +45,7 @@
         android:background="@drawable/fragment_bottom_selector"
         android:button="@null"
         android:gravity="center"
-        android:text="@string/notice"
+        android:text="@string/game_transport"
         android:textColor="@color/white"
         android:textSize="12sp" />
     <View
@@ -61,7 +61,7 @@
         android:button="@null"
         android:drawablePadding="3dip"
         android:gravity="center"
-        android:text="@string/more"
+        android:text="@string/game_letfly"
         android:textColor="@color/white"
         android:textSize="12sp" />
 </RadioGroup>

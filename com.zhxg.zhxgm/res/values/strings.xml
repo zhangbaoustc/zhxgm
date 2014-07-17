@@ -3,7 +3,7 @@
 
     <string name="app_name">com.zhxg.zhxgm</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_camera">CameraActivity</string>
+    <string name="title_activity_camera">比赛拍照</string>
     <string name="title_activity_start">StartActivity</string>
     <string name="login_loading">登录中&#8230;</string>
     <string name="title_activity_map">MapActivity</string>
@@ -12,7 +12,13 @@
     <string name="notice">Notice</string>
     <string name="order">Order</string>
     <string name="home">Home</string>
+    <string name="game_mgr">比赛管理</string>
+    <string name="game_gather">集鸽信息</string>
+    <string name="game_transport">司放途中</string>
+    <string name="game_letfly">比赛司放</string>
     <string name="title_activity_game_detail">比赛详情</string>
+    <string name="game_loading">正在加载比赛&#8230;</string>
+    <string name="game_loading_error">加载比赛失败</string>
 
     <!-- game detail -->
     <string name="game_name">比赛名称：</string>
@@ -43,6 +49,7 @@
     <string name="action_game_info_image_upload">上传照片</string>
     <string name="action_update">更新</string>
     <string name="action_add">添加</string>
+    <string name="action_confirm">确认</string>
     <string name="action_camera">拍照</string>
     <string name="game_transport_start_location">起始坐标：</string>
     <string name="game_transport_current_location">当前坐标：</string>
@@ -50,7 +57,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="btn_ok">OK</string>
     <string name="btn_pick">Pick From Gallery</string>
-    <string name="btn_pick_mul">Pick From Gallery (Multiple)</string>
+    <string name="btn_pick_mul">选择要上传的图片</string>
     <string name="btn_upload">上传</string>
     <string name="title_activity_add_game">添加比赛</string>
     <string name="title_activity_edit_game">编辑比赛</string>
@@ -61,19 +68,26 @@
         <item>地区比赛</item>
         <item>鸽舍比赛</item>
     </string-array>
+
     <integer-array name="game_type_array_num">
-    	<item>10</item>    
-    	<item>18</item>
-    	<item>28</item>
+        <item>10</item>
+        <item>18</item>
+        <item>28</item>
     </integer-array>
-    
+
     <string name="game_add_select_gather_time_title">选择集鸽时间</string>
     <string name="game_add_select_fly_time_title">选择放飞日期</string>
     <string name="title_activity_trace_mark">TraceMarkActivity</string>
-    
+    <string name="add_error_from_server">添加比赛失败，请联系系统管理员.</string>
+    <string name="add_game_loading">正在添加新比赛&#8230;</string>
+
     <!-- trace -->
     <string name="trace_title">行程记录</string>
     <string name="trace_title_note">发表行程记录</string>
     <string name="trace_publish">发表</string>
+    <string name="title_activity_upload_images">上传图片</string>
+    <string name="title_activity_update_game">编辑比赛信息</string>
+    
+    
 
 </resources>

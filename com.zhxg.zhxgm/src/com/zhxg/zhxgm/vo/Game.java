@@ -1,7 +1,10 @@
 package com.zhxg.zhxgm.vo;
 
-public class Game {
+import java.io.Serializable;
 
+public class Game implements Serializable {
+
+	private static final long serialVersionUID = 1883966379335583018L;
 
 	public Game(){
 		
@@ -22,6 +25,10 @@ public class Game {
 	private String flyAddress;
 	private String flyLongitude;
 	private String flyLatitude;
+	private String referee;
+	private String total;
+	private String info;
+	private String status;
 	
 	
 	public String getId() {
@@ -146,5 +153,37 @@ public class Game {
 	
 	public String toString(){
 		return getName();
+	}
+
+	public String getReferee() {
+		return referee;
+	}
+
+	public void setReferee(String referee) {
+		this.referee = referee;
+	}
+
+	public String getTotal() {
+		return total;
+	}
+
+	public void setTotal(String total) {
+		this.total = total;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

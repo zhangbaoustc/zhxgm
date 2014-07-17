@@ -3,8 +3,10 @@ package com.zhxg.zhxgm.utils;
 import java.util.ArrayList;
 
 import com.zhxg.zhxgm.R;
+import com.zhxg.zhxgm.vo.Const;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 public class Utils {
 
@@ -31,6 +33,20 @@ public class Utils {
 		return result;
 	}
 	
+	//get game garget id from game type
+	public static String getGameTargetIDByPosition(Context context,int position){
+		SharedPreferences pref = context.getSharedPreferences("loginSession", 0); 
+		String[] target_ids = pref.getString(Const.TARGETID, "").split(",");
+		return target_ids[position];
+	}
+	
+	public static String getGameTypeByPosition(Context context,int position){
+		SharedPreferences pref = context.getSharedPreferences("loginSession", 0); 
+		String[] target_ids = pref.getString(Const.ROLE, "").split(",");
+		return target_ids[position];
+	}
+	
+	
 	//get game type by user role
 	public static ArrayList<String> getTypeByRole(Context context, String role){
 		
@@ -50,5 +66,16 @@ public class Utils {
 		return result;
 	}
 	
+	
+	public static String ArrayListToString(ArrayList<String> arr){
+		String result="";
+		for(int i=0;i<arr.size();i++){
+			if(!arr.get(i).equals("")){
+				result += arr.get(i).toString()+",";
+			}
+		}
+		
+		return result.equals("")?"":result.substring(0, result.length()-1);
+	}
 	
 }

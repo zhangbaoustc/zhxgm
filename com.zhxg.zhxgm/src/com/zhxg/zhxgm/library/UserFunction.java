@@ -9,14 +9,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.zhxg.zhxgm.R;
-import com.zhxg.zhxgm.vo.Const;
-import com.zhxg.zhxgm.vo.User;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.graphics.Paint.Join;
+
+import com.zhxg.zhxgm.R;
+import com.zhxg.zhxgm.vo.Const;
+import com.zhxg.zhxgm.vo.User;
 
 public class UserFunction {
 	private JSONParser jsonParser;
@@ -75,13 +74,11 @@ public class UserFunction {
 	public static void loginOK(Context context,String username,String password,JSONObject obj)
 	{
 		
-		
 		SharedPreferences pref = context.getSharedPreferences("loginSession", 0); 
 		Editor editor = pref.edit();
 		editor.putString("username", username);
 		editor.putString("password", password);
 		try {
-			
 			
 			JSONArray roles = obj.getJSONArray(Const.ROLE);
 			

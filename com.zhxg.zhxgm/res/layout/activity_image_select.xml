@@ -6,21 +6,6 @@
     android:background="@color/bg_light_blue"
     android:orientation="vertical" >
 
-    <include
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/titlebar" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@color/menu_bg"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="Preview"
-        android:textColor="@android:color/white"
-        android:textStyle="bold" />
 
     <ViewSwitcher
         android:id="@+id/viewSwitcher"
