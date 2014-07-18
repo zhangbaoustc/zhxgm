@@ -30,13 +30,18 @@ public class SqliteController extends SQLiteOpenHelper {
 		onCreate(database);
 	}
 	
+	public void clearGameLocation(String bsid){
+		SQLiteDatabase database = this.getWritableDatabase(); 
+		String query = "delete FROM TransportLocation where bsid = " + bsid; 
+		database.execSQL(query); 
+	}
+	
 	public void insertLocation(HashMap<String, String> queryValues) 
 	{
 		SQLiteDatabase database = this.getWritableDatabase(); 
 		ContentValues values = new ContentValues(); 
 		values.put("bsid", queryValues.get("bsid")); 
 		values.put("xdot", queryValues.get("xdot")); 
-		values.put("xdot", queryValues.get("xdot"));
 		values.put("ydot", queryValues.get("ydot")); 
 		values.put("to_server", queryValues.get("to_server"));
 		values.put("time", queryValues.get("time"));

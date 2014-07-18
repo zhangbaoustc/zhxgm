@@ -80,6 +80,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private String targetid;
 	private Activity mActivity;
 	private ProgressDialog progressDialog;  
+	private HashMap<String, String> updatedData;
 	
    
 	//game info
@@ -121,6 +122,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		progressDialog = new ProgressDialog(getActivity());
 		progressDialog.setMessage(getString(R.string.game_loading));
 		
+		updatedData = new HashMap<String, String>();
 		data = new ArrayList<Game>();
 		controller = new SqliteController(getActivity().getApplicationContext());
 		
@@ -197,21 +199,8 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		rootView.findViewById(R.id.game_transport_image_upload).setOnClickListener(this);
 		game_transport_name = (TextView) rootView.findViewById(R.id.game_transport_name);
 		beginTransport = (Button) rootView.findViewById(R.id.game_transport_action_begin);
-		beginTransport.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				//save game id to sharedPreferences
-				SharedPreferences sharedPreferences = getActivity().getApplicationContext().getSharedPreferences(Const.transport_page, Context.MODE_PRIVATE); //˽�����
-				Editor editor = sharedPreferences.edit();//��ȡ�༭��
-				editor.putString("game_id", currentGame.getId());
-				editor.commit();//�ύ�޸�
-				
-				Intent intent = new Intent(getActivity(), GameTransportService.class);
-				getActivity().startService(intent);
-				beginTransport.setVisibility(View.GONE);
-				endTransport.setVisibility(View.VISIBLE);
-			}
-		});
+		beginTransport.setOnClickListener(this);
+		
 		endTransport = (Button) rootView.findViewById(R.id.game_transport_action_end);
 		endTransport.setOnClickListener(new OnClickListener() {
 			@Override
@@ -541,26 +530,34 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			intentUpload.putExtra(Const.CAMERA_STYLE, Const.CONTINUE_CAMERA);
 			startActivity(intentUpload);
 			break;
+		case R.id.game_transport_action_begin:
+			new beginTransportTask().execute(currentGame);
+			break;
+			
 		default:
 			break;
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void attempUpdateGatherInfo(){
-		currentGame.setTotal(game_gather_num.getText().toString());
-		currentGame.setInfo(game_gather_memo.getText().toString());
-		currentGame.setJgLatitude(game_gather_latitude.getText().toString());
-		currentGame.setJgLongitude(game_gather_longitude.getText().toString());
+		updatedData.clear();
+		updatedData.put(Const.GAME_ID, currentGame.getId());
+		updatedData.put(Const.GAME_TOTAL, game_gather_num.getText().toString());
+		updatedData.put(Const.GAME_INFO, game_gather_memo.getText().toString());
+		updatedData.put(Const.GAME_JGLATITUDE, game_gather_latitude.getText().toString());
+		updatedData.put(Const.GAME_JGLONGITUDE, game_gather_longitude.getText().toString());
+		
 		progressDialog.show();
-		new updateGatherInfoTask().execute(currentGame);
+		new updateGatherInfoTask().execute(updatedData);
 	}
 	
-	public class updateGatherInfoTask extends AsyncTask<Game, Void, Boolean> {
+	public class updateGatherInfoTask extends AsyncTask<HashMap<String, String>, Void, Boolean> {
 		private boolean resultCode = false;
 		private JSONObject result;
 		@SuppressLint("DefaultLocale")
 		@Override
-		protected Boolean doInBackground(Game... params) {
+		protected Boolean doInBackground(HashMap<String, String>... params) {
 			
 			result = new GameFunction().updateGatherInfo(params[0]);
 			try {
@@ -579,9 +576,47 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		protected void onPostExecute(final Boolean success) {
 
 			if (success) {
-				new GameFunction().updateLocalGameData(data, currentGame,"gather");
+				new GameFunction().updateLocalGameData(data, updatedData);
 			}else{
-				Toast.makeText(mActivity, R.string.add_error_from_server, Toast.LENGTH_LONG).show();
+				Toast.makeText(mActivity, R.string.update_gather_info_error, Toast.LENGTH_LONG).show();
+			}
+			progressDialog.dismiss();
+		}
+	}
+	
+	
+	
+	public class beginTransportTask extends AsyncTask<Game, Void, Boolean> {
+		private boolean resultCode = false;
+		private JSONObject result;
+		@SuppressLint("DefaultLocale")
+		@Override
+		protected Boolean doInBackground(Game... params) {
+			
+			result = new GameFunction().beginTransport(params[0]);
+			try {
+				if("TRUE".equals(result.getString("flag").toUpperCase())){
+					resultCode = true;
+				}else{
+					resultCode = false;
+				}
+			} catch (JSONException e) {
+				resultCode = false;
+			}
+			return resultCode;
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+
+			if (success) {
+				Intent intent = new Intent(mActivity, GameTransportService.class);
+				intent.putExtra(Const.BSID, currentGame.getId());
+				getActivity().startService(intent);
+				beginTransport.setVisibility(View.GONE);
+				endTransport.setVisibility(View.VISIBLE);
+			}else{
+				Toast.makeText(mActivity, R.string.begin_transport_error, Toast.LENGTH_LONG).show();
 			}
 			progressDialog.dismiss();
 		}

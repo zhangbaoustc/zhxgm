@@ -30,14 +30,14 @@ public class BaseActivity extends Activity {
     	ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		List<ActivityManager.RunningTaskInfo> taskList = am.getRunningTasks(10);
 		if(taskList.get(0).numActivities == 1){
-			new AlertDialog.Builder(this).setTitle("确认退出吗？")
-				.setPositiveButton("确定", new DialogInterface.OnClickListener() {		 
+			new AlertDialog.Builder(this).setTitle(getString(R.string.confirm_quit_app))
+				.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {		 
 				    @Override
 				    public void onClick(DialogInterface dialog, int which) {
 				    	BaseActivity.this.finish();
 				    }
 				})
-				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+				.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 		 
 				    @Override
 				    public void onClick(DialogInterface dialog, int which) {

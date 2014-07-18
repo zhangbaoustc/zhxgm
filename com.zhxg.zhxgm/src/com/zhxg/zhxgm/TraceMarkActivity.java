@@ -3,6 +3,9 @@ package com.zhxg.zhxgm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,22 +17,30 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.zhxg.zhxgm.control.TraceHistoryAdapter;
 import com.zhxg.zhxgm.library.Action;
 import com.zhxg.zhxgm.library.CustomGallery;
 import com.zhxg.zhxgm.library.GalleryAdapter;
 import com.zhxg.zhxgm.library.GameFunction;
-import com.zhxg.zhxgm.library.ImageSelectActivity;
+import com.zhxg.zhxgm.library.UserFunction;
 import com.zhxg.zhxgm.vo.Const;
+import com.zhxg.zhxgm.vo.Trace;
 
 public class TraceMarkActivity extends Activity {
 
@@ -43,6 +54,10 @@ public class TraceMarkActivity extends Activity {
 	String[] all_path;
 	EditText trace_content;
 	private String bsid;
+	
+	private ListView trace_history;
+	private TraceHistoryAdapter hisAdapter;
+	private ArrayList<Trace> data;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +76,7 @@ public class TraceMarkActivity extends Activity {
 		
 		initImageLoader();
 		init_layout();
+		setData();
 	}
 	
 	private void initImageLoader() {
@@ -104,7 +120,17 @@ public class TraceMarkActivity extends Activity {
 				attemptSendMark();				
 			}
 		});
+		
+		trace_history = (ListView) findViewById(R.id.trace_history);
 
+	}
+	
+	private void setData(){
+		data = new ArrayList<Trace>();
+		hisAdapter = new TraceHistoryAdapter(data,this); 
+		trace_history.setAdapter(hisAdapter);
+		
+		new TraceHistoryTask().execute(bsid);
 	}
 	
 	//prepare send trace mark
@@ -139,40 +165,90 @@ public class TraceMarkActivity extends Activity {
 	}
 
 	
-	class TraceMarkTask extends AsyncTask<String[], Integer, Void>{
+	class TraceMarkTask extends AsyncTask<String[], Integer, Boolean>{
 		
 		private ProgressDialog dialog = null;
+		private JSONObject result;
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			dialog = ProgressDialog.show(TraceMarkActivity.this, "", "信息发布中...", true);
+			dialog = ProgressDialog.show(TraceMarkActivity.this, "", getString(R.string.trace_uploading), true);
 		}
 		
 		@SuppressWarnings("deprecation")
 		@Override
-		protected Void doInBackground(String[]... arg0) {
-			String url = "http://hefeihua.com/uploadImage.php";
+		protected Boolean doInBackground(String[]... arg0) {
+			
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("bsid", bsid);
 			map.put("info", trace_content.getText().toString());
-			map.put("userid", "userid");
-			
-			GameFunction.addTraceMark(url, map, arg0[0]);
-			return null;
+			map.put("userid", UserFunction.getUserInfo(TraceMarkActivity.this, Const.USER_ID));
+			Boolean msg = new GameFunction().addTraceMark(map, arg0[0]); 
+			return msg;
 		}
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
+			if(result){
+				TraceMarkActivity.this.finish();
+			}
 			dialog.dismiss(); 
 		}
 		
+	}
+	
+	class TraceHistoryTask extends AsyncTask<String, Integer, Boolean>{
 		
+		private ProgressDialog dialog = null;
+		private JSONObject result;
+		private boolean resultCode = false;
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			dialog = ProgressDialog.show(TraceMarkActivity.this, "", getString(R.string.trace_uploading), true);
+		}
+		
+		@SuppressWarnings("deprecation")
+		@Override
+		protected Boolean doInBackground(String... arg0) {
+			
+			result = new GameFunction().getTraceHistry(arg0[0]);
+			try {
+				if("TRUE".equals(result.getString("flag").toUpperCase())){
+					resultCode = true;
+				}else{
+					resultCode = false;
+				}
+			} catch (JSONException e) {
+				resultCode = false;
+			}
+			return resultCode;
+		}
+		@Override
+		protected void onPostExecute(Boolean success) {
+			super.onPostExecute(success);
+			ArrayList<Trace> tempTrace = null;
+			if (success) {
+				try {
+					tempTrace = new GameFunction().traceConvert(result.getJSONArray("msg"));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}else{
+				
+			}
+			
+			data.clear();
+			data.addAll(tempTrace);
+			hisAdapter.notifyDataSetChanged();
+			dialog.dismiss(); 
+			setListViewHeightBasedOnChildren(trace_history);
+		}
 		
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.trace_mark, menu);
 		return true;
 	}
@@ -189,6 +265,28 @@ public class TraceMarkActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 		
+	}
+	
+	public static void setListViewHeightBasedOnChildren(ListView listView) {
+	    ListAdapter listAdapter = listView.getAdapter();
+	    if (listAdapter == null)
+	        return;
+
+	    int desiredWidth = MeasureSpec.makeMeasureSpec(listView.getWidth(), MeasureSpec.UNSPECIFIED);
+	    int totalHeight = 0;
+	    View view = null;
+	    for (int i = 0; i < listAdapter.getCount(); i++) {
+	        view = listAdapter.getView(i, view, listView);
+	        if (i == 0)
+	            view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, LayoutParams.WRAP_CONTENT));
+
+	        view.measure(desiredWidth, MeasureSpec.UNSPECIFIED);
+	        totalHeight += view.getMeasuredHeight();
+	    }
+	    ViewGroup.LayoutParams params = listView.getLayoutParams();
+	    params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+	    listView.setLayoutParams(params);
+	    listView.requestLayout();
 	}
 
 }

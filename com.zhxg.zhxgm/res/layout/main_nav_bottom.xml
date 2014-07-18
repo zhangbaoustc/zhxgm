@@ -12,7 +12,7 @@
         android:button="@null"
         android:drawableTop="@drawable/main_readiobutton_home"
         android:gravity="center"
-        android:text="@string/home"
+        android:text="@string/news"
         android:textColor="@color/white"
         android:textSize="12sp" />
     <View
@@ -28,7 +28,7 @@
         android:button="@null"
         android:drawableTop="@drawable/main_readiobutton_order"
         android:gravity="center"
-        android:text="@string/order"
+        android:text="@string/games"
         android:textColor="@color/white"
         android:checked="true"
         android:textSize="12sp" />
@@ -46,7 +46,7 @@
         android:button="@null"
         android:drawableTop="@drawable/main_readiobutton_notice"
         android:gravity="center"
-        android:text="@string/notice"
+        android:text="@string/shop"
         android:textColor="@color/white"
         android:textSize="12sp" />
     <View
@@ -63,7 +63,7 @@
         android:drawablePadding="3dip"
         android:drawableTop="@drawable/main_readiobutton_more"
         android:gravity="center"
-        android:text="@string/more"
+        android:text="@string/pageHome"
         android:textColor="@color/white"
         android:textSize="12sp" />
 </RadioGroup>

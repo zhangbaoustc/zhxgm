@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">com.zhxg.zhxgm</string>
+    <string name="app_name">中华信鸽</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_camera">比赛拍照</string>
     <string name="title_activity_start">StartActivity</string>
@@ -12,6 +12,15 @@
     <string name="notice">Notice</string>
     <string name="order">Order</string>
     <string name="home">Home</string>
+    <string name="news">新闻</string>
+    <string name="games">比赛</string>
+    <string name="shop">商城</string>
+    <string name="pageHome">鸽舍</string>
+    
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+    <string name="confirm_quit_app">确认退出系统</string>
+    
     <string name="game_mgr">比赛管理</string>
     <string name="game_gather">集鸽信息</string>
     <string name="game_transport">司放途中</string>
@@ -79,6 +88,7 @@
     <string name="game_add_select_fly_time_title">选择放飞日期</string>
     <string name="title_activity_trace_mark">TraceMarkActivity</string>
     <string name="add_error_from_server">添加比赛失败，请联系系统管理员.</string>
+    <string name="update_gather_info_error">修改集鸽西信息失败，请联系系统管理员.</string>
     <string name="add_game_loading">正在添加新比赛&#8230;</string>
 
     <!-- trace -->
@@ -87,7 +97,8 @@
     <string name="trace_publish">发表</string>
     <string name="title_activity_upload_images">上传图片</string>
     <string name="title_activity_update_game">编辑比赛信息</string>
+    <string name="trace_uploading">正在发表记录&#8230;</string>
     
-    
+    <string name="begin_transport_error">开始运输失败，请联系系统管理员.</string>
 
 </resources>

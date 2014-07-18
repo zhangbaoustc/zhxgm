@@ -140,13 +140,12 @@ public class UploadImagesActivity extends Activity {
 		@SuppressWarnings("deprecation")
 		@Override
 		protected Void doInBackground(String[]... arg0) {
-			String url = "http://hefeihua.com/uploadImage.php";
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("bsid", "bsid");
 			map.put("info", "info");
 			map.put("userid", "userid");
 			
-			GameFunction.addTraceMark(url, map, arg0[0]);
+			new GameFunction().addTraceMark( map, arg0[0]);
 			return null;
 		}
 		@Override

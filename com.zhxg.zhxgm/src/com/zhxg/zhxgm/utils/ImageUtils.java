@@ -2,8 +2,10 @@ package com.zhxg.zhxgm.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
-import com.baidu.location.BDLocation;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,6 +14,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.util.Log;
+
+import com.baidu.location.BDLocation;
 
 public class ImageUtils {
 
@@ -70,4 +75,22 @@ public class ImageUtils {
 		       } catch(Throwable ignore) {}
 		}
 	}
+	
+	 public static Bitmap getBitmapFromURL(String src) {
+	        try {
+	            Log.e("src",src);
+	            URL url = new URL(src);
+	            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	            connection.setDoInput(true);
+	            connection.connect();
+	            InputStream input = connection.getInputStream();
+	            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+	            Log.e("Bitmap","returned");
+	            return myBitmap;
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            Log.e("Exception",e.getMessage());
+	            return null;
+	        }
+	    }
 }

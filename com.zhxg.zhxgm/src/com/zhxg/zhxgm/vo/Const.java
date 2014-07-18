@@ -32,4 +32,15 @@ public class Const {
 	public static final int STATUS_ARRIVED = 3;
 	public static final int STATUS_LETFLY = 4;
 	public static final int STATUS_COMPLETE = 5;
+	
+	//game columns
+	public static final String GAME_ID = "id";
+	public static final String GAME_STATUS = "status";
+	public static final String GAME_TOTAL = "total";
+	public static final String GAME_JGLATITUDE = "jgLatitude";
+	public static final String GAME_JGLONGITUDE = "jgLongitude";
+	public static final String GAME_INFO = "info";
+	
+	
+	
 }

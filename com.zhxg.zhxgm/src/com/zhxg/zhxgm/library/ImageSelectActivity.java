@@ -156,7 +156,7 @@ public class ImageSelectActivity extends Activity {
 			map.put("info", "info");
 			map.put("userid", "userid");
 			
-			GameFunction.addTraceMark(url, map, arg0[0]);
+			new GameFunction().addTraceMark(map, arg0[0]);
 			return null;
 		}
 		@Override
