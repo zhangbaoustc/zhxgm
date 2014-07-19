@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
@@ -29,6 +30,7 @@ import com.zhxg.zhxgm.library.Action;
 import com.zhxg.zhxgm.library.CustomGallery;
 import com.zhxg.zhxgm.library.GalleryAdapter;
 import com.zhxg.zhxgm.library.GameFunction;
+import com.zhxg.zhxgm.vo.Const;
 
 public class UploadImagesActivity extends Activity {
 
@@ -43,6 +45,8 @@ public class UploadImagesActivity extends Activity {
 	String action;
 	ImageLoader imageLoader;
 	String[] all_path;
+	String bsid;
+	String status;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,11 @@ public class UploadImagesActivity extends Activity {
 		ActionBar ab = getActionBar();
 		ab.setDisplayHomeAsUpEnabled(true);
 		ab.setHomeButtonEnabled(true);
+		
+		if(getIntent() != null && getIntent().getExtras() != null){
+			bsid = getIntent().getStringExtra(Const.GAME_ID);
+			status = getIntent().getStringExtra(Const.GAME_STATUS);
+		}
 		
 		initImageLoader();
 		init();
@@ -87,6 +96,8 @@ public class UploadImagesActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
+				i.putExtra(Const.GAME_ID, bsid);
+				i.putExtra(Const.GAME_STATUS, status);
 				startActivityForResult(i, 200);
 			}
 		});
@@ -128,7 +139,7 @@ public class UploadImagesActivity extends Activity {
 	
 	
 	
-	class FileuploadTask extends AsyncTask<String[], Integer, Void>{
+	class FileuploadTask extends AsyncTask<String[], Integer, Boolean>{
 		
 		private ProgressDialog dialog = null;
 		@Override
@@ -139,22 +150,24 @@ public class UploadImagesActivity extends Activity {
 		
 		@SuppressWarnings("deprecation")
 		@Override
-		protected Void doInBackground(String[]... arg0) {
+		protected Boolean doInBackground(String[]... arg0) {
 			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("bsid", "bsid");
-			map.put("info", "info");
-			map.put("userid", "userid");
+			map.put("bsid", bsid);
+			//map.put("status", status);
 			
-			new GameFunction().addTraceMark( map, arg0[0]);
-			return null;
+			return new GameFunction().uploadImages( map, arg0[0]);
 		}
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
+			if(result == true){
+				UploadImagesActivity.this.finish();
+				Toast.makeText(UploadImagesActivity.this, getString(R.string.upload_images_success), Toast.LENGTH_LONG);
+			}else{
+				Toast.makeText(UploadImagesActivity.this, getString(R.string.upload_images_error), Toast.LENGTH_LONG);
+			}
 			dialog.dismiss(); 
 		}
-		
-		
 		
 	}
 	

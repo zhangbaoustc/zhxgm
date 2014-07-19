@@ -50,9 +50,11 @@
     <string name="location">定位</string>
     <string name="game_info_memo">集鸽备注：</string>
     <string name="game_letfly_time">放飞时间：</string>
+    <string name="game_letfly_place">放飞地点：</string>
     <string name="action_game_info_camera">集鸽拍照</string>
     <string name="action_transport_begin">开始司放</string>
     <string name="action_transport_end">结束司放</string>
+    <string name="action_transport_complete">司放完成</string>
     <string name="action_game_transport_camera">运输拍照</string>
     <string name="action_game_letfly_camera">司放拍照</string>
     <string name="action_game_info_image_upload">上传照片</string>
@@ -100,5 +102,9 @@
     <string name="trace_uploading">正在发表记录&#8230;</string>
     
     <string name="begin_transport_error">开始运输失败，请联系系统管理员.</string>
+    
+    <!--  upload  -->
+    <string name="upload_images_error">上传照片出错，请重新上传.</string>
+    <string name="upload_images_success">上传照片成功</string>
 
 </resources>

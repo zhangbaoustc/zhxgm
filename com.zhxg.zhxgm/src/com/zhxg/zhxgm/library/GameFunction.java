@@ -2,6 +2,7 @@ package com.zhxg.zhxgm.library;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -29,6 +30,7 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.widget.RadioGroup;
 
 import com.baidu.location.BDLocation;
@@ -44,6 +46,7 @@ public class GameFunction {
 	private static String traceHistoryUrl = "http://app.zhxg.com/index.php?arg=getsay&bsid=";
 	private static String transportHistoryUrl = "http://app.zhxg.com/index.php?arg=gpslist&bsid=";
 	private static String transportInsertUrl = "http://app.zhxg.com/index.php?arg=gpsadd";
+	private static String imageUploadUrl = "http://app.zhxg.com/index.php?arg=img";
 	
 	public GameFunction(){
 		jsonParser = new JSONParser();
@@ -191,8 +194,68 @@ public class GameFunction {
 		return jObj;
 	}
 	
+
 	
-	//����г̼�¼
+	public boolean uploadImages(HashMap<String, String> info, String[] files){
+		boolean result = false;
+
+		 try {
+			 HttpClient httpClient = new DefaultHttpClient();
+			 HttpPost postRequest = new HttpPost(imageUploadUrl);
+			 
+			 MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+			 
+			Iterator<Entry<String, String>> iter = info.entrySet().iterator();
+			while(iter.hasNext()){
+				Map.Entry entry = (Map.Entry) iter.next(); 
+				reqEntity.addPart(entry.getKey().toString(),new StringBody(entry.getValue().toString(),Charset.forName("UTF-8")));
+			}
+			
+			int i = 0;
+			for ( String name : files){
+				File file = new File(name);
+				String[] image_info = file.getName().replace(".jpg", "").split("_");
+				
+				ExifInterface exifInterface = new ExifInterface(name);
+				reqEntity.addPart("set["+i+ "][ydot]" ,new StringBody(image_info[0]));
+				reqEntity.addPart("set["+i+ "][xdot]" ,new StringBody(image_info[1]));
+				reqEntity.addPart("set["+i+ "][pubdate]" ,new StringBody(image_info[2]));
+				reqEntity.addPart("set["+i+ "][status]" ,new StringBody(image_info[3]));
+				Bitmap bitmap = BitmapFactory.decodeFile(name);
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				bitmap.compress(CompressFormat.JPEG, 25, bos);
+				byte[] data = bos.toByteArray();
+				ByteArrayBody bab = new ByteArrayBody(data, Math.floor(Math.random() * 11)+".jpg");
+				reqEntity.addPart("set["+i+ "][img]" ,bab);
+				i++;
+			}
+			
+			
+			 postRequest.setEntity(reqEntity);       
+		     HttpResponse response = httpClient.execute(postRequest);
+		     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+		     String sResponse;
+		     StringBuilder s = new StringBuilder();
+		     while ((sResponse = reader.readLine()) != null) {
+		         s = s.append(sResponse);
+		     }
+			 JSONObject jObj = new JSONObject(s.toString());
+			 if("TRUE".equals(jObj.getString("flag").toUpperCase())){
+				 result = true;
+			 }else{
+				 result = false;
+			 }
+		 }catch(Exception es){
+			 result = false;
+		 }
+		
+		
+		return result; 
+	}
+
+	
+	
+	
 	public boolean addTraceMark(HashMap<String, String> info, String[] files){
 		boolean result = false;
 

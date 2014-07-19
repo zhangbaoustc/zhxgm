@@ -29,6 +29,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.zhxg.zhxgm.R;
+import com.zhxg.zhxgm.vo.Const;
 
 public class CustomGalleryActivity extends Activity {
 
@@ -40,6 +41,10 @@ public class CustomGalleryActivity extends Activity {
 	Button btnGalleryOk;
 
 	String action;
+	String bsid;
+	String status;
+	boolean traceUpload = false;
+	
 	private ImageLoader imageLoader;
 
 	@Override
@@ -48,7 +53,18 @@ public class CustomGalleryActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.gallery);
 
+		if(getIntent() != null && getIntent().getExtras() != null){
+			bsid = getIntent().getStringExtra(Const.GAME_ID);
+			status = getIntent().getStringExtra(Const.GAME_STATUS);
+			
+			if(getIntent().getStringExtra(Const.BSID) != null){
+				traceUpload = true;
+			}
+		}
+		
+		
 		action = getIntent().getAction();
+		
 		if (action == null) {
 			finish();
 		}
@@ -178,6 +194,7 @@ public class CustomGalleryActivity extends Activity {
 		}
 	};
 
+	@SuppressWarnings("deprecation")
 	private ArrayList<CustomGallery> getGalleryPhotos() {
 		ArrayList<CustomGallery> galleryList = new ArrayList<CustomGallery>();
 
@@ -199,8 +216,20 @@ public class CustomGalleryActivity extends Activity {
 							.getColumnIndex(MediaStore.Images.Media.DATA);
 
 					item.sdcardPath = imagecursor.getString(dataColumnIndex);
+					
+					File file = new File(imagecursor.getString(dataColumnIndex));
+					String[] image_info = file.getName().replace(".jpg", "").split("_");
 
-					galleryList.add(item);
+					if(traceUpload){
+						galleryList.add(item);
+					}else{
+						if(image_info.length == 5){
+							if(image_info[3].equals(status) && image_info[4].equals(bsid)){
+								galleryList.add(item);
+							}
+						}
+					}
+					
 				}
 			}
 		} catch (Exception e) {

@@ -109,6 +109,7 @@ public class TraceMarkActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
+				i.putExtra(Const.BSID, bsid);
 				startActivityForResult(i, 100);
 			}
 		});

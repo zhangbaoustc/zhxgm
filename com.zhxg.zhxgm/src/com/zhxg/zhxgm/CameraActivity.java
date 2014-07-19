@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -31,6 +32,7 @@ import com.baidu.location.LocationClientOption.LocationMode;
 import com.zhxg.zhxgm.control.CameraPreview;
 import com.zhxg.zhxgm.utils.GpsUtils;
 import com.zhxg.zhxgm.utils.ImageUtils;
+import com.zhxg.zhxgm.utils.Utils;
 import com.zhxg.zhxgm.vo.Const;
 
 public class CameraActivity extends BaseActivity {
@@ -46,30 +48,35 @@ public class CameraActivity extends BaseActivity {
 	private LocationClient mLocationClient;
 	private BDLocation mLocation;
 	private String style;
+	private static String bsid;
+	private static String status;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera);
 		
+		//back
 		ActionBar ab = getActionBar();
 		ab.setDisplayHomeAsUpEnabled(true);
 		ab.setHomeButtonEnabled(true);
 		
 		if(getIntent() != null){
 			style = getIntent().getStringExtra(Const.CAMERA_STYLE);
+			bsid = getIntent().getStringExtra(Const.GAME_ID);
+			status = getIntent().getStringExtra(Const.GAME_STATUS);
 		}
 		
 		myLocationListener = new MyLocationListener();
-		mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
-		mLocationClient.registerLocationListener( myLocationListener );    //注册监听函数
+		mLocationClient = new LocationClient(getApplicationContext());     
+		mLocationClient.registerLocationListener( myLocationListener );    
 		
 		LocationClientOption option = new LocationClientOption();
-		option.setLocationMode(LocationMode.Hight_Accuracy);//设置定位模式
-		option.setCoorType("bd09ll");//返回的定位结果是百度经纬度,默认值gcj02
-		option.setScanSpan(1000);//设置发起定位请求的间隔时间为5000ms
-		option.setIsNeedAddress(true);//返回的定位结果包含地址信息
-		option.setNeedDeviceDirect(false);//返回的定位结果包含手机机头的方向
+		option.setLocationMode(LocationMode.Hight_Accuracy);
+		option.setCoorType("bd09ll");
+		option.setScanSpan(1000);
+		option.setIsNeedAddress(true);
+		option.setNeedDeviceDirect(false);
 		mLocationClient.setLocOption(option);
 		mLocationClient.start();
 		
@@ -160,9 +167,11 @@ public class CameraActivity extends BaseActivity {
 	            FileOutputStream fos = new FileOutputStream(pictureFile);
 	            fos.write(data);
 	            fos.close();
-	            ImageUtils imgUtils = new ImageUtils();
-		        imgUtils.addWatermark(CameraActivity.this,pictureFile.toString(),mLocation);
-	          // new getServerTimeTask().execute(pictureFile.toString());
+	            ImageUtils imgUtils = new ImageUtils();		       
+	           
+	            imgUtils.addWatermark(CameraActivity.this,pictureFile.toString(),mLocation);
+		        imgUtils.addExif(pictureFile.toString(), mLocation);
+		        imgUtils.exportToGallery(CameraActivity.this, pictureFile.toString());
 	        } catch (FileNotFoundException e) {
 	            Log.d(CameraPreview.TAG, "File not found: " + e.getMessage());
 	        } catch (IOException e) {
@@ -172,7 +181,7 @@ public class CameraActivity extends BaseActivity {
 	};
 
 	/** Create a File for saving an image or video */
-	private static File getOutputMediaFile(int type){
+	private File getOutputMediaFile(int type){
 	    // To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
@@ -193,8 +202,8 @@ public class CameraActivity extends BaseActivity {
 	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 	    File mediaFile;
 	    if (type == MEDIA_TYPE_IMAGE){
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "IMG_"+ timeStamp + ".jpg");
+	        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mLocation.getLatitude() + "_" + mLocation.getLongitude() + "_" +
+	        		Utils.getUTCTime(mLocation.getTime(), "yyyy-MM-dd HH:mm:ss") + "_" + status + "_" + bsid + ".jpg");
 	    } else if(type == MEDIA_TYPE_VIDEO) {
 	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
 	        "VID_"+ timeStamp + ".mp4");
@@ -212,27 +221,6 @@ public class CameraActivity extends BaseActivity {
 			if (location == null)
 		            return ;
 			mLocation = location;
-			StringBuffer sb = new StringBuffer(256);
-			sb.append("time : ");
-			sb.append(location.getTime());
-			sb.append("\nerror code : ");
-			sb.append(location.getLocType());
-			sb.append("\nlatitude : ");
-			sb.append(location.getLatitude());
-			sb.append("\nlontitude : ");
-			sb.append(location.getLongitude());
-			sb.append("\nradius : ");
-			sb.append(location.getRadius());
-			if (location.getLocType() == BDLocation.TypeGpsLocation){
-				sb.append("\nspeed : ");
-				sb.append(location.getSpeed());
-				sb.append("\nsatellite : ");
-				sb.append(location.getSatelliteNumber());
-			} else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
-				sb.append("\naddr : ");
-				sb.append(location.getAddrStr());
-			} 
-			
 		}
 	}
 	
@@ -240,14 +228,20 @@ public class CameraActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Intent intent = new Intent(this, MainActivity.class);            
-	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-	        startActivity(intent);            
+			this.finish();
 	        return true;    
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 		
+	}
+
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mCamera.release();
+		mLocationClient.stop();
 	}
 	
 }

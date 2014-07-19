@@ -10,13 +10,9 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,12 +38,11 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfigeration;
 import com.baidu.mapapi.map.MyLocationData;
-import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.zhxg.zhxgm.AddGameActivity;
 import com.zhxg.zhxgm.CameraActivity;
 import com.zhxg.zhxgm.R;
@@ -81,8 +76,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private Activity mActivity;
 	private ProgressDialog progressDialog;  
 	private HashMap<String, String> updatedData;
-	
-   
+    
 	//game info
 	private Spinner gameSpinner;
 	private	ArrayAdapter<Game> adapter;
@@ -103,15 +97,27 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private EditText game_gather_memo;
 	private TextView game_gather_longitude;
 	private TextView game_gather_latitude;
+	private boolean gather_locationing;
+	private TextView gather_location;
 	
 	//transport
 	private TextView game_transport_name;
 	private Button beginTransport;
 	private Button endTransport;
+	private TextView game_transport_start_point;
+	private TextView game_transport_current_point;
+	private TextView game_transport_distance;
 	
 	
 	//let fly
 	private TextView game_letfly_name;
+	private EditText game_letfly_place;
+	private TextView game_letfly_time;
+	private TextView game_letfly_longitude;
+	private TextView game_letfly_latitude;
+	private boolean letfly_locationing;
+	private TextView letfly_location;
+	private TextView game_letfly_distance;
 	
 	private static ArrayList<Game> data;
 	private Game currentGame;
@@ -125,7 +131,6 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		updatedData = new HashMap<String, String>();
 		data = new ArrayList<Game>();
 		controller = new SqliteController(getActivity().getApplicationContext());
-		
 	}
 
 	@Override
@@ -142,12 +147,11 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		game_info_ll = (LinearLayout) rootView.findViewById(R.id.game_info_ll);
 		game_transport_ll = (LinearLayout) rootView.findViewById(R.id.game_transport_ll);
 		game_letfly_ll = (LinearLayout) rootView.findViewById(R.id.game_letfly_ll);
-				
 		
 		mBaiduMapView = new MapView(getActivity());
 		mBaiduMapView.setClickable(true);
 		mBaiduMap = mBaiduMapView.getMap();
-		p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 500);
+		p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400);
 		
 		//geme info
 		game_type = (TextView) rootView.findViewById(R.id.game_type);
@@ -164,7 +168,6 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				Log.i("dd", "23423423");
 				currentGame = data.get(position);
 				setLayoutData(currentGame);
 			}
@@ -190,8 +193,10 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		rootView.findViewById(R.id.game_info_camera).setOnClickListener(this);
 		rootView.findViewById(R.id.game_gather_update_btn).setOnClickListener(this);
 		rootView.findViewById(R.id.game_gather_image_upload).setOnClickListener(this);
-		game_gather_longitude = (TextView) rootView.findViewById(R.id.game_gather_longitude);
-		game_gather_latitude = (TextView) rootView.findViewById(R.id.game_gather_latitude);
+		game_gather_longitude = (EditText) rootView.findViewById(R.id.game_gather_longitude);
+		game_gather_latitude = (EditText) rootView.findViewById(R.id.game_gather_latitude);
+		gather_location = (TextView) rootView.findViewById(R.id.gather_location);
+		gather_location.setOnClickListener(this);
 		
 		//transport
 		rootView.findViewById(R.id.game_transport_trace).setOnClickListener(this);
@@ -202,19 +207,23 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		beginTransport.setOnClickListener(this);
 		
 		endTransport = (Button) rootView.findViewById(R.id.game_transport_action_end);
-		endTransport.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getActivity().getApplicationContext(), GameTransportService.class);
-				getActivity().getApplicationContext().stopService(intent);
-			}
-		}); 
-		
+		endTransport.setOnClickListener(this);
+		game_transport_start_point = (TextView) rootView.findViewById(R.id.game_transport_start_point);
+		game_transport_current_point = (TextView) rootView.findViewById(R.id.game_transport_current_point);
+		game_transport_distance = (TextView) rootView.findViewById(R.id.game_transport_distance);
+				
 		//let fly
 		game_letfly_name = (TextView) rootView.findViewById(R.id.game_letfly_name);		
 		rootView.findViewById(R.id.game_letfly_trace).setOnClickListener(this);
 		rootView.findViewById(R.id.game_letfly_camera).setOnClickListener(this);
 		rootView.findViewById(R.id.game_letfly_image_upload).setOnClickListener(this);
+		game_letfly_place = (EditText) rootView.findViewById(R.id.game_letfly_place);
+		game_letfly_time = (TextView) rootView.findViewById(R.id.game_letfly_time);
+		game_letfly_longitude = (TextView) rootView.findViewById(R.id.game_letfly_longitude);
+		game_letfly_latitude = (TextView) rootView.findViewById(R.id.game_letfly_latitude);
+		letfly_location = (TextView) rootView.findViewById(R.id.letfly_location);
+		letfly_location.setOnClickListener(this);
+		game_letfly_distance = (TextView) rootView.findViewById(R.id.game_letfly_distance);
 	}
 	
 	//set layout view data
@@ -228,6 +237,9 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		game_bonus.setText(game.getBonus());
 		game_gather_time.setText(game.getJgDate());
 		game_gather_place.setText(game.getJgAddress());
+		game_gather_longitude.setText(game.getJgLongitude());
+		game_gather_latitude.setText(game.getJgLatitude());
+		
 		game_fly_date.setText(game.getFlyDate());
 		game_fly_place.setText(game.getFlyAddress());
 		
@@ -239,7 +251,28 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		game_gather_memo.setText(game.getInfo());
 		
 		game_referee.setText(game.getReferee());
+		game_letfly_place.setText(game.getFlyAddress());
+		game_letfly_time.setText(game.getFlyDate());
+		game_letfly_longitude.setText(game.getFlyLongitude());
+		game_letfly_latitude.setText(game.getFlyLatitude());
 		
+		if(game.getStatus().equals(Const.STATUS_COMPLETE+"") 
+				|| game.getStatus().equals(Const.STATUS_ARRIVED+"")
+				|| game.getStatus().equals(Const.STATUS_LETFLY+"")){
+			beginTransport.setVisibility(View.GONE);
+			endTransport.setVisibility(View.VISIBLE);
+			endTransport.setText(mActivity.getString(R.string.action_transport_complete));
+			endTransport.setEnabled(false);
+		}else if(game.getStatus().equals(Const.STATUS_TRANSPORTING+"")){
+			beginTransport.setVisibility(View.GONE);
+			endTransport.setVisibility(View.VISIBLE);
+		}else{
+			beginTransport.setVisibility(View.VISIBLE);
+			endTransport.setVisibility(View.GONE);
+		}
+
+		
+		game_transport_start_point.setText(game.getJgLongitude() + "    " + game.getJgLatitude());
 		GameFunction.setGameStatus(rg, Integer.parseInt(game.getStatus()));
 	}
 	
@@ -261,26 +294,31 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		mActivity = getActivity();
 		prepareLoadData();
 
-		mLocationClient = new LocationClient(getActivity().getApplicationContext());     //����LocationClient��
-		mLocationClient.registerLocationListener( myLocationListener );    //ע�������
-		
-		LocationClientOption option = new LocationClientOption();
-		option.setLocationMode(LocationMode.Hight_Accuracy);//���ö�λģʽ
-		option.setCoorType("bd09ll");//���صĶ�λ����ǰٶȾ�γ��,Ĭ��ֵgcj02
-		option.setScanSpan(10000);//���÷���λ����ļ��ʱ��Ϊ5000ms
-		option.setIsNeedAddress(true);//���صĶ�λ�����ַ��Ϣ
-		option.setNeedDeviceDirect(true);
-		mLocationClient.setLocOption(option);
-		
-		mLocationClient.start();
+		mLocationClient = new LocationClient(getActivity().getApplicationContext()); 
+		mLocationClient.registerLocationListener( myLocationListener );    
 		
 		rg.setOnCheckedChangeListener(
 				new OnCheckedChangeListener() {
 					@Override
-					public void onCheckedChanged(RadioGroup arg0, int item) {
-						changeGamePage(item);
-					}
-				});
+				public void onCheckedChanged(RadioGroup arg0, int item) {
+					changeGamePage(item);
+				}
+		});
+	}
+	
+	private void startGPSLocation(int interval){
+		LocationClientOption option = new LocationClientOption();
+		option.setLocationMode(LocationMode.Hight_Accuracy);
+		option.setCoorType("bd09ll");
+		option.setScanSpan(interval);
+		option.setIsNeedAddress(false);
+		option.setNeedDeviceDirect(true);
+		mLocationClient.setLocOption(option);
+		mLocationClient.start();
+	}
+	
+	private void stopGPSLocation(){
+		mLocationClient.stop();
 	}
 	
 	private void changeGamePage(int item){
@@ -318,6 +356,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			}
 			
 			mBaiduMapView.onResume();
+			startGPSLocation(120*1000);
 			break;
 		case R.id.pageLetFly:
 			game_mgr_ll.setVisibility(View.GONE);
@@ -332,15 +371,15 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 						mBaiduMap.clear();		
 						mBaiduMapView.onPause();
 						game_transport_ll.removeView(mBaiduMapView);
-						game_letfly_ll.addView(mBaiduMapView,5,p);
+						game_letfly_ll.addView(mBaiduMapView,6,p);
 					}							
 				}
 			}else{
-				game_letfly_ll.addView(mBaiduMapView,5,p);
+				game_letfly_ll.addView(mBaiduMapView,6,p);
 			}
 			mBaiduMapView.onResume();
 				
-			
+			startGPSLocation(120*1000);
 			break;
 		default:
 			game_mgr_ll.setVisibility(View.VISIBLE);
@@ -355,53 +394,45 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		@Override
 		public void onReceiveLocation(BDLocation location) {
 			if (location == null)
-		            return ;
-			StringBuffer sb = new StringBuffer(256);
-			sb.append("time : ");
-			sb.append(location.getTime());
-			sb.append("\nerror code : ");
-			sb.append(location.getLocType());
-			sb.append("\nlatitude : ");
-			sb.append(location.getLatitude());
-			sb.append("\nlontitude : ");
-			sb.append(location.getLongitude());
-			sb.append("\nradius : ");
-			sb.append(location.getRadius());
-			if (location.getLocType() == BDLocation.TypeGpsLocation){
-				sb.append("\nspeed : ");
-				sb.append(location.getSpeed());
-				sb.append("\nsatellite : ");
-				sb.append(location.getSatelliteNumber());
-			} else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
-				sb.append("\naddr : ");
-				sb.append(location.getAddrStr());
-			} 
-			
-			//addMapMark(location.getLongitude(), location.getLatitude());
+		        return ;
 			if(mBaiduMapView.getParent() != null)
 			{
 				mBaiduMap.clear();	
 				locationAndAddMapMark(location);
 				if(mBaiduMapView.getParent() == game_transport_ll){
+					game_transport_current_point.setText(location.getLongitude() + "  " + location.getLatitude());
+					LatLng ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
+					LatLng ptE = new LatLng(location.getLatitude(), location.getLongitude());
+					game_transport_distance.setText(DistanceUtil.getDistance(ptB, ptE)+"");
 					addTrace(location);
+				}else if(letfly_locationing == true){
+					letfly_locationing = false;
+					letfly_location.setClickable(false);
+					game_letfly_longitude.setText(location.getLongitude()+"");
+					game_letfly_latitude.setText(location.getLatitude()+"");
+					game_letfly_time.setText(location.getTime());
+					LatLng ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
+					LatLng ptE = new LatLng(location.getLatitude(), location.getLongitude());
+					game_letfly_distance.setText(DistanceUtil.getDistance(ptB, ptE)+"");
+					stopGPSLocation();
+					startGPSLocation(60*1000);
+				}else{
+					
 				}
+			}else{
+				//location gather gps
+				if(gather_locationing == true){
+					gather_locationing = false;
+					gather_location.setClickable(true);
+					game_gather_latitude.setText(location.getLatitude()+"");
+					game_gather_longitude.setText(location.getLongitude()+"");
+				}
+				stopGPSLocation();
 			}
 		}
 	}
 	
-	public void addMapMark(double longitute, double latitude){
-		LatLng point = new LatLng(latitude, longitute);  
-		//����Markerͼ��  
-		BitmapDescriptor bitmap = BitmapDescriptorFactory  
-		    .fromResource(R.drawable.mark);  
-		//����MarkerOption�������ڵ�ͼ�����Marker  
-		OverlayOptions option = new MarkerOptions()  
-		    .position(point)  
-		    .icon(bitmap);  
-		//�ڵ�ͼ�����Marker������ʾ
-		mBaiduMap.clear();		  
-		//mBaiduMap.addOverlay(option);
-	}
+
 	
 	public void locationAndAddMapMark(BDLocation location){
 		// ������λͼ��  
@@ -440,10 +471,8 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		
 		LatLng ptCurrent = new LatLng(location.getLatitude(), location.getLongitude());
 		pts.add(ptCurrent);  
-		//�����û����ƶ���ε�Option����
 		PolylineOptions polylineOption = new PolylineOptions()
 				.points(pts).color(0xAAFF0000);
-		//�ڵ�ͼ����Ӷ����Option��������ʾ  
 		mBaiduMap.addOverlay(polylineOption);
 	}
 	
@@ -510,30 +539,66 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			startActivity(intentTrace);
 			break;
 		case R.id.game_info_camera:
-		case R.id.game_transport_camera:
 			Intent intentNormalCamera= new Intent(getActivity(), CameraActivity.class);
 			intentNormalCamera.putExtra(Const.CAMERA_STYLE, Const.NORMAL);
+			intentNormalCamera.putExtra(Const.GAME_STATUS, "1");
+			intentNormalCamera.putExtra(Const.GAME_ID, currentGame.getId());
 			startActivity(intentNormalCamera);
+			break;
+		case R.id.game_transport_camera:
+			Intent intentNormalCameraT= new Intent(getActivity(), CameraActivity.class);
+			intentNormalCameraT.putExtra(Const.CAMERA_STYLE, Const.NORMAL);
+			intentNormalCameraT.putExtra(Const.GAME_STATUS, "2");
+			intentNormalCameraT.putExtra(Const.GAME_ID, currentGame.getId());
+			startActivity(intentNormalCameraT);
 			break;
 		case R.id.game_letfly_camera:
 			Intent intentLetflyCamera= new Intent(getActivity(), CameraActivity.class);
 			intentLetflyCamera.putExtra(Const.CAMERA_STYLE, Const.CONTINUE_CAMERA);
+			intentLetflyCamera.putExtra(Const.GAME_STATUS, "3");
+			intentLetflyCamera.putExtra(Const.GAME_ID, currentGame.getId());
 			startActivity(intentLetflyCamera);
 			break;
 		case R.id.game_gather_update_btn:
 			attempUpdateGatherInfo();
 			break;
 		case R.id.game_gather_image_upload:
-		case R.id.game_transport_image_upload:
-		case R.id.game_letfly_image_upload:
 			Intent intentUpload= new Intent(getActivity(), UploadImagesActivity.class);
-			intentUpload.putExtra(Const.CAMERA_STYLE, Const.CONTINUE_CAMERA);
+			intentUpload.putExtra(Const.GAME_ID, currentGame.getId());
+			intentUpload.putExtra(Const.GAME_STATUS, "1");
 			startActivity(intentUpload);
+			break;
+		case R.id.game_transport_image_upload:
+			Intent intentTransport= new Intent(getActivity(), UploadImagesActivity.class);
+			intentTransport.putExtra(Const.GAME_ID, currentGame.getId());
+			intentTransport.putExtra(Const.GAME_STATUS, "2");
+			startActivity(intentTransport);
+			break;
+		case R.id.game_letfly_image_upload:
+			Intent intentLetfly= new Intent(getActivity(), UploadImagesActivity.class);
+			intentLetfly.putExtra(Const.GAME_ID, currentGame.getId());
+			intentLetfly.putExtra(Const.GAME_STATUS, "3");
+			startActivity(intentLetfly);
 			break;
 		case R.id.game_transport_action_begin:
 			new beginTransportTask().execute(currentGame);
 			break;
-			
+		case R.id.game_transport_action_end:
+			Intent intent = new Intent(getActivity().getApplicationContext(), GameTransportService.class);
+			getActivity().getApplicationContext().stopService(intent);
+			break;
+		case R.id.gather_location:
+			gather_locationing = true;
+			startGPSLocation(1000);
+			gather_location.setClickable(false);
+			break;
+		case R.id.letfly_location:
+			letfly_locationing = true;
+			startGPSLocation(1000);
+			letfly_location.setClickable(false);
+			break;
+		
+		
 		default:
 			break;
 		}
@@ -547,6 +612,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		updatedData.put(Const.GAME_INFO, game_gather_memo.getText().toString());
 		updatedData.put(Const.GAME_JGLATITUDE, game_gather_latitude.getText().toString());
 		updatedData.put(Const.GAME_JGLONGITUDE, game_gather_longitude.getText().toString());
+		updatedData.put(Const.GAME_STATUS, currentGame.getStatus());
 		
 		progressDialog.show();
 		new updateGatherInfoTask().execute(updatedData);
@@ -583,7 +649,6 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			progressDialog.dismiss();
 		}
 	}
-	
 	
 	
 	public class beginTransportTask extends AsyncTask<Game, Void, Boolean> {

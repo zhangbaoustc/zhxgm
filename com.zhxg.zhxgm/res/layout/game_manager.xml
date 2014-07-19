@@ -222,7 +222,7 @@
 			        android:layout_height="wrap_content"
 			        android:text="@string/game_info_longitude"/>
 			    
-			    <TextView android:id="@+id/game_gather_longitude"
+			    <EditText android:id="@+id/game_gather_longitude"
 			        android:layout_width="80dp"
 			        android:layout_height="wrap_content"/>
 			    
@@ -231,11 +231,14 @@
 			        android:layout_height="wrap_content"
 			        android:text="@string/game_info_latitude"/>
 			    
-			    <TextView 
+			    <EditText 
 			        android:id="@+id/game_gather_latitude"
 			        android:layout_width="80dp"
 			        android:layout_height="wrap_content"/>
-			    <TextView android:layout_weight="2"
+			    
+			    <TextView
+			        android:id="@+id/gather_location" 
+			        android:layout_weight="2"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:drawableLeft="@drawable/mark"
@@ -493,6 +496,20 @@
 			    >
 			    <TextView android:layout_width="70dp"
 			        android:layout_height="wrap_content"
+			        android:text="@string/game_letfly_place"/>
+			    
+			    <EditText android:id="@+id/game_letfly_place"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"/>
+			</LinearLayout>
+			
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    >
+			    <TextView android:layout_width="70dp"
+			        android:layout_height="wrap_content"
 			        android:text="@string/game_letfly_latitude"/>
 			    
 			    <TextView android:id="@+id/game_letfly_longitude"
@@ -508,7 +525,9 @@
 			        android:id="@+id/game_letfly_latitude"
 			        android:layout_width="80dp"
 			        android:layout_height="wrap_content"/>
-			    <TextView android:layout_weight="2"
+			    <TextView
+			        android:id="@+id/letfly_location"			        
+			        android:layout_weight="2"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:drawableLeft="@drawable/mark"

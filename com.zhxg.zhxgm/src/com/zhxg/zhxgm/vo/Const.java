@@ -42,5 +42,5 @@ public class Const {
 	public static final String GAME_INFO = "info";
 	
 	
-	
+	public static final String TAG = "zhxg";
 }

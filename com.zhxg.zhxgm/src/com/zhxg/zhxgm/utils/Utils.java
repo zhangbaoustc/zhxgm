@@ -1,12 +1,16 @@
 package com.zhxg.zhxgm.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import com.zhxg.zhxgm.R;
-import com.zhxg.zhxgm.vo.Const;
+import java.util.Calendar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.zhxg.zhxgm.R;
+import com.zhxg.zhxgm.vo.Const;
 
 public class Utils {
 
@@ -31,6 +35,17 @@ public class Utils {
 			}
 		}
 		return result;
+	}
+	
+	public static String getUTCTime(String time,String formatStr){
+		Calendar c = Calendar.getInstance();
+		SimpleDateFormat format = new SimpleDateFormat(formatStr);
+		try {
+			c.setTime(format.parse(time));
+		} catch (ParseException e) {
+			Log.i(Const.TAG, "getUTCTime format error");
+		}
+		return c.getTimeInMillis()+""; 
 	}
 	
 	//get game garget id from game type
