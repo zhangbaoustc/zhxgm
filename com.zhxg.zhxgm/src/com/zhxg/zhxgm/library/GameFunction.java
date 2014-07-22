@@ -28,12 +28,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.widget.RadioGroup;
 
 import com.baidu.location.BDLocation;
+import com.zhxg.zhxgm.CameraActivity;
+import com.zhxg.zhxgm.utils.GpsUtils;
+import com.zhxg.zhxgm.utils.ImageUtils;
+import com.zhxg.zhxgm.utils.Utils;
 import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Game;
 import com.zhxg.zhxgm.vo.Trace;
@@ -47,6 +52,7 @@ public class GameFunction {
 	private static String transportHistoryUrl = "http://app.zhxg.com/index.php?arg=gpslist&bsid=";
 	private static String transportInsertUrl = "http://app.zhxg.com/index.php?arg=gpsadd";
 	private static String imageUploadUrl = "http://app.zhxg.com/index.php?arg=img";
+	private Iterator<Entry<String, String>> iter;
 	
 	public GameFunction(){
 		jsonParser = new JSONParser();
@@ -113,13 +119,11 @@ public class GameFunction {
 	
 	public JSONObject updateGatherInfo(HashMap<String, String> data){
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("id", data.get(Const.GAME_ID)));
-		params.add(new BasicNameValuePair("ji_wd", data.get(Const.GAME_JGLATITUDE))); 
-		params.add(new BasicNameValuePair("ji_jd", data.get(Const.GAME_JGLONGITUDE)));
-		params.add(new BasicNameValuePair("total", data.get(Const.GAME_TOTAL)));
-		params.add(new BasicNameValuePair("info", data.get(Const.GAME_INFO)));
-		if(data.get(Const.GAME_STATUS).equals(Const.STATUS_PREPARING+"")){
-			params.add(new BasicNameValuePair("status", Const.STATUS_STARTED+""));
+		
+		iter = data.entrySet().iterator();
+		while(iter.hasNext()){
+			Map.Entry entry = (Map.Entry) iter.next(); 
+			params.add(new BasicNameValuePair(entry.getKey().toString(),entry.getValue().toString()));
 		}
 		
 		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
@@ -127,6 +131,24 @@ public class GameFunction {
 	}
 	
 	public JSONObject beginTransport(Game game){
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("id", game.getId()));		
+		params.add(new BasicNameValuePair("status", Integer.parseInt(game.getStatus()) + 1 + ""));
+		
+		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
+		return jObj;
+	}
+	
+	public JSONObject stopTransport(Game game){
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("id", game.getId()));		
+		params.add(new BasicNameValuePair("status", Integer.parseInt(game.getStatus()) + 1 + ""));
+		
+		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
+		return jObj;
+	}
+	
+	public JSONObject letflyDone(Game game){
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("id", game.getId()));		
 		params.add(new BasicNameValuePair("status", Integer.parseInt(game.getStatus()) + 1 + ""));
@@ -215,15 +237,26 @@ public class GameFunction {
 			for ( String name : files){
 				File file = new File(name);
 				String[] image_info = file.getName().replace(".jpg", "").split("_");
+				//new ImageUtils().addWatermark(name,image_info[2],GpsUtils.DDDToDMS(image_info[0]),GpsUtils.DDDToDMS(image_info[1]));
 				
 				ExifInterface exifInterface = new ExifInterface(name);
 				reqEntity.addPart("set["+i+ "][ydot]" ,new StringBody(image_info[0]));
 				reqEntity.addPart("set["+i+ "][xdot]" ,new StringBody(image_info[1]));
 				reqEntity.addPart("set["+i+ "][pubdate]" ,new StringBody(image_info[2]));
 				reqEntity.addPart("set["+i+ "][status]" ,new StringBody(image_info[3]));
-				Bitmap bitmap = BitmapFactory.decodeFile(name);
+				
+				String markTime = Utils.getTimeFromUTC(image_info[2], "yyyy-MM-dd HH:mm:ss");
+				String markGPS = GpsUtils.DDDToDMS(image_info[0]) + "  " + GpsUtils.DDDToDMS(image_info[1]);
+				
+				BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+				Bitmap bitmap = BitmapFactory.decodeFile(name,options);
+				
+				
+				bitmap = ImageUtils.mark(bitmap, markGPS,markTime,255, 204, 15, false);
+				
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				bitmap.compress(CompressFormat.JPEG, 25, bos);
+				bitmap.compress(CompressFormat.JPEG, 100, bos);
 				byte[] data = bos.toByteArray();
 				ByteArrayBody bab = new ByteArrayBody(data, Math.floor(Math.random() * 11)+".jpg");
 				reqEntity.addPart("set["+i+ "][img]" ,bab);
@@ -272,14 +305,16 @@ public class GameFunction {
 			}
 			
 			int i = 0;
-			for ( String name : files){
-				Bitmap bitmap = BitmapFactory.decodeFile(name);
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				bitmap.compress(CompressFormat.JPEG, 25, bos);
-				byte[] data = bos.toByteArray();
-				ByteArrayBody bab = new ByteArrayBody(data, Math.floor(Math.random() * 11)+".jpg");
-				reqEntity.addPart("imgs["+i+"]", bab);
-				i++;
+			if(files != null){
+				for ( String name : files){
+					Bitmap bitmap = BitmapFactory.decodeFile(name);
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					bitmap.compress(CompressFormat.JPEG, 25, bos);
+					byte[] data = bos.toByteArray();
+					ByteArrayBody bab = new ByteArrayBody(data, Math.floor(Math.random() * 11)+".jpg");
+					reqEntity.addPart("imgs["+i+"]", bab);
+					i++;
+				}
 			}
 			
 			

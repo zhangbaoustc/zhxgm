@@ -17,16 +17,15 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -92,6 +91,7 @@ public class TraceMarkActivity extends Activity {
 		imageLoader = ImageLoader.getInstance();
 		imageLoader.init(config);
 	}
+
 	
 	private void init_layout() {
 
@@ -206,7 +206,6 @@ public class TraceMarkActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			dialog = ProgressDialog.show(TraceMarkActivity.this, "", getString(R.string.trace_uploading), true);
 		}
 		
 		@SuppressWarnings("deprecation")
@@ -242,7 +241,6 @@ public class TraceMarkActivity extends Activity {
 			data.clear();
 			data.addAll(tempTrace);
 			hisAdapter.notifyDataSetChanged();
-			dialog.dismiss(); 
 			setListViewHeightBasedOnChildren(trace_history);
 		}
 		

@@ -8,7 +8,6 @@ import android.view.Menu;
 import com.baidu.mapapi.SDKInitializer;
 import com.zhxg.zhxgm.fragment.GeneralFragment;
 import com.zhxg.zhxgm.fragment.MainNavFragment.Callbacks;
-import com.zhxg.zhxgm.utils.Utils;
 
 public class MainActivity extends BaseActivity implements Callbacks{
 
@@ -18,7 +17,6 @@ public class MainActivity extends BaseActivity implements Callbacks{
 		super.onCreate(savedInstanceState);
 		SDKInitializer.initialize(getApplicationContext());
 		setContentView(R.layout.activity_main);		
-		onItemSelected(R.id.fragment_bottom_game_man);
 
 	}
 

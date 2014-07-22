@@ -25,9 +25,9 @@ public class GpsUtils {
 	public static final boolean isOPen(final Context context) {  
         LocationManager locationManager   
                                  = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);  
-        // Í¨¹ýGPSÎÀÐÇ¶¨Î»£¬¶¨Î»¼¶±ð¿ÉÒÔ¾«È·µ½½Ö£¨Í¨¹ý24¿ÅÎÀÐÇ¶¨Î»£¬ÔÚÊÒÍâºÍ¿Õ¿õµÄµØ·½¶¨Î»×¼È·¡¢ËÙ¶È¿ì£©  
+        // Í¨ï¿½ï¿½GPSï¿½ï¿½ï¿½Ç¶ï¿½Î»ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¾ï¿½È·ï¿½ï¿½ï¿½Ö£ï¿½Í¨ï¿½ï¿½24ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¿Õ¿ï¿½ï¿½ÄµØ·ï¿½ï¿½ï¿½Î»×¼È·ï¿½ï¿½ï¿½Ù¶È¿ì£©  
         boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);  
-        // Í¨¹ýWLAN»òÒÆ¶¯ÍøÂç(3G/2G)È·¶¨µÄÎ»ÖÃ£¨Ò²³Æ×÷AGPS£¬¸¨ÖúGPS¶¨Î»¡£Ö÷ÒªÓÃÓÚÔÚÊÒÄÚ»òÕÚ¸ÇÎï£¨½¨ÖþÈº»òÃ¯ÃÜµÄÉîÁÖµÈ£©ÃÜ¼¯µÄµØ·½¶¨Î»£©  
+        // Í¨ï¿½ï¿½WLANï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½(3G/2G)È·ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½Ò²ï¿½ï¿½ï¿½ï¿½AGPSï¿½ï¿½ï¿½ï¿½ï¿½ï¿½GPSï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½Ú¸ï¿½ï¿½ï£¨ï¿½ï¿½ï¿½ï¿½Èºï¿½ï¿½Ã¯ï¿½Üµï¿½ï¿½ï¿½ï¿½ÖµÈ£ï¿½ï¿½Ü¼ï¿½ï¿½ÄµØ·ï¿½ï¿½ï¿½Î»ï¿½ï¿½  
         boolean network = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); 
         if(network){
         	Toast.makeText(context, "network open", Toast.LENGTH_LONG).show();
@@ -53,6 +53,53 @@ public class GpsUtils {
 	        mContext.sendBroadcast(poke);
 	    }
 	}
+	
+	
+	//gps format convert
+	public static String DDDToDMS(String ddd){
+		if(isDDD(ddd)){
+			String[] dmsArr = ddd.split("\\.");
+			String d1 = dmsArr[0];
+			String d2 = (Float.parseFloat("0."+dmsArr[1])*60 + "").split("\\.")[0];
+			String d3 = (int)Math.floor((Float.parseFloat("0."+(Float.parseFloat("0."+dmsArr[1])*60 + "").split("\\.")[1])*60))+"";
+			return d1 + "."+d2+d3;
+		}else{
+			return "";
+		}
+	}
+	
+	public static String DMSToDDD(String ddd){
+		if(isDMS(ddd)){
+			String[] dmsArr = ddd.split("\\.");
+			int d1 = Integer.parseInt(dmsArr[0]);
+			float d2 = Float.parseFloat(dmsArr[1].substring(0, 2))/60;
+			float d3 = Float.parseFloat(dmsArr[1].substring(2, 4))/3600;
+			return d1 + d2 + d3 + "";
+		}else{
+			return "";
+		}
+	}
+	
+	public static boolean isDDD(String ddd){
+		try{
+			Float.parseFloat(ddd);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
+	public static boolean isDMS(String dms){
+		try{
+			Float.parseFloat(dms);
+			if(dms.split("\\.")[1].length()==4){
+				return true;
+			}
+		}catch(Exception e){
+			
+		}
+		return false;
+	}
+	
 	
 	
 	public static final void openGPSSetting(Context context){
@@ -89,17 +136,17 @@ public class GpsUtils {
 		if (loc != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 			String date = sdf.format(new Date(loc.getTime()));
-			//return "¾­¶È:" + loc.getLatitude() + " " + "Î¬¶È:" + loc.getLongitude() + " " + "\n" +  "Ê±¼ä:" + date;
-			return "Ê±¼ä:" + date;    
+			//return "ï¿½ï¿½ï¿½ï¿½:" + loc.getLatitude() + " " + "Î¬ï¿½ï¿½:" + loc.getLongitude() + " " + "\n" +  "Ê±ï¿½ï¿½:" + date;
+			return "Ê±ï¿½ï¿½:" + date;    
 		}else{
 			loc = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if(loc != null){
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				String date = sdf.format(new Date(loc.getTime()));
-				//return "¾­¶È:" + loc.getLatitude() + " " + "Î¬¶È:" + loc.getLongitude() + " " + "\n" +  "Ê±¼ä:" + date;
-				return "Ê±¼ä:" + date;    
+				//return "ï¿½ï¿½ï¿½ï¿½:" + loc.getLatitude() + " " + "Î¬ï¿½ï¿½:" + loc.getLongitude() + " " + "\n" +  "Ê±ï¿½ï¿½:" + date;
+				return "Ê±ï¿½ï¿½:" + date;    
 			}else{
-				return "»ñÈ¡µØÀíÎ»ÖÃÊ§°Ü!";
+				return "ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Ê§ï¿½ï¿½!";
 			}
 		}
 		
@@ -118,7 +165,7 @@ public class GpsUtils {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 			String date = sdf.format(new Date(loc.getTime()));
 			Log.i("dd", date);
-			//return "¾­¶È:" + loc.getLatitude() + " " + "Î¬¶È:" + loc.getLongitude() + " " + "\n" +  "Ê±¼ä:" + date;
+			//return "ï¿½ï¿½ï¿½ï¿½:" + loc.getLatitude() + " " + "Î¬ï¿½ï¿½:" + loc.getLongitude() + " " + "\n" +  "Ê±ï¿½ï¿½:" + date;
 			Toast.makeText(mContext, "onLocationChanged" + loc.getLongitude(), Toast.LENGTH_LONG).show();
 		}
 

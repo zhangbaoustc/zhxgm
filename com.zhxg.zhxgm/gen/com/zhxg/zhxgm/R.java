@@ -74,8 +74,8 @@ public final class R {
         public static final int top_bar=0x7f020015;
     }
     public static final class id {
-        public static final int action=0x7f0a006d;
-        public static final int action_settings=0x7f0a0072;
+        public static final int action=0x7f0a006e;
+        public static final int action_settings=0x7f0a0073;
         public static final int bmapView=0x7f0a0020;
         public static final int bottom_fragment=0x7f0a001f;
         public static final int btnGalleryOk=0x7f0a003a;
@@ -88,10 +88,10 @@ public final class R {
         public static final int comfirm_password=0x7f0a0022;
         public static final int date_picker=0x7f0a0035;
         public static final int date_title=0x7f0a0034;
-        public static final int fragment_bottom_game_man=0x7f0a0069;
-        public static final int fragment_bottom_more=0x7f0a006b;
-        public static final int fragment_bottom_news=0x7f0a0068;
-        public static final int fragment_bottom_notice=0x7f0a006a;
+        public static final int fragment_bottom_game_man=0x7f0a006a;
+        public static final int fragment_bottom_more=0x7f0a006c;
+        public static final int fragment_bottom_news=0x7f0a0069;
+        public static final int fragment_bottom_notice=0x7f0a006b;
         public static final int frmQueue=0x7f0a003b;
         public static final int gameNameSpinner=0x7f0a0046;
         public static final int game_add=0x7f0a0044;
@@ -117,15 +117,16 @@ public final class R {
         public static final int game_info_camera=0x7f0a0051;
         public static final int game_info_ll=0x7f0a0048;
         public static final int game_info_trace=0x7f0a0049;
-        public static final int game_letfly_camera=0x7f0a0066;
-        public static final int game_letfly_distance=0x7f0a0065;
-        public static final int game_letfly_image_upload=0x7f0a0067;
-        public static final int game_letfly_latitude=0x7f0a0063;
+        public static final int game_letfly_camera=0x7f0a0067;
+        public static final int game_letfly_distance=0x7f0a0066;
+        public static final int game_letfly_done=0x7f0a005f;
+        public static final int game_letfly_image_upload=0x7f0a0068;
+        public static final int game_letfly_latitude=0x7f0a0064;
         public static final int game_letfly_ll=0x7f0a005d;
-        public static final int game_letfly_longitude=0x7f0a0062;
-        public static final int game_letfly_name=0x7f0a005f;
-        public static final int game_letfly_place=0x7f0a0061;
-        public static final int game_letfly_time=0x7f0a0060;
+        public static final int game_letfly_longitude=0x7f0a0063;
+        public static final int game_letfly_name=0x7f0a0060;
+        public static final int game_letfly_place=0x7f0a0062;
+        public static final int game_letfly_time=0x7f0a0061;
         public static final int game_letfly_trace=0x7f0a005e;
         public static final int game_mgr_ll=0x7f0a0043;
         public static final int game_name=0x7f0a0001;
@@ -152,7 +153,7 @@ public final class R {
         public static final int imgQueue=0x7f0a003c;
         public static final int imgQueueMultiSelected=0x7f0a003d;
         public static final int imgSinglePick=0x7f0a0012;
-        public static final int letfly_location=0x7f0a0064;
+        public static final int letfly_location=0x7f0a0065;
         public static final int llBottomContainer=0x7f0a0013;
         public static final int login=0x7f0a001c;
         public static final int login_form=0x7f0a0019;
@@ -169,9 +170,9 @@ public final class R {
         public static final int pageTransport=0x7f0a0041;
         public static final int password=0x7f0a001b;
         public static final int pbLarge=0x7f0a0025;
-        public static final int referee=0x7f0a006c;
+        public static final int referee=0x7f0a006d;
         public static final int referee_listview=0x7f0a0009;
-        public static final int register=0x7f0a0073;
+        public static final int register=0x7f0a0074;
         public static final int register_button=0x7f0a0023;
         public static final int scroll=0x7f0a0000;
         public static final int sign_in_button=0x7f0a001d;
@@ -180,12 +181,12 @@ public final class R {
         public static final int time_picker=0x7f0a0037;
         public static final int time_title=0x7f0a0036;
         public static final int trace_content=0x7f0a0026;
-        public static final int trace_his_content=0x7f0a0070;
-        public static final int trace_his_images=0x7f0a0071;
-        public static final int trace_his_user=0x7f0a006f;
+        public static final int trace_his_content=0x7f0a0071;
+        public static final int trace_his_images=0x7f0a0072;
+        public static final int trace_his_user=0x7f0a0070;
         public static final int trace_history=0x7f0a0029;
         public static final int trace_send=0x7f0a0028;
-        public static final int tvTitleText=0x7f0a006e;
+        public static final int tvTitleText=0x7f0a006f;
         public static final int typeLL=0x7f0a000f;
         public static final int uploadButton=0x7f0a0031;
         public static final int username=0x7f0a001a;
@@ -234,112 +235,119 @@ public final class R {
         public static final int upload_images=0x7f09000c;
     }
     public static final class string {
-        public static final int action_add=0x7f060036;
-        public static final int action_camera=0x7f060038;
-        public static final int action_confirm=0x7f060037;
-        public static final int action_game_info_camera=0x7f06002e;
-        public static final int action_game_info_image_upload=0x7f060034;
-        public static final int action_game_letfly_camera=0x7f060033;
-        public static final int action_game_transport_camera=0x7f060032;
+        public static final int action_add=0x7f060039;
+        public static final int action_camera=0x7f06003b;
+        public static final int action_confirm=0x7f06003a;
+        public static final int action_game_info_camera=0x7f060031;
+        public static final int action_game_info_image_upload=0x7f060037;
+        public static final int action_game_letfly_camera=0x7f060036;
+        public static final int action_game_transport_camera=0x7f060035;
+        public static final int action_letfly_done=0x7f060012;
         public static final int action_settings=0x7f060001;
-        public static final int action_sign_in_register=0x7f060057;
-        public static final int action_sign_in_short=0x7f060058;
-        public static final int action_transport_begin=0x7f06002f;
-        public static final int action_transport_complete=0x7f060031;
-        public static final int action_transport_end=0x7f060030;
-        public static final int action_update=0x7f060035;
-        public static final int add_error_from_server=0x7f060046;
-        public static final int add_game_loading=0x7f060048;
+        public static final int action_sign_in_register=0x7f06005c;
+        public static final int action_sign_in_short=0x7f06005d;
+        public static final int action_transport_begin=0x7f060032;
+        public static final int action_transport_complete=0x7f060034;
+        public static final int action_transport_end=0x7f060033;
+        public static final int action_update=0x7f060038;
+        public static final int add_error_from_server=0x7f06004a;
+        public static final int add_game_loading=0x7f06004c;
         public static final int app_name=0x7f060000;
-        public static final int begin_transport_error=0x7f06004f;
-        public static final int btn_ok=0x7f06003d;
-        public static final int btn_pick=0x7f06003e;
-        public static final int btn_pick_mul=0x7f06003f;
-        public static final int btn_upload=0x7f060040;
+        public static final int begin_transport_error=0x7f060053;
+        public static final int btn_ok=0x7f060040;
+        public static final int btn_pick=0x7f060041;
+        public static final int btn_pick_mul=0x7f060042;
+        public static final int btn_upload=0x7f060043;
         public static final int cancel=0x7f06000f;
         public static final int confirm=0x7f060010;
         public static final int confirm_quit_app=0x7f060011;
-        public static final int error_field_mobile_format=0x7f060060;
-        public static final int error_field_not_identical=0x7f060061;
-        public static final int error_field_required=0x7f06005e;
-        public static final int error_field_username_format=0x7f06005f;
-        public static final int error_incorrect_password=0x7f06005d;
-        public static final int error_invalid_email=0x7f06005b;
-        public static final int error_invalid_password=0x7f06005c;
-        public static final int game_add=0x7f060022;
-        public static final int game_add_select_fly_time_title=0x7f060044;
-        public static final int game_add_select_gather_time_title=0x7f060043;
-        public static final int game_bonus=0x7f06001c;
-        public static final int game_distance=0x7f06001b;
-        public static final int game_edit=0x7f060024;
-        public static final int game_fly_date=0x7f06001e;
-        public static final int game_fly_place=0x7f06001f;
-        public static final int game_gather=0x7f060013;
-        public static final int game_gather_date=0x7f06001d;
-        public static final int game_gather_place=0x7f060021;
-        public static final int game_info_latitude=0x7f060026;
-        public static final int game_info_longitude=0x7f060027;
-        public static final int game_info_memo=0x7f06002b;
-        public static final int game_letfly=0x7f060015;
-        public static final int game_letfly_latitude=0x7f060028;
-        public static final int game_letfly_longitude=0x7f060029;
-        public static final int game_letfly_place=0x7f06002d;
-        public static final int game_letfly_time=0x7f06002c;
-        public static final int game_loading=0x7f060017;
-        public static final int game_loading_error=0x7f060018;
-        public static final int game_mgr=0x7f060012;
+        /**  gather 
+         */
+        public static final int dms_gps_format_error=0x7f060046;
+        public static final int end_transport_error=0x7f060054;
+        public static final int error_field_mobile_format=0x7f060065;
+        public static final int error_field_not_identical=0x7f060066;
+        public static final int error_field_required=0x7f060063;
+        public static final int error_field_username_format=0x7f060064;
+        public static final int error_incorrect_password=0x7f060062;
+        public static final int error_invalid_email=0x7f060060;
+        public static final int error_invalid_password=0x7f060061;
+        public static final int game_add=0x7f060025;
+        public static final int game_add_select_fly_time_title=0x7f060048;
+        public static final int game_add_select_gather_time_title=0x7f060047;
+        public static final int game_bonus=0x7f06001f;
+        public static final int game_distance=0x7f06001e;
+        public static final int game_edit=0x7f060027;
+        public static final int game_fly_date=0x7f060021;
+        public static final int game_fly_place=0x7f060022;
+        public static final int game_gather=0x7f060014;
+        public static final int game_gather_date=0x7f060020;
+        public static final int game_gather_place=0x7f060024;
+        public static final int game_info_latitude=0x7f060029;
+        public static final int game_info_longitude=0x7f06002a;
+        public static final int game_info_memo=0x7f06002e;
+        public static final int game_letfly=0x7f060016;
+        public static final int game_letfly_latitude=0x7f06002b;
+        public static final int game_letfly_longitude=0x7f06002c;
+        public static final int game_letfly_place=0x7f060030;
+        public static final int game_letfly_time=0x7f06002f;
+        public static final int game_loading=0x7f060018;
+        public static final int game_loading_error=0x7f060019;
+        public static final int game_mgr=0x7f060013;
         /**  game detail 
          */
-        public static final int game_name=0x7f060019;
-        public static final int game_page_num=0x7f060025;
-        public static final int game_referee=0x7f060020;
-        public static final int game_trace=0x7f060023;
-        public static final int game_transport=0x7f060014;
-        public static final int game_transport_current_location=0x7f06003a;
-        public static final int game_transport_start_location=0x7f060039;
-        public static final int game_type=0x7f06001a;
+        public static final int game_name=0x7f06001c;
+        public static final int game_page_num=0x7f060028;
+        public static final int game_referee=0x7f060023;
+        public static final int game_trace=0x7f060026;
+        public static final int game_transport=0x7f060015;
+        public static final int game_transport_current_location=0x7f06003d;
+        public static final int game_transport_start_location=0x7f06003c;
+        public static final int game_type=0x7f06001d;
         public static final int games=0x7f06000c;
-        public static final int hello_world=0x7f06003c;
+        public static final int hello_world=0x7f06003f;
         public static final int home=0x7f06000a;
-        public static final int location=0x7f06002a;
+        public static final int letfly_done_error=0x7f06001a;
+        public static final int letfly_done_success=0x7f06001b;
+        public static final int location=0x7f06002d;
         public static final int login_loading=0x7f060004;
-        public static final int login_progress_signing_in=0x7f06005a;
+        public static final int login_progress_signing_in=0x7f06005f;
         public static final int more=0x7f060007;
         public static final int news=0x7f06000b;
         public static final int notice=0x7f060008;
         public static final int order=0x7f060009;
         public static final int pageHome=0x7f06000e;
-        public static final int prompt_comfirm_password=0x7f060056;
-        public static final int prompt_mobile=0x7f060054;
-        public static final int prompt_password=0x7f060055;
+        public static final int prompt_comfirm_password=0x7f06005b;
+        public static final int prompt_mobile=0x7f060059;
+        public static final int prompt_password=0x7f06005a;
         /**  Strings related to login 
          */
-        public static final int prompt_username=0x7f060053;
-        public static final int register=0x7f060059;
+        public static final int prompt_username=0x7f060058;
+        public static final int register=0x7f06005e;
         public static final int shop=0x7f06000d;
-        public static final int title_activity_add_game=0x7f060041;
+        public static final int title_activity_add_game=0x7f060044;
         public static final int title_activity_base=0x7f060006;
         public static final int title_activity_camera=0x7f060002;
-        public static final int title_activity_edit_game=0x7f060042;
-        public static final int title_activity_game_detail=0x7f060016;
-        public static final int title_activity_login=0x7f060052;
+        public static final int title_activity_edit_game=0x7f060045;
+        public static final int title_activity_game_detail=0x7f060017;
+        public static final int title_activity_login=0x7f060057;
         public static final int title_activity_map=0x7f060005;
         public static final int title_activity_start=0x7f060003;
-        public static final int title_activity_trace_mark=0x7f060045;
-        public static final int title_activity_update_game=0x7f06004d;
-        public static final int title_activity_upload_file=0x7f06003b;
-        public static final int title_activity_upload_images=0x7f06004c;
-        public static final int trace_publish=0x7f06004b;
+        public static final int title_activity_trace_mark=0x7f060049;
+        public static final int title_activity_update_game=0x7f060051;
+        public static final int title_activity_upload_file=0x7f06003e;
+        public static final int title_activity_upload_images=0x7f060050;
+        public static final int trace_publish=0x7f06004f;
         /**  trace 
          */
-        public static final int trace_title=0x7f060049;
-        public static final int trace_title_note=0x7f06004a;
-        public static final int trace_uploading=0x7f06004e;
-        public static final int update_gather_info_error=0x7f060047;
+        public static final int trace_title=0x7f06004d;
+        public static final int trace_title_note=0x7f06004e;
+        public static final int trace_uploading=0x7f060052;
+        public static final int update_gather_info_error=0x7f06004b;
         /**   upload  
          */
-        public static final int upload_images_error=0x7f060050;
-        public static final int upload_images_success=0x7f060051;
+        public static final int upload_images_error=0x7f060055;
+        public static final int upload_images_success=0x7f060056;
     }
     public static final class style {
         /** 
@@ -351,7 +359,6 @@ public final class R {
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
-
         
 
         Base application theme for API 11+. This theme completely replaces
@@ -369,12 +376,14 @@ public final class R {
         /**  Application theme. 
          */
         public static final int AppTheme=0x7f080001;
-        public static final int LoginFormContainer=0x7f080004;
-        public static final int MyActionBar=0x7f080002;
+        public static final int LoginFormContainer=0x7f080006;
+        public static final int MyActionBar=0x7f080004;
         /**  ActionBar title text 
          */
-        public static final int MyActionBarTitleText=0x7f080003;
-        public static final int btn=0x7f080005;
-        public static final int title_bar=0x7f080006;
+        public static final int MyActionBarTitleText=0x7f080005;
+        public static final int btn=0x7f080007;
+        public static final int myEditText=0x7f080003;
+        public static final int myTextviewStyle=0x7f080002;
+        public static final int title_bar=0x7f080008;
     }
 }

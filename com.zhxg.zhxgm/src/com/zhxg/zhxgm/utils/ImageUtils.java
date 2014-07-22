@@ -15,7 +15,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -27,20 +26,6 @@ public class ImageUtils {
 
 	public ImageUtils() {
 		super();		
-	}
-	
-	
-	public void addWatermark(Context context,String filePath,BDLocation mLocation){
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-		Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-		Point pointGPS = new Point(150, 180); 
-		
-		String markTime = mLocation.getTime();
-		String markGPS = mLocation.getLatitude() + " : " + mLocation.getLongitude();
-		
-		Bitmap afterMark = mark(bitmap, markGPS,markTime,pointGPS, 255, 1, 15, false);
-		BitmapTofile(afterMark,filePath);
 	}
 	
 	
@@ -61,7 +46,7 @@ public class ImageUtils {
 		
 	}
 	
-	public static Bitmap mark(Bitmap src, String watermarkGPS,String watermarkTime, Point location, int color, int alpha, int size, boolean underline) {
+	public static Bitmap mark(Bitmap src, String watermarkGPS,String watermarkTime, int color, int alpha, int size, boolean underline) {
 	    int w = src.getWidth();
 	    int h = src.getHeight();
 	    Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());
@@ -70,13 +55,21 @@ public class ImageUtils {
 	    canvas.drawBitmap(src, 0, 0, null);
 	 
 	    Paint paint = new Paint();
-	    paint.setColor(Color.RED);
-	    //paint.setAlpha(alpha);
-	    //paint.setTextSize(size);
+	    paint.setColor(Color.WHITE);
+	    paint.setTextSize(36);
+	    paint.setAlpha(alpha);
 	    paint.setAntiAlias(true);
 	    paint.setUnderlineText(underline);
-	    canvas.drawText(watermarkGPS, location.x, location.y, paint);
-	    canvas.drawText(watermarkTime, location.x, location.y + 20, paint);
+	    
+	    Paint paint1 = new Paint();
+	    paint1.setColor(Color.WHITE);
+	    paint1.setTextSize(24);
+	    paint1.setAlpha(alpha);
+	    paint1.setAntiAlias(true);
+	    paint1.setUnderlineText(underline);
+	    
+	    canvas.drawText(watermarkTime, 45, h - 60, paint);
+	    canvas.drawText(watermarkGPS, 45, h - 20, paint1);
 	 
 	    return result;
 	}

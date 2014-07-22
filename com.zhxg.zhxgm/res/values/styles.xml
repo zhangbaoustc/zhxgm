@@ -9,16 +9,45 @@
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        -->
+            backward-compatibility can go here.        -->
     </style>
 
+    
+
+    
+    
+    
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="android:textViewStyle">@style/myTextviewStyle</item>
+        <item name="android:editTextStyle">@style/myEditText</item>
     </style>
 
+     <style name="myTextviewStyle">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textSelectHandleLeft">?android:attr/textSelectHandleLeft</item>
+        <item name="android:textSelectHandleRight">?android:attr/textSelectHandleRight</item>
+        <item name="android:textSelectHandle">?android:attr/textSelectHandle</item>
+        <item name="android:textEditPasteWindowLayout">?android:attr/textEditPasteWindowLayout</item>
+        <item name="android:textEditNoPasteWindowLayout">?android:attr/textEditNoPasteWindowLayout</item>
+        <item name="android:textEditSidePasteWindowLayout">?android:attr/textEditSidePasteWindowLayout</item>
+        <item name="android:textEditSideNoPasteWindowLayout">?android:attr/textEditSideNoPasteWindowLayout</item>
+        <item name="android:textEditSuggestionItemLayout">?android:attr/textEditSuggestionItemLayout</item>
+        <item name="android:textCursorDrawable">?android:attr/textCursorDrawable</item>
+    </style>
+    
+     <style name="myEditText">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">?android:attr/editTextBackground</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmallInverse</item>
+        <item name="android:textColor">?android:attr/editTextColor</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    
     <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@drawable/my_title</item>
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>  
@@ -44,5 +73,7 @@
         <item name="android:textColor">#d9f3ff</item>
         <item name="android:textSize">22sp</item>
     </style>
+    
+
 
 </resources>

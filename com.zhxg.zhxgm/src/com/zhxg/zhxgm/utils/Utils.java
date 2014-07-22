@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -47,6 +48,14 @@ public class Utils {
 		}
 		return c.getTimeInMillis()+""; 
 	}
+	
+	public static String getTimeFromUTC(String time,String formatStr){
+		Date date = new Date(Long.parseLong(time));
+		SimpleDateFormat format = new SimpleDateFormat(formatStr);
+		
+		return format.format(date);	
+	}
+	 
 	
 	//get game garget id from game type
 	public static String getGameTargetIDByPosition(Context context,int position){

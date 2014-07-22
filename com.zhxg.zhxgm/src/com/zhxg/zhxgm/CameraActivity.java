@@ -9,11 +9,13 @@ import java.util.Date;
 
 import android.app.ActionBar;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.net.Uri;
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -83,7 +85,7 @@ public class CameraActivity extends BaseActivity {
 		
 		mHandler = new Handler();
 		mCamera = getCameraInstance();
-		mPreview = new CameraPreview(this, mCamera);
+		mPreview = new CameraPreview(this,mCamera);
 		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
 		preview.addView(mPreview);
 		
@@ -149,6 +151,7 @@ public class CameraActivity extends BaseActivity {
 		catch (Exception e){
 			
 		}
+	
 		return c;
 	}
 	
@@ -157,29 +160,59 @@ public class CameraActivity extends BaseActivity {
 		@Override
 	    public void onPictureTaken(byte[] data, Camera camera) {
 
-	        File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
-	        if (pictureFile == null){
-	            Log.d(CameraPreview.TAG, "Error creating media file, check storage permissions");
-	            return;
-	        }
+			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
 
-	        try {
-	            FileOutputStream fos = new FileOutputStream(pictureFile);
-	            fos.write(data);
-	            fos.close();
-	            ImageUtils imgUtils = new ImageUtils();		       
-	           
-	            imgUtils.addWatermark(CameraActivity.this,pictureFile.toString(),mLocation);
-		        imgUtils.addExif(pictureFile.toString(), mLocation);
-		        imgUtils.exportToGallery(CameraActivity.this, pictureFile.toString());
-	        } catch (FileNotFoundException e) {
-	            Log.d(CameraPreview.TAG, "File not found: " + e.getMessage());
-	        } catch (IOException e) {
-	            Log.d(CameraPreview.TAG, "Error accessing file: " + e.getMessage());
-	        }
+		    if (pictureFile.exists()) {
+		        pictureFile.delete();
+		    }
+
+		    try {
+		        FileOutputStream fos = new FileOutputStream(pictureFile);
+
+		        Bitmap realImage = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+		        ExifInterface exif=new ExifInterface(pictureFile.toString());
+
+		        Log.d("EXIF value", exif.getAttribute(ExifInterface.TAG_ORIENTATION));
+		        if(exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("6")){
+		            realImage= rotate(realImage, 90);
+		        } else if(exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("8")){
+		            realImage= rotate(realImage, 270);
+		        } else if(exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("3")){
+		            realImage= rotate(realImage, 180);
+		        } else if(exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("0")){
+		            realImage= rotate(realImage, 90);
+		        }
+
+		        boolean bo = realImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+		        fos.close();
+
+		       // ((ImageView) findViewById(R.id.imageview)).setImageBitmap(realImage);
+		        new ImageUtils().exportToGallery(CameraActivity.this, pictureFile.toString());
+		        Log.d("Info", bo + "");
+
+		    } catch (FileNotFoundException e) {
+		        Log.d("Info", "File not found: " + e.getMessage());
+		    } catch (IOException e) {
+		        Log.d("TAG", "Error accessing file: " + e.getMessage());
+		    }
 	    }
 	};
 
+	
+	public static Bitmap rotate(Bitmap bitmap, int degree) {
+		    int w = bitmap.getWidth();
+		    int h = bitmap.getHeight();
+
+		    Matrix mtx = new Matrix();
+		   //       mtx.postRotate(degree);
+		    mtx.setRotate(degree);
+
+		    return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+		}
+
+	
 	/** Create a File for saving an image or video */
 	private File getOutputMediaFile(int type){
 	    // To be safe, you should check that the SDCard is mounted
@@ -204,6 +237,7 @@ public class CameraActivity extends BaseActivity {
 	    if (type == MEDIA_TYPE_IMAGE){
 	        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mLocation.getLatitude() + "_" + mLocation.getLongitude() + "_" +
 	        		Utils.getUTCTime(mLocation.getTime(), "yyyy-MM-dd HH:mm:ss") + "_" + status + "_" + bsid + ".jpg");
+	    	//mediaFile = new File(mediaStorageDir.getPath() + File.separator + timeStamp + ".jpg");
 	    } else if(type == MEDIA_TYPE_VIDEO) {
 	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
 	        "VID_"+ timeStamp + ".mp4");
@@ -236,6 +270,7 @@ public class CameraActivity extends BaseActivity {
 		
 	}
 
+	
 
 	@Override
 	protected void onDestroy() {

@@ -4,7 +4,7 @@
     <string name="app_name">中华信鸽</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_camera">比赛拍照</string>
-    <string name="title_activity_start">StartActivity</string>
+    <string name="title_activity_start">中华信鸽</string>
     <string name="login_loading">登录中&#8230;</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="title_activity_base">BaseActivity</string>
@@ -20,6 +20,7 @@
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
     <string name="confirm_quit_app">确认退出系统</string>
+    <string name="action_letfly_done">确认司放</string>
     
     <string name="game_mgr">比赛管理</string>
     <string name="game_gather">集鸽信息</string>
@@ -28,6 +29,8 @@
     <string name="title_activity_game_detail">比赛详情</string>
     <string name="game_loading">正在加载比赛&#8230;</string>
     <string name="game_loading_error">加载比赛失败</string>
+    <string name="letfly_done_error">确认司放失败</string>
+    <string name="letfly_done_success">确认司放成功</string>
 
     <!-- game detail -->
     <string name="game_name">比赛名称：</string>
@@ -73,6 +76,10 @@
     <string name="title_activity_add_game">添加比赛</string>
     <string name="title_activity_edit_game">编辑比赛</string>
 
+    
+    <!-- gather -->
+    <string name="dms_gps_format_error">经纬度格式不正确</string>
+    
     <!-- add game -->
     <string-array name="game_type_array">
         <item>协会比赛</item>
@@ -101,7 +108,8 @@
     <string name="title_activity_update_game">编辑比赛信息</string>
     <string name="trace_uploading">正在发表记录&#8230;</string>
     
-    <string name="begin_transport_error">开始运输失败，请联系系统管理员.</string>
+    <string name="begin_transport_error">开始运输失败.</string>
+    <string name="end_transport_error">结束运输失败.</string>
     
     <!--  upload  -->
     <string name="upload_images_error">上传照片出错，请重新上传.</string>

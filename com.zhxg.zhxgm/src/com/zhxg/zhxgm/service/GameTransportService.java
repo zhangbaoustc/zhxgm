@@ -25,6 +25,7 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
 import com.zhxg.zhxgm.control.SqliteController;
 import com.zhxg.zhxgm.library.GameFunction;
+import com.zhxg.zhxgm.utils.GpsUtils;
 import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Trace;
 
@@ -208,8 +209,8 @@ public class GameTransportService extends Service {
 		SimpleDateFormat  format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		locationMap = new HashMap<String, String>();
 		locationMap.put("bsid", bsid);
-		locationMap.put("xdot", location.getLongitude()+"");
-		locationMap.put("ydot", location.getLatitude()+"");
+		locationMap.put("xdot", GpsUtils.DDDToDMS(location.getLongitude()+""));
+		locationMap.put("ydot", GpsUtils.DDDToDMS(location.getLatitude()+""));
 		locationMap.put("to_server", "Y");
 		Calendar c = Calendar.getInstance();
 		try {

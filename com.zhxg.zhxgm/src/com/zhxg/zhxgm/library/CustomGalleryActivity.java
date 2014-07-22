@@ -220,12 +220,14 @@ public class CustomGalleryActivity extends Activity {
 					File file = new File(imagecursor.getString(dataColumnIndex));
 					String[] image_info = file.getName().replace(".jpg", "").split("_");
 
-					if(traceUpload){
-						galleryList.add(item);
-					}else{
-						if(image_info.length == 5){
-							if(image_info[3].equals(status) && image_info[4].equals(bsid)){
-								galleryList.add(item);
+					if(file.exists() && !file.isDirectory()){
+						if(traceUpload){
+							galleryList.add(item);
+						}else{
+							if(image_info.length == 5){
+								if(image_info[3].equals(status) && image_info[4].equals(bsid)){
+									galleryList.add(item);
+								}
 							}
 						}
 					}

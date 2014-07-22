@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.zhxg.zhxgm.MainActivity;
 import com.zhxg.zhxgm.R;
 /**
- * ¿ò¼ÜÀà£¬³éÏó¹«¹²·½·¨
+ * 
  * @author zb
  *
  */
@@ -18,9 +17,9 @@ public class GeneralFragment extends Fragment{
 	 * 
 	 */
 	
-	private int item; //ÓÃÓÚÇø·Öµ×²¿²Ëµ¥Ïî
-	protected static View main_title_RelativeLayout; //±êÌâÀ¸
-	protected final static String key = "Bundle";   //Ìø×ªÖµ´«µİkeyµÄÃû³Æ
+	private int item; 
+	protected static View main_title_RelativeLayout; 
+	protected final static String key = "Bundle";   
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,53 +31,38 @@ public class GeneralFragment extends Fragment{
 		}
 	}
 	
-	/**ÎªFragment¼ÓÔØ²¼¾ÖÊ±µ÷ÓÃ **/
+	/** Fragment**/
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_general, container, false);
 		GeneralFragment fragment = null;
 		switch(item) {
-		case R.id.fragment_bottom_news:  //³õÊ¼»¯Ö÷Ò³
-//			fragment = new OrderView();  //³õÊ¼»¯¶©µ¥
+		case R.id.fragment_bottom_news: 
 			break;
 		case R.id.fragment_bottom_game_man:
-			fragment = new GameManager();  //³õÊ¼»¯¶©µ¥
+			fragment = new GameManager(); 
 			 break;
 		case R.id.fragment_bottom_notice:
-//			fragment = new NoticeView();   //³õÊ¼»¯¹«¸æ
 			break;
 		case R.id.fragment_bottom_more:
-//			fragment = new MoreView();  //³õÊ¼»¯¸ü¶à
 			break;
 		default:
 			break;
 		}
 		if(fragment != null) {
-			//¸ü»»mainViewÖĞ¼äµÄÄÚÈİ£¨home,msg,at,more£©
 			getActivity().getFragmentManager().beginTransaction().replace(R.id.general_fragment, fragment).commit();
 		}
-		//main_title_RelativeLayout =  ((View) container.getParent()).findViewById(R.id.main_title_RelativeLayout);
-		//½«Éú³ÉµÄview·µ»Ø
 		return view;
 	}
 	
-	/**ÉèÖÃ±êÌâ**/
+	/**ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½**/
 	protected void setTitle(Object title) {
 		if(main_title_RelativeLayout != null) {
-			//±êÌâÀ¸ÖĞµÄÎÄ×Ö
-			//TextView mTvTitle = (TextView) main_title_RelativeLayout.findViewById(R.id.main_title_TextView);
-//			if(mTvTitle != null) {
-//				if(title instanceof Integer) {  //ÕûĞÍ
-//					mTvTitle.setText((Integer)title);
-//				} else { //×Ö·ûÀàĞÍ
-//					mTvTitle.setText((CharSequence)title);
-//				}
-//			}
 		}
 	}
 	
-	/**Ò³ÃæÌø×ªÖµ´«µİ**/
+	/**Ò³ï¿½ï¿½ï¿½ï¿½×ªÖµï¿½ï¿½ï¿½ï¿½**/
 	protected void setBundle(Object... objects) {
 		Bundle arguments = new Bundle();
 		arguments.putSerializable(key, objects);
@@ -86,7 +70,7 @@ public class GeneralFragment extends Fragment{
 		generalFragment.setArguments(arguments);
 	}
 	
-	/**»ñÈ¡Ëù´«µİµÄÖµ**/
+	/**ï¿½ï¿½È¡ï¿½ï¿½İµï¿½Öµ**/
 	protected Object[] getBundle() {
 		if(getArguments() != null) {
 			System.out.println("getBundle");
@@ -98,7 +82,7 @@ public class GeneralFragment extends Fragment{
 		return null;
 	}
 	
-	/**ÎŞ²ÎÒ³ÃæÌø×ª**/
+	/**ï¿½Ş²ï¿½Ò³ï¿½ï¿½ï¿½ï¿½×ª**/
 	protected void toIntent(GeneralFragment generalFragment) {
 		if(generalFragment != null) {
 			getActivity().getFragmentManager().beginTransaction().replace(R.id.general_fragment, generalFragment).commit();
