@@ -37,10 +37,11 @@ public class Const {
 	public static final String GAME_ID = "id";
 	public static final String GAME_STATUS = "status";
 	public static final String GAME_TOTAL = "total";
-	public static final String GAME_JGLATITUDE = "jgLatitude";
-	public static final String GAME_JGLONGITUDE = "jgLongitude";
+	public static final String GAME_JGLATITUDE = "ji_wd";
+	public static final String GAME_JGLONGITUDE = "ji_jd";
 	public static final String GAME_INFO = "info";
 	
+	public static final String IMAGE_INFO = "image_name";
 	
 	public static final String TAG = "zhxg";
 }

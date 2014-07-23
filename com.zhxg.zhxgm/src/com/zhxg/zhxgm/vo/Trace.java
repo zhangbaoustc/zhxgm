@@ -8,6 +8,7 @@ public class Trace {
 	
 	private String author;
 	private String content;
+	private String pubdate;
 	private String[] images;
 	
 	
@@ -22,6 +23,12 @@ public class Trace {
 	}
 	public void setContent(String content) {
 		this.content = content;
+	}
+	public String getPubdate() {
+		return pubdate;
+	}
+	public void setPubdate(String pubdate) {
+		this.pubdate = pubdate;
 	}
 	public String[] getImages() {
 		return images;

@@ -5,18 +5,25 @@ import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhxg.zhxgm.R;
+import com.zhxg.zhxgm.SingleImageShowActivity;
+import com.zhxg.zhxgm.library.ExpandableHeightGridView;
 import com.zhxg.zhxgm.utils.ImageUtils;
+import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Trace;
 
 public class TraceHistoryAdapter extends BaseAdapter {
@@ -57,17 +64,34 @@ public class TraceHistoryAdapter extends BaseAdapter {
 			holder = new ViewHolder();
 			convertView = LayoutInflater.from(mActivity).inflate(R.layout.trace_history_item, null);
 			holder.author = (TextView) convertView.findViewById(R.id.trace_his_user);
+			holder.pubdate = (TextView) convertView.findViewById(R.id.trace_his_pubdate);
 			holder.content = (TextView) convertView.findViewById(R.id.trace_his_content);
-			holder.images = (GridView) convertView.findViewById(R.id.trace_his_images);
+			holder.images = (ExpandableHeightGridView) convertView.findViewById(R.id.trace_his_images);
 			
 			convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
+		holder.images.setExpanded(true);
 		holder.author.setText(data.get(position).getAuthor());
+		holder.pubdate.setText(data.get(position).getPubdate());
 		holder.content.setText(data.get(position).getContent());
-		holder.images.setAdapter(new ImageAdapter(mActivity,data.get(position).getImages()));
+		
+		if(data.get(position).getImages() != null){
+			holder.images.setVisibility(View.VISIBLE);
+			holder.images.setAdapter(new ImageAdapter(mActivity,data.get(position).getImages()));
+			holder.images.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int idx, long arg3) {
+					Intent sivIntent = new Intent(mActivity, SingleImageShowActivity.class);
+					sivIntent.putExtra(Const.IMAGE_INFO, data.get(position).getImages()[idx]);
+					mActivity.startActivity(sivIntent);
+				}
+			});
+		}else{
+			holder.images.setVisibility(View.GONE);
+		}
 		
 		return convertView;
 	}
@@ -75,7 +99,8 @@ public class TraceHistoryAdapter extends BaseAdapter {
 	final class ViewHolder{
 		TextView author;
 		TextView content;
-		GridView images;
+		TextView pubdate;
+		ExpandableHeightGridView images;
 	}
 	
 	
@@ -127,7 +152,7 @@ public class TraceHistoryAdapter extends BaseAdapter {
 		@Override
 		protected Bitmap doInBackground(ImageValue... params) {
 			imageValue = params[0];
-			return ImageUtils.getBitmapFromURL(imageValue.url);
+			return ImageUtils.getBitmapFromURL(imageValue.url,8);
 		}
 
 		@Override

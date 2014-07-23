@@ -157,6 +157,10 @@
             android:name="com.zhxg.zhxgm.UpdateGameActivity"
             android:label="@string/title_activity_update_game" >
         </activity>
+        <activity
+            android:name="com.zhxg.zhxgm.SingleImageShowActivity"
+            android:label="@string/title_activity_single_image_show" >
+        </activity>
     </application>
 
 </manifest>

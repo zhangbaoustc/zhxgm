@@ -726,6 +726,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			if (success) {
 				new GameFunction().updateLocalGameData(data, updatedData);
 				setLayoutData(currentGame);
+				Toast.makeText(mActivity, R.string.update_gather_info_success, Toast.LENGTH_LONG).show();
 			}else{
 				Toast.makeText(mActivity, R.string.update_gather_info_error, Toast.LENGTH_LONG).show();
 			}

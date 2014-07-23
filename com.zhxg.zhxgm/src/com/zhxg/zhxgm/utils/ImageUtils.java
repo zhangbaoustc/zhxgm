@@ -1,5 +1,6 @@
 package com.zhxg.zhxgm.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,7 +95,7 @@ public class ImageUtils {
 		}
 	}
 	
-	 public static Bitmap getBitmapFromURL(String src) {
+	 public static Bitmap getBitmapFromURL(String src,int scale) {
 	        try {
 	            Log.e("src",src);
 	            URL url = new URL(src);
@@ -102,8 +103,10 @@ public class ImageUtils {
 	            connection.setDoInput(true);
 	            connection.connect();
 	            InputStream input = connection.getInputStream();
-	            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+	            Bitmap myBitmap = decodeBitmap(input,scale);
 	            Log.e("Bitmap","returned");
+	            input.close();
+	            connection.disconnect();
 	            return myBitmap;
 	        } catch (IOException e) {
 	            e.printStackTrace();
@@ -124,4 +127,43 @@ public class ImageUtils {
 	                Uri.parse("file://"+ filename)));
 	        return uri;
 	    }
+	 
+	 
+	 private static Bitmap decodeBitmap(InputStream is, int scale ) {
+			if (is == null) {
+				return null;
+			}
+			
+			try {
+				BitmapFactory.Options options = new BitmapFactory.Options();
+				//设置该属性可以不占用内存，并且能够得到bitmap的宽高等属性，此时得到的bitmap是空
+				options.inJustDecodeBounds = true;
+				byte[] data;
+				
+				data = inputStream2ByteArr(is);
+			
+				Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+				//设置计算得到的压缩比例
+				options.inSampleSize = scale;
+				//设置为false，确保可以得到bitmap != null
+				options.inJustDecodeBounds = false;
+				bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+				return bitmap;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	 
+	 private static byte[] inputStream2ByteArr(InputStream inputStream) throws IOException {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			byte[] buff = new byte[1024];
+			int len = 0;
+			while ( (len = inputStream.read(buff)) != -1) {
+				outputStream.write(buff, 0, len);
+			}
+			inputStream.close();
+			outputStream.close();
+			return outputStream.toByteArray();
+		}
 }

@@ -40,7 +40,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.zhxg.zhxgm.AddGameActivity.addGameTask;
 import com.zhxg.zhxgm.control.RefereeAdapter;
 import com.zhxg.zhxgm.control.RefereeAdapter.Callbacks;
 import com.zhxg.zhxgm.library.GameFunction;
@@ -144,6 +143,9 @@ public class UpdateGameActivity extends Activity implements OnTouchListener,Call
 		}
 		
 		data = new ArrayList<String>(Arrays.asList(mGame.getReferee().split(",")));
+		if(!mGame.getReferee().equals("")){
+			data.add("");
+		}
 		refereeAdapter = new RefereeAdapter(data, this);
 		referee_listview.setAdapter(refereeAdapter);
 		setListViewHeightBasedOnChildren(referee_listview);
@@ -166,9 +168,7 @@ public class UpdateGameActivity extends Activity implements OnTouchListener,Call
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Intent intent = new Intent(this, MainActivity.class);            
-	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-	        startActivity(intent);            
+			this.finish();
 	        return true;    
 		default:
 			return super.onOptionsItemSelected(item);
@@ -200,7 +200,7 @@ public class UpdateGameActivity extends Activity implements OnTouchListener,Call
 	        	date_title.setVisibility(View.VISIBLE);
 	        	time_title.setVisibility(View.VISIBLE);
 	        	builder.setTitle(getString(R.string.game_add_select_gather_time_title));  
-                builder.setPositiveButton("ȷ  ��", new DialogInterface.OnClickListener() {  
+                builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {  
   
                     @Override  
                     public void onClick(DialogInterface dialog, int which) {  
@@ -226,7 +226,7 @@ public class UpdateGameActivity extends Activity implements OnTouchListener,Call
 	        	date_title.setVisibility(View.GONE);
 	        	time_title.setVisibility(View.GONE);
 		        builder.setTitle(getString(R.string.game_add_select_fly_time_title));  
-	            builder.setPositiveButton("ȷ  ��", new DialogInterface.OnClickListener() {  
+	            builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {  
 	
 	                @Override  
 	                public void onClick(DialogInterface dialog, int which) {  

@@ -13,6 +13,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +29,8 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -35,15 +40,16 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.zhxg.zhxgm.control.TraceHistoryAdapter;
 import com.zhxg.zhxgm.library.Action;
 import com.zhxg.zhxgm.library.CustomGallery;
+import com.zhxg.zhxgm.library.ExpandableHeightGridView;
 import com.zhxg.zhxgm.library.GalleryAdapter;
 import com.zhxg.zhxgm.library.GameFunction;
 import com.zhxg.zhxgm.library.UserFunction;
 import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Trace;
 
-public class TraceMarkActivity extends Activity {
-
-	GridView gridGallery;
+public class TraceMarkActivity extends Activity implements Callback{
+ 
+	ExpandableHeightGridView gridGallery;
 	GalleryAdapter adapter;
 	
 	Button image_select;
@@ -53,18 +59,20 @@ public class TraceMarkActivity extends Activity {
 	String[] all_path;
 	EditText trace_content;
 	private String bsid;
+	private ProgressBar trace_loading;
 	
 	private ListView trace_history;
 	private TraceHistoryAdapter hisAdapter;
 	private ArrayList<Trace> data;
+	private Handler mHandler;
+	private static final int trace_message_success= 111;
+	private static final int trace_message_error= 123;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_trace_mark);
 		
-		
-		Bundle bundle = getIntent().getBundleExtra(Const.BSID);
 		if(getIntent() != null){
 			bsid = getIntent().getStringExtra(Const.BSID);
 		}
@@ -95,7 +103,8 @@ public class TraceMarkActivity extends Activity {
 	
 	private void init_layout() {
 
-		gridGallery = (GridView) findViewById(R.id.gridGallery);
+		gridGallery = (ExpandableHeightGridView) findViewById(R.id.gridGallery);
+		gridGallery.setExpanded(true);
 		gridGallery.setFastScrollEnabled(true);
 		adapter = new GalleryAdapter(getApplicationContext(), imageLoader);
 		adapter.setMultiplePick(false);
@@ -122,11 +131,13 @@ public class TraceMarkActivity extends Activity {
 			}
 		});
 		
+		trace_loading = (ProgressBar) findViewById(R.id.trace_loading);
 		trace_history = (ListView) findViewById(R.id.trace_history);
-
+		
 	}
 	
 	private void setData(){
+		mHandler = new Handler(this);
 		data = new ArrayList<Trace>();
 		hisAdapter = new TraceHistoryAdapter(data,this); 
 		trace_history.setAdapter(hisAdapter);
@@ -140,9 +151,12 @@ public class TraceMarkActivity extends Activity {
 		
 		if(TextUtils.isEmpty(trace_content.getText().toString())){
 			cancel = true;
+			trace_content.setError(getString(R.string.error_field_required));
+			return;
 		}
 		
-		new TraceMarkTask().execute(all_path);
+		new Thread(new SendTraceMark()).start();
+		//new TraceMarkTask().execute(all_path);
 	}
 	
 	@Override
@@ -166,6 +180,29 @@ public class TraceMarkActivity extends Activity {
 	}
 
 	
+	//
+	private class SendTraceMark implements Runnable{
+
+		@Override
+		public void run() {
+			Message msg = new Message();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("bsid", bsid);
+			map.put("info", trace_content.getText().toString());
+			map.put("userid", UserFunction.getUserInfo(TraceMarkActivity.this, Const.USER_ID));
+			Boolean result = new GameFunction().addTraceMark(map, all_path); 
+			if(result == true){
+				msg.what = trace_message_success;
+			}else{
+				msg.what = trace_message_error;
+			}
+			mHandler.sendMessage(msg);
+		}
+		
+	}
+	
+	
+	
 	class TraceMarkTask extends AsyncTask<String[], Integer, Boolean>{
 		
 		private ProgressDialog dialog = null;
@@ -173,13 +210,25 @@ public class TraceMarkActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			dialog = ProgressDialog.show(TraceMarkActivity.this, "", getString(R.string.trace_uploading), true);
+			dialog = new ProgressDialog(TraceMarkActivity.this); 
+			dialog.setMessage(getString(R.string.trace_uploading));
+			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			dialog.setCancelable(false);
+			dialog.show();
+
 		}
 		
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			super.onProgressUpdate(values);
+			dialog.setProgress(values[0]);
+
+		}
+
 		@SuppressWarnings("deprecation")
 		@Override
 		protected Boolean doInBackground(String[]... arg0) {
-			
+			Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("bsid", bsid);
 			map.put("info", trace_content.getText().toString());
@@ -192,6 +241,9 @@ public class TraceMarkActivity extends Activity {
 			super.onPostExecute(result);
 			if(result){
 				TraceMarkActivity.this.finish();
+				Toast.makeText(getApplicationContext(), getString(R.string.add_trace_success), Toast.LENGTH_LONG).show();
+			}else{
+				Toast.makeText(getApplicationContext(), getString(R.string.add_trace_error), Toast.LENGTH_LONG).show();
 			}
 			dialog.dismiss(); 
 		}
@@ -211,7 +263,7 @@ public class TraceMarkActivity extends Activity {
 		@SuppressWarnings("deprecation")
 		@Override
 		protected Boolean doInBackground(String... arg0) {
-			
+			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 			result = new GameFunction().getTraceHistry(arg0[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
@@ -231,6 +283,8 @@ public class TraceMarkActivity extends Activity {
 			if (success) {
 				try {
 					tempTrace = new GameFunction().traceConvert(result.getJSONArray("msg"));
+					trace_loading.setVisibility(View.GONE);
+					trace_history.setVisibility(View.VISIBLE);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -256,9 +310,7 @@ public class TraceMarkActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Intent intent = new Intent(this, MainActivity.class);            
-	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-	        startActivity(intent);            
+			this.finish();        
 	        return true;    
 		default:
 			return super.onOptionsItemSelected(item);
@@ -286,6 +338,23 @@ public class TraceMarkActivity extends Activity {
 	    params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
 	    listView.setLayoutParams(params);
 	    listView.requestLayout();
+	}
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		switch (msg.what) {
+		case trace_message_success:
+			this.finish();
+			Toast.makeText(getApplicationContext(), getString(R.string.add_trace_success), Toast.LENGTH_LONG).show();
+			break;
+
+		case trace_message_error:
+			Toast.makeText(getApplicationContext(), getString(R.string.add_trace_error), Toast.LENGTH_LONG).show();
+			break;
+		default:
+			break;
+		}
+		return false;
 	}
 
 }

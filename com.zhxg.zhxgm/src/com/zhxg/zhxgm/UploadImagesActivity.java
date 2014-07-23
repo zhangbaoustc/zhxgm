@@ -1,13 +1,34 @@
 package com.zhxg.zhxgm;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,8 +49,13 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.zhxg.zhxgm.library.Action;
 import com.zhxg.zhxgm.library.CustomGallery;
+import com.zhxg.zhxgm.library.CustomMultiPartEntity;
 import com.zhxg.zhxgm.library.GalleryAdapter;
 import com.zhxg.zhxgm.library.GameFunction;
+import com.zhxg.zhxgm.library.CustomMultiPartEntity.ProgressListener;
+import com.zhxg.zhxgm.utils.GpsUtils;
+import com.zhxg.zhxgm.utils.ImageUtils;
+import com.zhxg.zhxgm.utils.Utils;
 import com.zhxg.zhxgm.vo.Const;
 
 public class UploadImagesActivity extends Activity {
@@ -140,12 +166,22 @@ public class UploadImagesActivity extends Activity {
 	
 	
 	class FileuploadTask extends AsyncTask<String[], Integer, Boolean>{
+		long totalSize;
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			dialog.setProgress((int) (values[0]));
+		}
+		
 		
 		private ProgressDialog dialog = null;
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			dialog = ProgressDialog.show(UploadImagesActivity.this, "", "Uploading file...", true);
+			dialog = new ProgressDialog(UploadImagesActivity.this);
+			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			dialog.setMessage("Uploading Picture...");
+			dialog.setCancelable(false);
+			dialog.show();
 		}
 		
 		@SuppressWarnings("deprecation")
@@ -153,9 +189,79 @@ public class UploadImagesActivity extends Activity {
 		protected Boolean doInBackground(String[]... arg0) {
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("bsid", bsid);
-			//map.put("status", status);
+			String imageUploadUrl = "http://app.zhxg.com/index.php?arg=img";
+			boolean result = false;
+			 try {
+				 HttpClient httpClient = new DefaultHttpClient();
+				 HttpPost postRequest = new HttpPost(imageUploadUrl);
+				 
+				 //MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+				 CustomMultiPartEntity reqEntity = new CustomMultiPartEntity(HttpMultipartMode.BROWSER_COMPATIBLE,new ProgressListener()
+					{
+						@Override
+						public void transferred(long num)
+						{
+							publishProgress((int) ((num / (float) totalSize) * 100));
+						}
+					});
+				 
+				 
+				Iterator<Entry<String, String>> iter = map.entrySet().iterator();
+				while(iter.hasNext()){
+					Map.Entry entry = (Map.Entry) iter.next(); 
+					reqEntity.addPart(entry.getKey().toString(),new StringBody(entry.getValue().toString(),Charset.forName("UTF-8")));
+				}
+				
+				int i = 0;
+				for ( String name : arg0[0]){
+					File file = new File(name);
+					String[] image_info = file.getName().replace(".jpg", "").split("_");
+					//new ImageUtils().addWatermark(name,image_info[2],GpsUtils.DDDToDMS(image_info[0]),GpsUtils.DDDToDMS(image_info[1]));
+					
+					ExifInterface exifInterface = new ExifInterface(name);
+					reqEntity.addPart("set["+i+ "][ydot]" ,new StringBody(image_info[0]));
+					reqEntity.addPart("set["+i+ "][xdot]" ,new StringBody(image_info[1]));
+					reqEntity.addPart("set["+i+ "][pubdate]" ,new StringBody(image_info[2]));
+					reqEntity.addPart("set["+i+ "][status]" ,new StringBody(image_info[3]));
+					
+					String markTime = Utils.getTimeFromUTC(image_info[2], "yyyy-MM-dd HH:mm:ss");
+					String markGPS = GpsUtils.DDDToDMS(image_info[0]) + "  " + GpsUtils.DDDToDMS(image_info[1]);
+					
+					BitmapFactory.Options options = new BitmapFactory.Options();
+					options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+					Bitmap bitmap = BitmapFactory.decodeFile(name,options);
+					
+					
+					bitmap = ImageUtils.mark(bitmap, markGPS,markTime,255, 204, 15, false);
+					
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					bitmap.compress(CompressFormat.JPEG, 100, bos);
+					byte[] data = bos.toByteArray();
+					ByteArrayBody bab = new ByteArrayBody(data, Math.floor(Math.random() * 11)+".jpg");
+					reqEntity.addPart("set["+i+ "][img]" ,bab);
+					i++;
+				}
+				
+				 totalSize = reqEntity.getContentLength();
+				 postRequest.setEntity(reqEntity);       
+			     HttpResponse response = httpClient.execute(postRequest);
+			     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+			     String sResponse;
+			     StringBuilder s = new StringBuilder();
+			     while ((sResponse = reader.readLine()) != null) {
+			         s = s.append(sResponse);
+			     }
+				 JSONObject jObj = new JSONObject(s.toString());
+				 if("TRUE".equals(jObj.getString("flag").toUpperCase())){
+					 result = true;
+				 }else{
+					 result = false;
+				 }
+			 }catch(Exception es){
+				 result = false;
+			 }
 			
-			return new GameFunction().uploadImages( map, arg0[0]);
+			return result;
 		}
 		@Override
 		protected void onPostExecute(Boolean result) {
@@ -175,9 +281,7 @@ public class UploadImagesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Intent intent = new Intent(this, MainActivity.class);            
-	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-	        startActivity(intent);            
+			finish();           
 	        return true;    
 		default:
 			return super.onOptionsItemSelected(item);

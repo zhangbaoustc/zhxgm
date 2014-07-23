@@ -28,14 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.widget.RadioGroup;
 
 import com.baidu.location.BDLocation;
-import com.zhxg.zhxgm.CameraActivity;
+import com.zhxg.zhxgm.library.CustomMultiPartEntity.ProgressListener;
 import com.zhxg.zhxgm.utils.GpsUtils;
 import com.zhxg.zhxgm.utils.ImageUtils;
 import com.zhxg.zhxgm.utils.Utils;
@@ -201,8 +200,7 @@ public class GameFunction {
 	
 	
 	public JSONObject getTraceHistry(String bsid){
-		traceHistoryUrl = traceHistoryUrl + bsid;
-		JSONObject jObj = jsonParser.getJSONFromUrl(traceHistoryUrl,null, "GET");
+		JSONObject jObj = jsonParser.getJSONFromUrl(traceHistoryUrl + bsid,null, "GET");
 		return jObj;
 	}
 	
@@ -220,12 +218,21 @@ public class GameFunction {
 	
 	public boolean uploadImages(HashMap<String, String> info, String[] files){
 		boolean result = false;
-
+		final long totalSize;
 		 try {
 			 HttpClient httpClient = new DefaultHttpClient();
 			 HttpPost postRequest = new HttpPost(imageUploadUrl);
 			 
 			 MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+			 CustomMultiPartEntity multipartContent = new CustomMultiPartEntity(new ProgressListener()
+				{
+					@Override
+					public void transferred(long num)
+					{
+						//publishProgress((int) ((num / (float) totalSize) * 100));
+					}
+				});
+			 
 			 
 			Iterator<Entry<String, String>> iter = info.entrySet().iterator();
 			while(iter.hasNext()){
@@ -317,7 +324,6 @@ public class GameFunction {
 				}
 			}
 			
-			
 			 postRequest.setEntity(reqEntity);       
 		     HttpResponse response = httpClient.execute(postRequest);
 		     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
@@ -327,7 +333,7 @@ public class GameFunction {
 		         s = s.append(sResponse);
 		     }
 			 JSONObject jObj = new JSONObject(s.toString());
-			 if("TRUE".equals(jObj.getString("flag".toUpperCase()))){
+			 if("TRUE".equals(jObj.getString("flag").toUpperCase())){
 				 result = true;
 			 }else{
 				 result = false;
@@ -393,8 +399,12 @@ public class GameFunction {
 				JSONObject obj = arr.getJSONObject(i);				
 				trace.setAuthor(obj.getString("username").equals("null")?"":obj.getString("username"));
 				trace.setContent(obj.getString("info").equals("null")?"":obj.getString("info"));
-				String[] images = obj.getString("imgs").replace("\"", "").replace("[", "").replace("]", "").split(",");
-				trace.setImages(images);
+				trace.setPubdate(obj.getString("pubdate").equals("null")?"":Utils.getTimeFromUTC(obj.getString("pubdate"),"yyyy-MM-dd HH:mm"));
+				String imagesStr = obj.getString("imgs").replace("\"", "").replace("[", "").replace("]", "");
+				if(!"null".equals(imagesStr)){
+					String[] images = obj.getString("imgs").replace("\"", "").replace("[", "").replace("]", "").split(",");
+					trace.setImages(images);
+				}
 
 				data.add(trace);
 				

@@ -16,12 +16,10 @@
     <string name="games">比赛</string>
     <string name="shop">商城</string>
     <string name="pageHome">鸽舍</string>
-    
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
     <string name="confirm_quit_app">确认退出系统</string>
     <string name="action_letfly_done">确认司放</string>
-    
     <string name="game_mgr">比赛管理</string>
     <string name="game_gather">集鸽信息</string>
     <string name="game_transport">司放途中</string>
@@ -76,10 +74,12 @@
     <string name="title_activity_add_game">添加比赛</string>
     <string name="title_activity_edit_game">编辑比赛</string>
 
-    
+    <!-- edit game -->
+    <string name="add_referee_title">请输入裁判</string>
+
     <!-- gather -->
     <string name="dms_gps_format_error">经纬度格式不正确</string>
-    
+
     <!-- add game -->
     <string-array name="game_type_array">
         <item>协会比赛</item>
@@ -97,7 +97,8 @@
     <string name="game_add_select_fly_time_title">选择放飞日期</string>
     <string name="title_activity_trace_mark">TraceMarkActivity</string>
     <string name="add_error_from_server">添加比赛失败，请联系系统管理员.</string>
-    <string name="update_gather_info_error">修改集鸽西信息失败，请联系系统管理员.</string>
+    <string name="update_gather_info_error">集鸽信息确认失败，请联系系统管理员.</string>
+    <string name="update_gather_info_success">集鸽信息确认成功.</string>
     <string name="add_game_loading">正在添加新比赛&#8230;</string>
 
     <!-- trace -->
@@ -107,12 +108,16 @@
     <string name="title_activity_upload_images">上传图片</string>
     <string name="title_activity_update_game">编辑比赛信息</string>
     <string name="trace_uploading">正在发表记录&#8230;</string>
-    
+    <string name="trace_history_title">行程记录历史记录</string>
+    <string name="trace_history_loading">数据加载中&#8230;</string>
     <string name="begin_transport_error">开始运输失败.</string>
     <string name="end_transport_error">结束运输失败.</string>
-    
-    <!--  upload  -->
+    <string name="add_trace_success">添加行程记录成功</string>
+    <string name="add_trace_error">添加行程记录失败</string>
+
+    <!-- upload -->
     <string name="upload_images_error">上传照片出错，请重新上传.</string>
     <string name="upload_images_success">上传照片成功</string>
+    <string name="title_activity_single_image_show">SingleImageShowActivity</string>
 
 </resources>

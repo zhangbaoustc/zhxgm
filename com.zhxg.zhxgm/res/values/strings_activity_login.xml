@@ -14,7 +14,7 @@
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
+    <string name="error_field_required">该栏位不能为空</string>
     <string name="error_field_username_format">用户名格式不正确</string>
 	<string name="error_field_mobile_format">手机格式不正确</string>
 	<string name="error_field_not_identical">两次密码输入不一致</string>

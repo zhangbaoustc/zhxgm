@@ -21,4 +21,11 @@
 	    <color name="dialog_bg">#f0f0f0</color>
 	
 	    <drawable name="light_black_">#33000000</drawable>
+	    
+	    <color name="divider_color">#90909090</color>
+	    
+	    
+	    <!-- trace -->
+	    <color name="trace_his_name">#ff99CCCC</color>
+	    <color name="trace_his_time">#ff999999</color>
 </resources>

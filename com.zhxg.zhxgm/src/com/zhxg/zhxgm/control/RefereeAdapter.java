@@ -82,10 +82,10 @@ public class RefereeAdapter extends BaseAdapter {
 					
 					final EditText refereeV = new EditText(mActivity);
 					new AlertDialog.Builder(mActivity)
-							.setTitle("请输入")
+							.setTitle(mActivity.getString(R.string.add_referee_title))
 							.setIcon(android.R.drawable.ic_dialog_info)
 							.setView(refereeV)
-							.setPositiveButton("确定", new  DialogInterface.OnClickListener() {
+							.setPositiveButton(mActivity.getString(R.string.confirm), new  DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(DialogInterface arg0, int arg1) {
 											data.add(getCount()-1,refereeV.getText().toString());
@@ -93,7 +93,7 @@ public class RefereeAdapter extends BaseAdapter {
 											callback.onDataSetChanged();
 										}
 									} )
-									.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+									.setNegativeButton(mActivity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(DialogInterface arg0, int arg1) {
 											
