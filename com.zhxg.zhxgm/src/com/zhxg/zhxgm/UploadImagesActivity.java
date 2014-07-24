@@ -58,7 +58,7 @@ import com.zhxg.zhxgm.utils.ImageUtils;
 import com.zhxg.zhxgm.utils.Utils;
 import com.zhxg.zhxgm.vo.Const;
 
-public class UploadImagesActivity extends Activity {
+public class UploadImagesActivity extends BaseActivity {
 
 	GridView gridGallery;
 	Handler handler;
@@ -179,7 +179,7 @@ public class UploadImagesActivity extends Activity {
 			super.onPreExecute();
 			dialog = new ProgressDialog(UploadImagesActivity.this);
 			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			dialog.setMessage("Uploading Picture...");
+			dialog.setMessage(getString(R.string.upload_images_progreess));
 			dialog.setCancelable(false);
 			dialog.show();
 		}
@@ -268,9 +268,9 @@ public class UploadImagesActivity extends Activity {
 			super.onPostExecute(result);
 			if(result == true){
 				UploadImagesActivity.this.finish();
-				Toast.makeText(UploadImagesActivity.this, getString(R.string.upload_images_success), Toast.LENGTH_LONG);
+				Toast.makeText(getApplicationContext(), getString(R.string.upload_images_success), Toast.LENGTH_LONG);
 			}else{
-				Toast.makeText(UploadImagesActivity.this, getString(R.string.upload_images_error), Toast.LENGTH_LONG);
+				Toast.makeText(getApplicationContext(), getString(R.string.upload_images_error), Toast.LENGTH_LONG);
 			}
 			dialog.dismiss(); 
 		}
@@ -287,6 +287,12 @@ public class UploadImagesActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 		
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
 	}
 
 }

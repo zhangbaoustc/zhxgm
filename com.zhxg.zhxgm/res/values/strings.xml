@@ -118,6 +118,7 @@
     <!-- upload -->
     <string name="upload_images_error">上传照片出错，请重新上传.</string>
     <string name="upload_images_success">上传照片成功</string>
+    <string name="upload_images_progreess">上传进度</string>
     <string name="title_activity_single_image_show">SingleImageShowActivity</string>
 
 </resources>

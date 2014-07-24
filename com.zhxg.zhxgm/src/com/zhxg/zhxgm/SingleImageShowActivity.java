@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import com.zhxg.zhxgm.utils.ImageUtils;
 import com.zhxg.zhxgm.vo.Const;
 
-public class SingleImageShowActivity extends Activity {
+public class SingleImageShowActivity extends BaseActivity{
 
 	private ImageView iv;
 	private String imageUrl;
@@ -66,6 +66,14 @@ public class SingleImageShowActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.single_image_show, menu);
 		return true;
+	}
+
+
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
 	}
 
 	

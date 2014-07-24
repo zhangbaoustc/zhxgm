@@ -57,9 +57,21 @@ public class CustomMultiPartEntity extends MultipartEntity
  
 		public void write(byte[] b, int off, int len) throws IOException
 		{
-			out.write(b, off, len);
-			this.transferred += len;
+			int BUFFER_SIZE = 10000;
+			int chunkSize;
+			int currentOffset = 0;
+
+			while (len>currentOffset) {
+				chunkSize = len - currentOffset;
+				if (chunkSize > BUFFER_SIZE) {
+				chunkSize = BUFFER_SIZE;
+			}
+			out.write(b, currentOffset, chunkSize);
+			currentOffset += chunkSize;
+			this.transferred += chunkSize;
+			//Log.i("CustomOutputStream WRITE","" + off + "|" + len + "|" + len + "|" + currentOffset + "|" + chunkSize + "|" + this.transferred);
 			this.listener.transferred(this.transferred);
+			}
 		}
  
 		public void write(int b) throws IOException

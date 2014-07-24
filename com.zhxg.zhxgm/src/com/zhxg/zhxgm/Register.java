@@ -179,5 +179,11 @@ public class Register extends BaseActivity {
 		}
 		
 	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+	}
 	
 }

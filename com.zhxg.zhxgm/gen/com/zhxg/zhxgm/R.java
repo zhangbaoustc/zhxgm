@@ -261,8 +261,8 @@ public final class R {
         public static final int action_game_transport_camera=0x7f060035;
         public static final int action_letfly_done=0x7f060012;
         public static final int action_settings=0x7f060001;
-        public static final int action_sign_in_register=0x7f060063;
-        public static final int action_sign_in_short=0x7f060064;
+        public static final int action_sign_in_register=0x7f060064;
+        public static final int action_sign_in_short=0x7f060065;
         public static final int action_transport_begin=0x7f060032;
         public static final int action_transport_complete=0x7f060034;
         public static final int action_transport_end=0x7f060033;
@@ -287,13 +287,13 @@ public final class R {
          */
         public static final int dms_gps_format_error=0x7f060047;
         public static final int end_transport_error=0x7f060058;
-        public static final int error_field_mobile_format=0x7f06006c;
-        public static final int error_field_not_identical=0x7f06006d;
-        public static final int error_field_required=0x7f06006a;
-        public static final int error_field_username_format=0x7f06006b;
-        public static final int error_incorrect_password=0x7f060069;
-        public static final int error_invalid_email=0x7f060067;
-        public static final int error_invalid_password=0x7f060068;
+        public static final int error_field_mobile_format=0x7f06006d;
+        public static final int error_field_not_identical=0x7f06006e;
+        public static final int error_field_required=0x7f06006b;
+        public static final int error_field_username_format=0x7f06006c;
+        public static final int error_incorrect_password=0x7f06006a;
+        public static final int error_invalid_email=0x7f060068;
+        public static final int error_invalid_password=0x7f060069;
         public static final int game_add=0x7f060025;
         public static final int game_add_select_fly_time_title=0x7f060049;
         public static final int game_add_select_gather_time_title=0x7f060048;
@@ -333,28 +333,28 @@ public final class R {
         public static final int letfly_done_success=0x7f06001b;
         public static final int location=0x7f06002d;
         public static final int login_loading=0x7f060004;
-        public static final int login_progress_signing_in=0x7f060066;
+        public static final int login_progress_signing_in=0x7f060067;
         public static final int more=0x7f060007;
         public static final int news=0x7f06000b;
         public static final int notice=0x7f060008;
         public static final int order=0x7f060009;
         public static final int pageHome=0x7f06000e;
-        public static final int prompt_comfirm_password=0x7f060062;
-        public static final int prompt_mobile=0x7f060060;
-        public static final int prompt_password=0x7f060061;
+        public static final int prompt_comfirm_password=0x7f060063;
+        public static final int prompt_mobile=0x7f060061;
+        public static final int prompt_password=0x7f060062;
         /**  Strings related to login 
          */
-        public static final int prompt_username=0x7f06005f;
-        public static final int register=0x7f060065;
+        public static final int prompt_username=0x7f060060;
+        public static final int register=0x7f060066;
         public static final int shop=0x7f06000d;
         public static final int title_activity_add_game=0x7f060044;
         public static final int title_activity_base=0x7f060006;
         public static final int title_activity_camera=0x7f060002;
         public static final int title_activity_edit_game=0x7f060045;
         public static final int title_activity_game_detail=0x7f060017;
-        public static final int title_activity_login=0x7f06005e;
+        public static final int title_activity_login=0x7f06005f;
         public static final int title_activity_map=0x7f060005;
-        public static final int title_activity_single_image_show=0x7f06005d;
+        public static final int title_activity_single_image_show=0x7f06005e;
         public static final int title_activity_start=0x7f060003;
         public static final int title_activity_trace_mark=0x7f06004a;
         public static final int title_activity_update_game=0x7f060053;
@@ -373,6 +373,7 @@ public final class R {
         /**  upload 
          */
         public static final int upload_images_error=0x7f06005b;
+        public static final int upload_images_progreess=0x7f06005d;
         public static final int upload_images_success=0x7f06005c;
     }
     public static final class style {

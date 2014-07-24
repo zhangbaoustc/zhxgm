@@ -124,9 +124,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Intent intent = new Intent(this, MainActivity.class);            
-	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-	        startActivity(intent);
+			finish();
 	        return true;    
 		default:
 			return super.onOptionsItemSelected(item);
@@ -357,6 +355,12 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 	public void onDataSetChanged() {
 		setListViewHeightBasedOnChildren(referee_listview);
 		addGame.requestFocus();
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
 	}
 
 

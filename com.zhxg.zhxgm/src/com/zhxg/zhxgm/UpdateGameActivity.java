@@ -49,7 +49,7 @@ import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Game;
 
 
-public class UpdateGameActivity extends Activity implements OnTouchListener,Callbacks {
+public class UpdateGameActivity extends BaseActivity implements OnTouchListener,Callbacks {
 
 	
 	private Game mGame;
@@ -400,6 +400,12 @@ public class UpdateGameActivity extends Activity implements OnTouchListener,Call
 	@Override
 	public void onDataSetChanged() {
 		setListViewHeightBasedOnChildren(referee_listview);
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		this.finish();
 	}
 
 }

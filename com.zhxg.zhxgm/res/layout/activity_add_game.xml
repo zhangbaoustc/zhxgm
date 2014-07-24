@@ -167,7 +167,7 @@
 	                android:paddingRight="32dp"
 	                android:textColor="@color/white"
 	                android:background="@drawable/blue_button"
-	                android:text="@string/action_update" />
+	                android:text="@string/action_add" />
 				</LinearLayout>
 	
 	</LinearLayout>

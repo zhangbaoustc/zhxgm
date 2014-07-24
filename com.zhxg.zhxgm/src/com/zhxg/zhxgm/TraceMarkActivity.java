@@ -47,7 +47,7 @@ import com.zhxg.zhxgm.library.UserFunction;
 import com.zhxg.zhxgm.vo.Const;
 import com.zhxg.zhxgm.vo.Trace;
 
-public class TraceMarkActivity extends Activity implements Callback{
+public class TraceMarkActivity extends BaseActivity implements Callback{
  
 	ExpandableHeightGridView gridGallery;
 	GalleryAdapter adapter;
@@ -355,6 +355,12 @@ public class TraceMarkActivity extends Activity implements Callback{
 			break;
 		}
 		return false;
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
 	}
 
 }
