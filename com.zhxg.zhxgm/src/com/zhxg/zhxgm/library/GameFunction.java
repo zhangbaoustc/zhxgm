@@ -65,28 +65,6 @@ public class GameFunction {
 	}
 	
 	
-	public JSONObject addGame(Game game){
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("targetid", game.getTargetID()));
-		params.add(new BasicNameValuePair("title", game.getName()));
-		params.add(new BasicNameValuePair("bsdate", game.getDate()));
-		params.add(new BasicNameValuePair("bonus", game.getBonus()));
-		params.add(new BasicNameValuePair("distance", game.getDistance()));
-		params.add(new BasicNameValuePair("ji_address", game.getJgAddress()));
-		params.add(new BasicNameValuePair("ji_wd", game.getJgLatitude())); 
-		params.add(new BasicNameValuePair("ji_jd", game.getJgLongitude()));
-		params.add(new BasicNameValuePair("ji_date", game.getJgDate()));
-		params.add(new BasicNameValuePair("fly_address", game.getFlyAddress()));
-		params.add(new BasicNameValuePair("fly_jd", game.getFlyLongitude()));
-		params.add(new BasicNameValuePair("fly_wd", game.getFlyLatitude()));
-		params.add(new BasicNameValuePair("fly_date", game.getFlyDate()));
-		params.add(new BasicNameValuePair("cp", game.getReferee()));
-		
-		
-		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
-		return jObj;
-	}
-	
 	public JSONObject getTransportLocation(String bsid){
 		String rul = transportHistoryUrl + bsid;
 		
@@ -94,29 +72,9 @@ public class GameFunction {
 		return jObj;
 	}
 	
-	public JSONObject updateGame(Game game){
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("id", game.getId()));
-		params.add(new BasicNameValuePair("targetid", game.getTargetID()));
-		params.add(new BasicNameValuePair("title", game.getName()));
-		params.add(new BasicNameValuePair("bsdate", game.getDate()));
-		params.add(new BasicNameValuePair("bonus", game.getBonus()));
-		params.add(new BasicNameValuePair("distance", game.getDistance()));
-		params.add(new BasicNameValuePair("ji_address", game.getJgAddress()));
-		params.add(new BasicNameValuePair("ji_wd", game.getJgLatitude())); 
-		params.add(new BasicNameValuePair("ji_jd", game.getJgLongitude()));
-		params.add(new BasicNameValuePair("ji_date", game.getJgDate()));
-		params.add(new BasicNameValuePair("fly_address", game.getFlyAddress()));
-		params.add(new BasicNameValuePair("fly_jd", game.getFlyLongitude()));
-		params.add(new BasicNameValuePair("fly_wd", game.getFlyLatitude()));
-		params.add(new BasicNameValuePair("fly_date", game.getFlyDate()));
-		params.add(new BasicNameValuePair("cp", game.getReferee()));
-		
-		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
-		return jObj;
-	}
 	
-	public JSONObject updateGatherInfo(HashMap<String, String> data){
+	
+	public JSONObject gameAction(HashMap<String, String> data){
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		
 		iter = data.entrySet().iterator();
@@ -129,34 +87,7 @@ public class GameFunction {
 		return jObj;
 	}
 	
-	public JSONObject beginTransport(Game game){
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("id", game.getId()));		
-		params.add(new BasicNameValuePair("status", Integer.parseInt(game.getStatus()) + 1 + ""));
-		
-		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
-		return jObj;
-	}
-	
-	public JSONObject stopTransport(Game game){
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("id", game.getId()));		
-		params.add(new BasicNameValuePair("status", Integer.parseInt(game.getStatus()) + 1 + ""));
-		
-		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
-		return jObj;
-	}
-	
-	public JSONObject letflyDone(Game game){
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("id", game.getId()));		
-		params.add(new BasicNameValuePair("status", Integer.parseInt(game.getStatus()) + 1 + ""));
-		
-		JSONObject jObj = jsonParser.getJSONFromUrl(addOrUpdateGameUrl,params, "POST");
-		return jObj;
-	}
-	
-	public void updateLocalGameData(ArrayList<Game> games,HashMap<String, String> columns){
+	public Game updateLocalGameData(ArrayList<Game> games,HashMap<String, String> columns){
 		for(int i=0;i<games.size();i++){
 			if(games.get(i).getId().equals(columns.get(Const.GAME_ID))){
 				Iterator it = columns.entrySet().iterator();
@@ -177,8 +108,11 @@ public class GameFunction {
 					}
 				    
 				}
+				return games.get(i);
 			}
 		}
+		
+		return games.get(0);
 	}
 	
 	public void updateLocalGameData1(ArrayList<Game> games, Game game, String step){
@@ -213,87 +147,6 @@ public class GameFunction {
 		JSONObject jObj = jsonParser.getJSONFromUrl(transportInsertUrl,params, "POST");
 		return jObj;
 	}
-	
-
-	
-	public boolean uploadImages(HashMap<String, String> info, String[] files){
-		boolean result = false;
-		final long totalSize;
-		 try {
-			 HttpClient httpClient = new DefaultHttpClient();
-			 HttpPost postRequest = new HttpPost(imageUploadUrl);
-			 
-			 MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-			 CustomMultiPartEntity multipartContent = new CustomMultiPartEntity(new ProgressListener()
-				{
-					@Override
-					public void transferred(long num)
-					{
-						//publishProgress((int) ((num / (float) totalSize) * 100));
-					}
-				});
-			 
-			 
-			Iterator<Entry<String, String>> iter = info.entrySet().iterator();
-			while(iter.hasNext()){
-				Map.Entry entry = (Map.Entry) iter.next(); 
-				reqEntity.addPart(entry.getKey().toString(),new StringBody(entry.getValue().toString(),Charset.forName("UTF-8")));
-			}
-			
-			int i = 0;
-			for ( String name : files){
-				File file = new File(name);
-				String[] image_info = file.getName().replace(".jpg", "").split("_");
-				//new ImageUtils().addWatermark(name,image_info[2],GpsUtils.DDDToDMS(image_info[0]),GpsUtils.DDDToDMS(image_info[1]));
-				
-				ExifInterface exifInterface = new ExifInterface(name);
-				reqEntity.addPart("set["+i+ "][ydot]" ,new StringBody(image_info[0]));
-				reqEntity.addPart("set["+i+ "][xdot]" ,new StringBody(image_info[1]));
-				reqEntity.addPart("set["+i+ "][pubdate]" ,new StringBody(image_info[2]));
-				reqEntity.addPart("set["+i+ "][status]" ,new StringBody(image_info[3]));
-				
-				String markTime = Utils.getTimeFromUTC(image_info[2], "yyyy-MM-dd HH:mm:ss");
-				String markGPS = GpsUtils.DDDToDMS(image_info[0]) + "  " + GpsUtils.DDDToDMS(image_info[1]);
-				
-				BitmapFactory.Options options = new BitmapFactory.Options();
-				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-				Bitmap bitmap = BitmapFactory.decodeFile(name,options);
-				
-				
-				bitmap = ImageUtils.mark(bitmap, markGPS,markTime,255, 204, 15, false);
-				
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				bitmap.compress(CompressFormat.JPEG, 100, bos);
-				byte[] data = bos.toByteArray();
-				ByteArrayBody bab = new ByteArrayBody(data, Math.floor(Math.random() * 11)+".jpg");
-				reqEntity.addPart("set["+i+ "][img]" ,bab);
-				i++;
-			}
-			
-			
-			 postRequest.setEntity(reqEntity);       
-		     HttpResponse response = httpClient.execute(postRequest);
-		     BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-		     String sResponse;
-		     StringBuilder s = new StringBuilder();
-		     while ((sResponse = reader.readLine()) != null) {
-		         s = s.append(sResponse);
-		     }
-			 JSONObject jObj = new JSONObject(s.toString());
-			 if("TRUE".equals(jObj.getString("flag").toUpperCase())){
-				 result = true;
-			 }else{
-				 result = false;
-			 }
-		 }catch(Exception es){
-			 result = false;
-		 }
-		
-		
-		return result; 
-	}
-
-	
 	
 	
 	public boolean addTraceMark(HashMap<String, String> info, String[] files){

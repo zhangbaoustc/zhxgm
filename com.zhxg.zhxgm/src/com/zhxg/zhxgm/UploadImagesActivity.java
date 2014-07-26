@@ -215,7 +215,7 @@ public class UploadImagesActivity extends BaseActivity {
 				int i = 0;
 				for ( String name : arg0[0]){
 					File file = new File(name);
-					String[] image_info = file.getName().replace(".jpg", "").split("_");
+					String[] image_info = Utils.StrReverse(file.getName().replace(".jpg", "")).split("_");
 					//new ImageUtils().addWatermark(name,image_info[2],GpsUtils.DDDToDMS(image_info[0]),GpsUtils.DDDToDMS(image_info[1]));
 					
 					ExifInterface exifInterface = new ExifInterface(name);

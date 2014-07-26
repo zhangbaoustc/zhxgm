@@ -3,6 +3,8 @@ package com.zhxg.zhxgm.control;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.baidu.location.BDLocation;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

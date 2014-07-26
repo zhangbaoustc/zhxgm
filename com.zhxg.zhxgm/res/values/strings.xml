@@ -97,9 +97,12 @@
     <string name="game_add_select_fly_time_title">选择放飞日期</string>
     <string name="title_activity_trace_mark">TraceMarkActivity</string>
     <string name="add_error_from_server">添加比赛失败，请联系系统管理员.</string>
+    <string name="update_error_from_server">修改比赛失败，请联系系统管理员.</string>
+    <string name="update_error_from_success">比赛修改成功</string>
     <string name="update_gather_info_error">集鸽信息确认失败，请联系系统管理员.</string>
     <string name="update_gather_info_success">集鸽信息确认成功.</string>
     <string name="add_game_loading">正在添加新比赛&#8230;</string>
+    <string name="update_game_loading">正在修改比赛&#8230;</string>
 
     <!-- trace -->
     <string name="trace_title">行程记录</string>
@@ -121,4 +124,7 @@
     <string name="upload_images_progreess">上传进度</string>
     <string name="title_activity_single_image_show">SingleImageShowActivity</string>
 
+    <!-- take picture -->
+    <string name="take_pic_loading_text">加载地理位置信息&#8230;</string>
+    <string name="take_pic_save_text">照片正在保存&#8230;</string>
 </resources>

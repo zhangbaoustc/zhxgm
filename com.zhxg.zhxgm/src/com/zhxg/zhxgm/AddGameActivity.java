@@ -2,6 +2,7 @@ package com.zhxg.zhxgm;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,6 +63,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 	
 	private Button addGame;
 	private ProgressDialog progressDialog;  
+	private HashMap<String, String> updatedData;
 	
 	
 	@Override
@@ -92,6 +94,7 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 
 		referee_listview = (ListView) findViewById(R.id.referee_listview);
 		
+		updatedData = new HashMap<String, String>();
 		data = new ArrayList<String>();
 		data.add("");
 		
@@ -267,42 +270,35 @@ public class AddGameActivity extends BaseActivity implements View.OnTouchListene
 			cancel = true;
 		}
 		
-		Game game = new Game();
-		game.setName(game_name.getText().toString());
-		game.setBonus(game_bonus.getText().toString());
-		game.setType(Utils.getGameTypeByPosition(this,game_type.getSelectedItemPosition()));
-		game.setTargetID(Utils.getGameTargetIDByPosition(this, game_type.getSelectedItemPosition()));
-		game.setDate("");
-		game.setDistance(game_distance.getText().toString());
+		updatedData.put(Const.GAME_BONUS, game_bonus.getText().toString());
+		updatedData.put(Const.GAME_NAME, game_name.getText().toString());
+		updatedData.put(Const.GAME_TYPE, Utils.getGameTypeByPosition(this,game_type.getSelectedItemPosition()));
+		updatedData.put(Const.GAME_TARGET_ID, Utils.getGameTargetIDByPosition(this, game_type.getSelectedItemPosition()));
+		updatedData.put(Const.GAME_DISTANCE, game_distance.getText().toString());
+		updatedData.put(Const.GAME_JG_ADDRESS, game_add_gather_place.getText().toString());
+		updatedData.put(Const.GAME_JG_TIME, gather_time_cal.getTimeInMillis()/1000+"");
+		updatedData.put(Const.GAME_FLY_DATE, fly_date_cal.getTimeInMillis()/1000+"");
+		updatedData.put(Const.GAME_FLY_ADDRESS, game_add_fly_place.getText().toString());
+		updatedData.put(Const.GAME_REFEREE, Utils.ArrayListToString(data));
 		
-		game.setJgAddress(game_add_gather_place.getText().toString());
-		game.setJgLatitude("");
-		game.setJgLongitude("");
-		
-		game.setJgDate(gather_time_cal.getTimeInMillis()/1000+"");
-		game.setFlyAddress(game_add_fly_place.getText().toString());
-		game.setFlyDate(fly_date_cal.getTimeInMillis()/1000+"");
-		game.setFlyLatitude("");
-		game.setFlyLongitude("");
-		game.setReferee(Utils.ArrayListToString(data));
 		
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
 			progressDialog = ProgressDialog.show(this, "", getString(R.string.add_game_loading), true, false);  
-			new addGameTask().execute(game);
+			new addGameTask().execute(updatedData);
 		}
 	}
 	
 	
-	public class addGameTask extends AsyncTask<Game, Void, Boolean> {
+	public class addGameTask extends AsyncTask<HashMap<String, String>, Void, Boolean> {
 		private boolean resultCode = false;
 		private JSONObject result;
 		@SuppressLint("DefaultLocale")
 		@Override
-		protected Boolean doInBackground(Game... params) {
+		protected Boolean doInBackground(HashMap<String, String>... params) {
 			
-			result = new GameFunction().addGame(params[0]);
+			result = new GameFunction().gameAction(params[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
 					resultCode = true;

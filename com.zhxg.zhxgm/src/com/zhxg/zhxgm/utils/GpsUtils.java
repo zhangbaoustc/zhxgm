@@ -25,15 +25,9 @@ public class GpsUtils {
 	public static final boolean isOPen(final Context context) {  
         LocationManager locationManager   
                                  = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);  
-        // ͨ��GPS���Ƕ�λ����λ������Ծ�ȷ���֣�ͨ��24�����Ƕ�λ��������Ϳտ��ĵط���λ׼ȷ���ٶȿ죩  
         boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);  
-        // ͨ��WLAN���ƶ�����(3G/2G)ȷ����λ�ã�Ҳ����AGPS������GPS��λ����Ҫ���������ڻ��ڸ������Ⱥ��ï�ܵ����ֵȣ��ܼ��ĵط���λ��  
         boolean network = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); 
-        if(network){
-        	Toast.makeText(context, "network open", Toast.LENGTH_LONG).show();
-        }else{
-        	Toast.makeText(context, "network close", Toast.LENGTH_LONG).show();
-        }
+        
         if (gps) {  
             return true;  
         }  
@@ -72,8 +66,17 @@ public class GpsUtils {
 		if(isDMS(ddd)){
 			String[] dmsArr = ddd.split("\\.");
 			int d1 = Integer.parseInt(dmsArr[0]);
-			float d2 = Float.parseFloat(dmsArr[1].substring(0, 2))/60;
-			float d3 = Float.parseFloat(dmsArr[1].substring(2, 4))/3600;
+			float d2 = 0;
+			float d3 = 0;
+			if(dmsArr[1] != null){
+				if(dmsArr[1].length() >= 2){
+					d2 = Float.parseFloat(dmsArr[1].substring(0, 2))/60;
+				}
+				if(dmsArr[1].length() >2){
+					d3 = Float.parseFloat(dmsArr[1].substring(2))/3600;
+				}
+			}
+			
 			return d1 + d2 + d3 + "";
 		}else{
 			return "";
@@ -91,9 +94,9 @@ public class GpsUtils {
 	public static boolean isDMS(String dms){
 		try{
 			Float.parseFloat(dms);
-			if(dms.split("\\.")[1].length()==4){
+			//if(dms.split("\\.")[1].length()==4){
 				return true;
-			}
+			//}
 		}catch(Exception e){
 			
 		}

@@ -263,7 +263,6 @@ public class TraceMarkActivity extends BaseActivity implements Callback{
 		@SuppressWarnings("deprecation")
 		@Override
 		protected Boolean doInBackground(String... arg0) {
-			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 			result = new GameFunction().getTraceHistry(arg0[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){

@@ -1,13 +1,20 @@
 package com.zhxg.zhxgm.utils;
 
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64;
 import android.util.Log;
 
 import com.zhxg.zhxgm.R;
@@ -102,4 +109,9 @@ public class Utils {
 		return result.equals("")?"":result.substring(0, result.length()-1);
 	}
 	
+	public static String StrReverse(String str){
+		return new StringBuilder(str).reverse().toString();
+	}
+	
+
 }

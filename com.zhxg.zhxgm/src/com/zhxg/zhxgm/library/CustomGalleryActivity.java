@@ -29,6 +29,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.zhxg.zhxgm.R;
+import com.zhxg.zhxgm.utils.Utils;
 import com.zhxg.zhxgm.vo.Const;
 
 public class CustomGalleryActivity extends Activity {
@@ -218,21 +219,21 @@ public class CustomGalleryActivity extends Activity {
 					item.sdcardPath = imagecursor.getString(dataColumnIndex);
 					
 					File file = new File(imagecursor.getString(dataColumnIndex));
-					String[] image_info = file.getName().replace(".jpg", "").split("_");
-
-					if(file.exists() && !file.isDirectory()){
-						if(traceUpload){
-							galleryList.add(item);
-						}else{
-							if(image_info.length == 5){
-								if(image_info[3].equals(status) && image_info[4].equals(bsid)){
-									galleryList.add(item);
+					
+						String[] image_info = Utils.StrReverse(file.getName().replace(".jpg", "")).split("_");
+	
+						if(file.exists() && !file.isDirectory()){
+							if(traceUpload){
+								galleryList.add(item);
+							}else{
+								if(image_info.length == 5){
+									if(image_info[3].equals(status) && image_info[4].equals(bsid)){
+										galleryList.add(item);
+									}
 								}
 							}
 						}
 					}
-					
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

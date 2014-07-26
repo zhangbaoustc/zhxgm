@@ -35,11 +35,23 @@ public class Const {
 	
 	//game columns
 	public static final String GAME_ID = "id";
+	public static final String GAME_TYPE = "type";
+	public static final String GAME_TARGET_ID = "targetid";
+	public static final String GAME_NAME = "title";
+	public static final String GAME_BONUS = "bonus";
 	public static final String GAME_STATUS = "status";
 	public static final String GAME_TOTAL = "total";
 	public static final String GAME_JGLATITUDE = "ji_wd";
 	public static final String GAME_JGLONGITUDE = "ji_jd";
+	public static final String GAME_JG_ADDRESS = "ji_address";
+	public static final String GAME_JG_TIME = "ji_date";
 	public static final String GAME_INFO = "info";
+	public static final String GAME_FLY_LONGITUDE = "fly_wd";
+	public static final String GAME_FLY_LATITUDE = "fly_jd";
+	public static final String GAME_FLY_DATE = "fly_date";
+	public static final String GAME_FLY_ADDRESS = "fly_address";
+	public static final String GAME_DISTANCE = "distance";
+	public static final String GAME_REFEREE = "cp";
 	
 	public static final String IMAGE_INFO = "image_name";
 	

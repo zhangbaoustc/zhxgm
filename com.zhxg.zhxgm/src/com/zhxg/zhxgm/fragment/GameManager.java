@@ -13,6 +13,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -100,6 +101,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	private TextView game_gather_latitude;
 	private boolean gather_locationing;
 	private TextView gather_location;
+	private Button game_gather_update_btn;
 	
 	//transport
 	private TextView game_transport_name;
@@ -193,7 +195,8 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		game_gather_memo = (EditText) rootView.findViewById(R.id.game_gather_memo);
 		rootView.findViewById(R.id.game_info_trace).setOnClickListener(this);
 		rootView.findViewById(R.id.game_info_camera).setOnClickListener(this);
-		rootView.findViewById(R.id.game_gather_update_btn).setOnClickListener(this);
+		game_gather_update_btn = (Button) rootView.findViewById(R.id.game_gather_update_btn);
+		game_gather_update_btn.setOnClickListener(this);
 		rootView.findViewById(R.id.game_gather_image_upload).setOnClickListener(this);
 		game_gather_longitude = (EditText) rootView.findViewById(R.id.game_gather_longitude);
 		game_gather_latitude = (EditText) rootView.findViewById(R.id.game_gather_latitude);
@@ -232,6 +235,13 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	
 	//set layout view data
 	private void setLayoutData(Game game){
+		
+		if(Integer.parseInt(game.getStatus()) == Const.STATUS_COMPLETE){
+			setActionDisabled();
+		}else{
+			setActionEnabled();
+		}
+		
 		if(game.getType() != null && !"".equals(game.getType())){
 			game_type.setText(Utils.getGameTypeNameByType(mActivity, Integer.parseInt(game.getType())));
 		}else{	
@@ -285,6 +295,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		if(data.size()>0){
 			currentGame = data.get(0);
 		}
+		setLayoutData(currentGame);
 	}
 
 	@Override
@@ -310,7 +321,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	//start or stop gps location 
 	private void startGPSLocation(int interval){
 		LocationClientOption option = new LocationClientOption();
-		option.setLocationMode(LocationMode.Hight_Accuracy);
+		option.setLocationMode(LocationMode.Battery_Saving);
 		option.setCoorType("bd09ll");
 		option.setScanSpan(interval);
 		option.setIsNeedAddress(false);
@@ -422,27 +433,61 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		        return ;
 			if(mBaiduMapView.getParent() != null)
 			{
-				mBaiduMap.clear();	
-				locationAndAddMapMark(location);
+				
 				if(mBaiduMapView.getParent() == game_transport_ll){
-					game_transport_current_point.setText(GpsUtils.DDDToDMS(location.getLongitude()+"") + "  " + GpsUtils.DDDToDMS(location.getLatitude()+""));
-					LatLng ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
-					LatLng ptE = new LatLng(location.getLatitude(), location.getLongitude());
-					game_transport_distance.setText(DistanceUtil.getDistance(ptB, ptE)+"");
-					addTrace(location);
-				}else if(letfly_locationing == true){
-					letfly_locationing = false;
-					letfly_location.setClickable(false);
-					game_letfly_longitude.setText(GpsUtils.DDDToDMS(location.getLongitude()+""));
-					game_letfly_latitude.setText(GpsUtils.DDDToDMS(location.getLatitude()+""));
-					game_letfly_time.setText(location.getTime());
-					LatLng ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
-					LatLng ptE = new LatLng(location.getLatitude(), location.getLongitude());
-					game_letfly_distance.setText(DistanceUtil.getDistance(ptB, ptE)+"");
-					startGPSLocation(60*1000);
+					LatLng ptB = null;
+					LatLng ptE = null;
+					//transporting 
+					if(Integer.parseInt(currentGame.getId()) == Const.STATUS_TRANSPORTING 
+							|| Integer.parseInt(currentGame.getId()) == Const.STATUS_ARRIVED){
+						game_transport_current_point.setText(GpsUtils.DDDToDMS(location.getLongitude()+"") + "  " + GpsUtils.DDDToDMS(location.getLatitude()+""));
+						ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
+						ptE = new LatLng(location.getLatitude(), location.getLongitude());
+						game_transport_distance.setText(DistanceUtil.getDistance(ptB, ptE)+"");
+						
+					}else if(Integer.parseInt(currentGame.getId()) >= Const.STATUS_LETFLY){
+					//after letfly	
+
+						if(GpsUtils.isDDD(currentGame.getFlyAddress()) && GpsUtils.isDDD(currentGame.getFlyLongitude())){
+							ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
+							ptE = new LatLng(Double.valueOf(currentGame.getFlyLatitude()), Double.valueOf(currentGame.getFlyLongitude()));
+							game_transport_current_point.setText(GpsUtils.DDDToDMS(currentGame.getFlyLongitude()) + "  " + GpsUtils.DDDToDMS(currentGame.getFlyLatitude()));
+						}else{
+							ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
+							ptE = new LatLng(location.getLatitude(), location.getLongitude());
+							game_transport_current_point.setText(GpsUtils.DDDToDMS(location.getLongitude()+"") + "  " + GpsUtils.DDDToDMS(location.getLatitude()+""));
+						}
+						
+						game_transport_distance.setText(DistanceUtil.getDistance(ptB, ptE)+"");
+					}else{
+					}
+					
+					//addTrace(location,currentGame);
+				}else if(mBaiduMapView.getParent() == game_letfly_ll){
+					
+					if(letfly_locationing == true){
+						letfly_locationing = false;
+						letfly_location.setClickable(false);
+						game_letfly_longitude.setText(GpsUtils.DDDToDMS(location.getLongitude()+""));
+						game_letfly_latitude.setText(GpsUtils.DDDToDMS(location.getLatitude()+""));
+						game_letfly_time.setText(location.getTime());
+						LatLng ptB = new LatLng(Double.valueOf(currentGame.getJgLatitude()), Double.valueOf(currentGame.getJgLongitude()));
+						LatLng ptE = new LatLng(location.getLatitude(), location.getLongitude());
+						game_letfly_distance.setText(DistanceUtil.getDistance(ptB, ptE)+"");
+					}else{
+						if(Integer.parseInt(currentGame.getStatus()) >= Const.STATUS_LETFLY){
+							game_letfly_longitude.setText(GpsUtils.DDDToDMS(currentGame.getFlyLongitude()+""));
+							game_letfly_latitude.setText(GpsUtils.DDDToDMS(currentGame.getFlyLatitude()+""));
+							game_letfly_time.setText(currentGame.getFlyDate());
+							game_letfly_distance.setText(currentGame.getDistance());
+							game_letfly_place.setText(currentGame.getFlyAddress());
+						}
+					}
+					
 				}else{
 					
 				}
+				locationAndAddMapMark(location);
 			}else{
 				//location gather gps
 				if(gather_locationing == true){
@@ -456,7 +501,6 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		}
 	}
 	
-
 	
 	public void locationAndAddMapMark(BDLocation location){
 		// ������λͼ��  
@@ -481,20 +525,29 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		//mBaiduMap.setMyLocationEnabled(false);
 	}
 	
-	public void addTrace(BDLocation location){
-		ArrayList<HashMap<String, String>> wordList = controller.getAllLocations("1234");
+	public void addTrace(BDLocation location,Game game){
+		ArrayList<HashMap<String, String>> wordList = controller.getAllLocations(game.getId());
 		if(wordList.size() == 0 || wordList.size() > 199)
 		{
 			return;
 		}
 		List<LatLng> pts = new ArrayList<LatLng>();  
+		
 		for(int i=0;i<wordList.size();i++){
 			LatLng pt = new LatLng(Double.valueOf(GpsUtils.DMSToDDD(wordList.get(i).get("ydot"))),Double.valueOf(GpsUtils.DDDToDMS(wordList.get(i).get("xdot"))));
 			pts.add(pt);
 		}
 		
-		LatLng ptCurrent = new LatLng(location.getLatitude(), location.getLongitude());
-		pts.add(ptCurrent);  
+		if(Integer.parseInt(currentGame.getId()) == Const.STATUS_TRANSPORTING 
+				|| Integer.parseInt(currentGame.getId()) == Const.STATUS_ARRIVED){
+			LatLng ptCurrent = new LatLng(location.getLatitude(), location.getLongitude());
+			pts.add(ptCurrent);
+		}else{
+			LatLng ptCurrent = new LatLng(Double.valueOf(GpsUtils.DDDToDMS(game.getFlyLatitude())), Double.valueOf(GpsUtils.DDDToDMS(game.getFlyLongitude())));
+			pts.add(ptCurrent);
+		}
+		
+		
 		PolylineOptions polylineOption = new PolylineOptions()
 				.points(pts).color(0xAAFF0000);
 		mBaiduMap.addOverlay(polylineOption);
@@ -536,16 +589,16 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			}
 			progressDialog.dismiss();
 			Toast.makeText(mActivity, mActivity.getString(R.string.game_loading_error), Toast.LENGTH_LONG).show();
-		}
+		} 
 	}
 	
-	public class letflyDoneTask extends AsyncTask<Game, Void, Boolean> {
+	public class letflyDoneTask extends AsyncTask<HashMap<String, String>, Void, Boolean> {
 		private boolean resultCode = false;
 		private JSONObject result;
 		@Override
-		protected Boolean doInBackground(Game... params) {
+		protected Boolean doInBackground(HashMap<String, String>... params) {
 
-			result = new GameFunction().letflyDone(params[0]);
+			result = new GameFunction().gameAction(params[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
 					resultCode = true;
@@ -638,16 +691,20 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			break;
 		case R.id.game_transport_action_begin:
 			if(currentGame.getStatus().equals(Const.STATUS_STARTED+"")){
-				new beginTransportTask().execute(currentGame);
+				updatedData.clear();
+				updatedData.put(Const.GAME_ID, currentGame.getId());
+				updatedData.put(Const.GAME_STATUS, Const.STATUS_TRANSPORTING+"");
+				new beginTransportTask().execute(updatedData);
 			}else{
 				startTransportService();
 			}
 			break;
 		case R.id.game_transport_action_end:
 			if(currentGame.getStatus().equals(Const.STATUS_TRANSPORTING+"")){
-				new stopTransportTask().execute(currentGame);
-			}else{
-				stopTransportService();
+				updatedData.clear();
+				updatedData.put(Const.GAME_ID, currentGame.getId());
+				updatedData.put(Const.GAME_STATUS, Const.STATUS_ARRIVED+"");
+				new stopTransportTask().execute(updatedData);
 			}
 			break;
 		case R.id.gather_location:
@@ -661,17 +718,57 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 			letfly_location.setClickable(false);
 			break;
 		case R.id.game_letfly_done:
-			new letflyDoneTask().execute(currentGame);
+			attempUpdateLetfly();
 			break;
 		default:
 			break;
 		}
 	}
 	
+	private void attempUpdateLetfly(){
+		updatedData.clear();
+		game_letfly_place.setError(null);
+		game_letfly_time.setError(null);
+		game_letfly_latitude.setError(null);
+		game_letfly_longitude.setError(null);
+		
+		if(TextUtils.isEmpty(game_letfly_time.getText().toString())){
+			game_letfly_time.setError(mActivity.getString(R.string.error_field_required));
+			return;
+		}
+		
+		if(TextUtils.isEmpty(game_letfly_place.getText().toString())){
+			game_letfly_place.setError(mActivity.getString(R.string.error_field_required));
+			return;
+		}
+		
+		if(TextUtils.isEmpty(game_letfly_latitude.getText().toString())){
+			game_letfly_latitude.setError(mActivity.getString(R.string.error_field_required));
+			return;
+		}
+		
+		if(TextUtils.isEmpty(game_letfly_longitude.getText().toString())){
+			game_letfly_longitude.setError(mActivity.getString(R.string.error_field_required));
+			return;
+		}
+		
+		updatedData.put(Const.GAME_ID,currentGame.getId());
+		updatedData.put(Const.GAME_FLY_ADDRESS, game_letfly_place.getText().toString());
+		updatedData.put(Const.GAME_FLY_LATITUDE,GpsUtils.DMSToDDD(game_letfly_latitude.getText().toString()));
+		updatedData.put(Const.GAME_FLY_LONGITUDE,GpsUtils.DMSToDDD(game_letfly_longitude.getText().toString()));
+		updatedData.put(Const.GAME_DISTANCE,game_letfly_distance.getText().toString());
+		
+		if(Integer.parseInt(currentGame.getStatus()) == Const.STATUS_ARRIVED){
+			updatedData.put(Const.GAME_FLY_DATE,Utils.getUTCTime(game_letfly_time.getText().toString(), "yyyy-MM-dd HH:mm"));
+			updatedData.put(Const.GAME_STATUS, Const.STATUS_LETFLY+"");
+		}
+		
+		new letflyDoneTask().execute(updatedData);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void attempUpdateGatherInfo(){
 		
-
 		
 		game_gather_latitude.setError(null);
 		game_gather_longitude.setError(null);
@@ -707,7 +804,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		@Override
 		protected Boolean doInBackground(HashMap<String, String>... params) {
 			
-			result = new GameFunction().updateGatherInfo(params[0]);
+			result = new GameFunction().gameAction(params[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
 					resultCode = true;
@@ -724,7 +821,7 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		protected void onPostExecute(final Boolean success) {
 
 			if (success) {
-				new GameFunction().updateLocalGameData(data, updatedData);
+				currentGame = new GameFunction().updateLocalGameData(data, updatedData);
 				setLayoutData(currentGame);
 				Toast.makeText(mActivity, R.string.update_gather_info_success, Toast.LENGTH_LONG).show();
 			}else{
@@ -735,14 +832,14 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 	}
 	
 	
-	public class beginTransportTask extends AsyncTask<Game, Void, Boolean> {
+	public class beginTransportTask extends AsyncTask<HashMap<String, String>, Void, Boolean> {
 		private boolean resultCode = false;
 		private JSONObject result;
 		@SuppressLint("DefaultLocale")
 		@Override
-		protected Boolean doInBackground(Game... params) {
+		protected Boolean doInBackground(HashMap<String, String>... params) {
 			
-			result = new GameFunction().beginTransport(params[0]);
+			result = new GameFunction().gameAction(params[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
 					resultCode = true;
@@ -767,14 +864,14 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		}
 	}
 	
-	public class stopTransportTask extends AsyncTask<Game, Void, Boolean> {
+	public class stopTransportTask extends AsyncTask<HashMap<String, String>, Void, Boolean> {
 		private boolean resultCode = false;
 		private JSONObject result;
 		@SuppressLint("DefaultLocale")
 		@Override
-		protected Boolean doInBackground(Game... params) {
+		protected Boolean doInBackground(HashMap<String, String>... params) {
 			
-			result = new GameFunction().stopTransport(params[0]);
+			result = new GameFunction().gameAction(params[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
 					resultCode = true;
@@ -838,6 +935,20 @@ public class GameManager extends GeneralFragment implements OnClickListener{
 		endTransport.setVisibility(View.VISIBLE);
 		endTransport.setEnabled(false);
 		endTransport.setText(mActivity.getString(R.string.action_transport_complete));
+	}
+	
+	private void setActionEnabled(){
+		gather_location.setVisibility(View.VISIBLE);
+		letfly_location.setVisibility(View.VISIBLE);
+		game_letfly_done.setVisibility(View.VISIBLE);
+		game_gather_update_btn.setVisibility(View.VISIBLE);
+	}
+	
+	private void setActionDisabled(){
+		gather_location.setVisibility(View.GONE);
+		letfly_location.setVisibility(View.GONE);
+		game_letfly_done.setVisibility(View.GONE);
+		game_gather_update_btn.setVisibility(View.GONE);
 	}
 
 }

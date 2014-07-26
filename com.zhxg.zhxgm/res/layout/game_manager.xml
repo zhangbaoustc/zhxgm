@@ -327,7 +327,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                  android:layout_alignParentLeft="true"
-                android:textColor="@color/white"
                 android:text="@string/game_trace" />
 			    
 			    <Button
@@ -336,7 +335,6 @@
 	                android:layout_height="wrap_content"
 	                android:layout_gravity="right"
 	                android:layout_alignParentRight="true"
-	                android:textColor="@color/white"
 	                android:text="@string/action_transport_begin" />
 			    
 			     <Button
@@ -345,7 +343,6 @@
 	                android:layout_height="wrap_content"
 	                android:layout_gravity="right"
 	                android:layout_alignParentRight="true"
-	                android:textColor="@color/white"
 	                android:visibility="gone"
 	                android:text="@string/action_transport_end" />
 			</RelativeLayout>
@@ -515,7 +512,7 @@
 			    >
 			    <TextView android:layout_width="70dp"
 			        android:layout_height="wrap_content"
-			        android:text="@string/game_letfly_latitude"/>
+			        android:text="@string/game_letfly_longitude"/>
 			    
 			    <TextView android:id="@+id/game_letfly_longitude"
 			        android:layout_width="80dp"

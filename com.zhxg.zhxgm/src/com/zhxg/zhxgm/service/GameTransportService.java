@@ -10,9 +10,9 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
@@ -27,11 +27,9 @@ import com.zhxg.zhxgm.control.SqliteController;
 import com.zhxg.zhxgm.library.GameFunction;
 import com.zhxg.zhxgm.utils.GpsUtils;
 import com.zhxg.zhxgm.vo.Const;
-import com.zhxg.zhxgm.vo.Trace;
 
 public class GameTransportService extends Service {
 
-	private static final int HashMap = 0;
 	private LocationClient mLocationClient;
 	private BDLocationListener myLocationListener = new MyLocationListener();
 	private	SqliteController controller;
@@ -48,7 +46,6 @@ public class GameTransportService extends Service {
 		super.onCreate();
 		
 		controller = new SqliteController(getApplicationContext());
-		SQLiteDatabase sqliteDatabase = controller.getWritableDatabase();
 		
 		mLocationClient = new LocationClient(getApplicationContext());
 		mLocationClient.registerLocationListener(myLocationListener);
@@ -84,26 +81,6 @@ public class GameTransportService extends Service {
 		public void onReceiveLocation(BDLocation location) {
 			if (location == null)
 		            return ;
-			StringBuffer sb = new StringBuffer(256);
-			sb.append("time : ");
-			sb.append(location.getTime());
-			sb.append("\nerror code : ");
-			sb.append(location.getLocType());
-			sb.append("\nlatitude : ");
-			sb.append(location.getLatitude());
-			sb.append("\nlontitude : ");
-			sb.append(location.getLongitude());
-			sb.append("\nradius : ");
-			sb.append(location.getRadius());
-			if (location.getLocType() == BDLocation.TypeGpsLocation){
-				sb.append("\nspeed : ");
-				sb.append(location.getSpeed());
-				sb.append("\nsatellite : ");
-				sb.append(location.getSatelliteNumber());
-			} else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
-				sb.append("\naddr : ");
-				sb.append(location.getAddrStr());
-			} 
 			
 			//insert into sqlite
 			new TransportLocationInsertTask().execute(location);
@@ -127,7 +104,7 @@ public class GameTransportService extends Service {
 		private boolean resultCode = false;
 		
 		
-		@SuppressWarnings("deprecation")
+		@SuppressLint("DefaultLocale")
 		@Override
 		protected Boolean doInBackground(String... arg0) {
 			
@@ -158,7 +135,7 @@ public class GameTransportService extends Service {
 			}
 			
 			for (BDLocation location : tempLocation){
-				HashMap locationMap = new HashMap<String, String>();
+				HashMap<String, String> locationMap = new HashMap<String, String>();
 				locationMap.put("bsid", bsid);
 				locationMap.put("xdot", location.getLongitude()+"");
 				locationMap.put("ydot", location.getLatitude()+"");
@@ -205,6 +182,7 @@ public class GameTransportService extends Service {
 		}
 	}
 	
+	@SuppressLint("SimpleDateFormat")
 	private void insertToSqlite(BDLocation location){
 		SimpleDateFormat  format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		locationMap = new HashMap<String, String>();

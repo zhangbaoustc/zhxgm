@@ -5,13 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -72,6 +72,8 @@ public class UpdateGameActivity extends BaseActivity implements OnTouchListener,
 	private ProgressDialog progressDialog;  
 	private Button updateGame;
 	
+	private HashMap<String, String> updatedData;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,6 +82,7 @@ public class UpdateGameActivity extends BaseActivity implements OnTouchListener,
 		dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		data = new ArrayList<String>();
+		updatedData = new HashMap<String, String>();
 		ActionBar ab = getActionBar();
 		ab.setDisplayHomeAsUpEnabled(true);
 		ab.setHomeButtonEnabled(true);
@@ -312,42 +315,35 @@ public class UpdateGameActivity extends BaseActivity implements OnTouchListener,
 			cancel = true;
 		}
 		
-		Game game = new Game();
-		game.setId(mGame.getId());
-		game.setName(game_name.getText().toString());
-		game.setBonus(game_bonus.getText().toString());
-		game.setType(Utils.getGameTypeByPosition(this,game_type.getSelectedItemPosition()));
-		game.setTargetID(Utils.getGameTargetIDByPosition(this, game_type.getSelectedItemPosition()));
-		game.setDate("");
-		game.setDistance(game_distance.getText().toString());
-		
-		game.setJgAddress(game_gather_place.getText().toString());
-		game.setJgLatitude("");
-		game.setJgLongitude("");
-		
-		game.setJgDate(gather_time_cal.getTimeInMillis()/1000+"");
-		game.setFlyAddress(game_fly_place.getText().toString());
-		game.setFlyDate(fly_date_cal.getTimeInMillis()/1000+"");
-		game.setFlyLatitude("");
-		game.setFlyLongitude("");
-		game.setReferee(Utils.ArrayListToString(data));
+		updatedData.put(Const.GAME_ID, mGame.getId());
+		updatedData.put(Const.GAME_BONUS, game_bonus.getText().toString());
+		updatedData.put(Const.GAME_NAME, game_name.getText().toString());
+		updatedData.put(Const.GAME_TYPE, Utils.getGameTypeByPosition(this,game_type.getSelectedItemPosition()));
+		updatedData.put(Const.GAME_TARGET_ID, Utils.getGameTargetIDByPosition(this, game_type.getSelectedItemPosition()));
+		updatedData.put(Const.GAME_DISTANCE, game_distance.getText().toString());
+		updatedData.put(Const.GAME_JG_ADDRESS, game_gather_place.getText().toString());
+		updatedData.put(Const.GAME_JG_TIME, gather_time_cal.getTimeInMillis()/1000+"");
+		updatedData.put(Const.GAME_FLY_DATE, fly_date_cal.getTimeInMillis()/1000+"");
+		updatedData.put(Const.GAME_FLY_ADDRESS, game_fly_place.getText().toString());
+		updatedData.put(Const.GAME_REFEREE, Utils.ArrayListToString(data));
 		
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
-			progressDialog = ProgressDialog.show(this, "", getString(R.string.add_game_loading), true, false);  
-			new updateGameTask().execute(game);
+			progressDialog = ProgressDialog.show(this, "", getString(R.string.update_game_loading), true, false);  
+			new updateGameTask().execute(updatedData);
 		}
 	}
 	
-	public class updateGameTask extends AsyncTask<Game, Void, Boolean> {
+	public class updateGameTask extends AsyncTask<HashMap<String, String>, Void, Boolean> {
 		private boolean resultCode = false;
 		private JSONObject result;
+		
 		@SuppressLint("DefaultLocale")
 		@Override
-		protected Boolean doInBackground(Game... params) {
+		protected Boolean doInBackground(HashMap<String, String>... params) {
 			
-			result = new GameFunction().updateGame(params[0]);
+			result = new GameFunction().gameAction(params[0]);
 			try {
 				if("TRUE".equals(result.getString("flag").toUpperCase())){
 					resultCode = true;
@@ -366,9 +362,15 @@ public class UpdateGameActivity extends BaseActivity implements OnTouchListener,
 			if (success) {
 				Intent backIntent = new Intent();
 				setResult(Const.EDIT_GAME_INTENT_FOR_RESULT, backIntent);
+				Toast.makeText(UpdateGameActivity.this, R.string.update_error_from_success, Toast.LENGTH_LONG).show();
 				UpdateGameActivity.this.finish();
 			}else{
-				Toast.makeText(UpdateGameActivity.this, R.string.add_error_from_server, Toast.LENGTH_LONG).show();
+				try {
+					Toast.makeText(UpdateGameActivity.this, result.getString("msg"), Toast.LENGTH_LONG).show();
+				} catch (JSONException e) {
+					Toast.makeText(UpdateGameActivity.this, R.string.update_error_from_server, Toast.LENGTH_LONG).show();
+					e.printStackTrace();
+				}
 			}
 			progressDialog.dismiss();
 		}

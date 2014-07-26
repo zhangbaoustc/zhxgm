@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -15,6 +13,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.ShutterCallback;
+import android.media.AudioManager;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +25,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -45,13 +47,20 @@ public class CameraActivity extends BaseActivity {
 	private Camera mCamera;
 	private CameraPreview mPreview;
 	private Handler mHandler;
-	private int continueCameraCount = 6;
+	private int continueCameraCount = 1;
+	private int takePicInteval = 2000;
 	private BDLocationListener myLocationListener;
 	private LocationClient mLocationClient;
+	private ProgressBar progressBar;
+	private TextView gps_load_text;
 	private BDLocation mLocation;
+	private Button captureButton;
+	private TextView image_save_text;
 	private String style;
 	private static String bsid;
 	private static String status;
+	private boolean safeToTakePicture = true;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +78,8 @@ public class CameraActivity extends BaseActivity {
 			status = getIntent().getStringExtra(Const.GAME_STATUS);
 		}
 		
+		
+		//get gps info
 		myLocationListener = new MyLocationListener();
 		mLocationClient = new LocationClient(getApplicationContext());     
 		mLocationClient.registerLocationListener( myLocationListener );    
@@ -85,52 +96,79 @@ public class CameraActivity extends BaseActivity {
 		
 		mHandler = new Handler();
 		mCamera = getCameraInstance();
-		mPreview = new CameraPreview(this,mCamera);
-		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-		preview.addView(mPreview);
+		mHandler.postDelayed(loadPreview, 500);
 		
-		
-		Button captureButton = (Button) findViewById(R.id.button_capture);
+		captureButton = (Button) findViewById(R.id.button_capture);
 		captureButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
+				captureButton.setEnabled(false);
 				if(style.equals(Const.NORMAL)){
-					mCamera.takePicture(null, null, mPicture);
+					continueCameraCount = 1;
+					takePicInteval = 100;
+					mHandler.postDelayed(takePicRunnable, takePicInteval);
 				}else{
-					mHandler.postDelayed(takePicRunnable, 2000);
+					continueCameraCount = 5;
+					takePicInteval = 2000;
+					mHandler.postDelayed(takePicRunnable, takePicInteval);
 				}
 			}
 		});
+		
+		
+		progressBar = (ProgressBar) findViewById(R.id.camera_gps_load_progressbar);
+		gps_load_text = (TextView) findViewById(R.id.camera_gps_load_text);
+		image_save_text = (TextView) findViewById(R.id.image_save_text);
+		
 		
 		if(!GpsUtils.isOPen(this)){
 			new GpsUtils(this);
 			GpsUtils.openGPSSetting(this);
 		}
-		
+		beforeTakePic();
 	}
+	
+	
+
+	
+	private Runnable loadPreview = new Runnable() {
+		
+		@Override
+		public void run() {
+			mPreview = new CameraPreview(CameraActivity.this,mCamera);
+			FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+			preview.addView(mPreview);
+		}
+	};
+	
+
+	private final ShutterCallback shutterCallback = new ShutterCallback() {
+        public void onShutter() {
+            AudioManager mgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            mgr.playSoundEffect(AudioManager.FLAG_PLAY_SOUND);
+        }
+    };
 	
 	private Runnable takePicRunnable = new Runnable() {
 		
 		@Override
 		public void run() {
-			if(continueCameraCount>0){
-				mCamera.takePicture(null, null, mPicture);
-				continueCameraCount--;
-				mHandler.postDelayed(this, 2000);
-			}else{
-				continueCameraCount= 6;
+			if(safeToTakePicture){
+				safeToTakePicture = false;
+				if(continueCameraCount>0){
+					mCamera.takePicture(shutterCallback, null, mPicture);
+					continueCameraCount--;
+					mHandler.postDelayed(this, takePicInteval);
+				}else{
+					continueCameraCount= 1;
+				}
+			
+				captureButton.setEnabled(true);
 			}
 		}
 	};
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.camera, menu);
-		return true;
-	}
-	
 	
 	//check if the device has a camera
 	private boolean checkCameraHardware(Context context){
@@ -160,6 +198,7 @@ public class CameraActivity extends BaseActivity {
 		@Override
 	    public void onPictureTaken(byte[] data, Camera camera) {
 
+			image_save_text.setVisibility(View.VISIBLE);
 			File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
 
 		    if (pictureFile.exists()) {
@@ -196,6 +235,9 @@ public class CameraActivity extends BaseActivity {
 		        Log.d("Info", "File not found: " + e.getMessage());
 		    } catch (IOException e) {
 		        Log.d("TAG", "Error accessing file: " + e.getMessage());
+		    }finally{
+		    	 safeToTakePicture = true;
+				 image_save_text.setVisibility(View.GONE);
 		    }
 	    }
 	};
@@ -219,29 +261,27 @@ public class CameraActivity extends BaseActivity {
 	    // using Environment.getExternalStorageState() before doing this.
 
 	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-	              Environment.DIRECTORY_PICTURES), "MyCameraApp");
+	              Environment.DIRECTORY_PICTURES), "ZHXG");
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 
 	    // Create the storage directory if it does not exist
 	    if (! mediaStorageDir.exists()){
 	        if (! mediaStorageDir.mkdirs()){
-	            Log.d("MyCameraApp", "failed to create directory");
+	            Log.d("ZHXG", "failed to create directory");
 	            return null;
 	        }
 	    }
 
 	    // Create a media file name
-	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 	    File mediaFile;
 	    if (type == MEDIA_TYPE_IMAGE){
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mLocation.getLatitude() + "_" + mLocation.getLongitude() + "_" +
-	        		Utils.getUTCTime(mLocation.getTime(), "yyyy-MM-dd HH:mm:ss") + "_" + status + "_" + bsid + ".jpg");
+	    	String fileName = mLocation.getLatitude() + "_" + mLocation.getLongitude() + "_" +
+	        		Utils.getUTCTime(mLocation.getTime(), "yyyy-MM-dd HH:mm:ss") + "_" + status + "_" + bsid;
+	    	fileName = Utils.StrReverse(fileName) + ".jpg";
+	        mediaFile = new File(mediaStorageDir.getPath() + File.separator + fileName);
 	    	//mediaFile = new File(mediaStorageDir.getPath() + File.separator + timeStamp + ".jpg");
-	    } else if(type == MEDIA_TYPE_VIDEO) {
-	        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-	        "VID_"+ timeStamp + ".mp4");
-	    } else {
+	    }else {
 	        return null;
 	    }
 
@@ -255,6 +295,7 @@ public class CameraActivity extends BaseActivity {
 			if (location == null)
 		            return ;
 			mLocation = location;
+			readyForTakePic();
 		}
 	}
 	
@@ -262,14 +303,29 @@ public class CameraActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
+			mCamera.stopPreview();
 			this.finish();
 	        return true;    
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-		
 	}
 
+	
+	//should add time and gps to image, so should get the info before take picture
+	private void beforeTakePic(){
+		progressBar.setVisibility(View.VISIBLE);
+		gps_load_text.setVisibility(View.VISIBLE);
+		captureButton.setVisibility(View.GONE);
+		image_save_text.setVisibility(View.GONE);
+	}
+	
+	private void readyForTakePic(){
+		progressBar.setVisibility(View.GONE);
+		gps_load_text.setVisibility(View.GONE);
+		captureButton.setVisibility(View.VISIBLE);
+		image_save_text.setVisibility(View.GONE);
+	}
 	
 
 	@Override
@@ -277,6 +333,12 @@ public class CameraActivity extends BaseActivity {
 		super.onDestroy();
 		mCamera.release();
 		mLocationClient.stop();
+	}
+
+	@Override
+	public void onBackPressed() {
+		mCamera.stopPreview();
+		super.onBackPressed();
 	}
 	
 }
